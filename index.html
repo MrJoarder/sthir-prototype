@@ -41,7 +41,7 @@
     display:flex;align-items:center;justify-content:space-between;
     padding:8px 24px;gap:12px;font-size:13px;
   }
-  .statusbar .loc{display:flex;align-items:center;gap:8px;color:#CFE3DC;}
+  .statusbar .loc{display:flex;align-items:center;gap:8px;color:#CFE3DC;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
   .statusbar .loc b{color:#fff;font-weight:600;}
   .dot{width:7px;height:7px;border-radius:50%;background:#5FD3A2;flex-shrink:0;animation:blink 1.8s infinite;}
   @keyframes blink{0%,100%{opacity:1;}50%{opacity:.35;}}
@@ -49,8 +49,16 @@
     background:var(--red);color:#fff;border:none;border-radius:999px;
     padding:7px 16px;font-weight:700;font-size:12.5px;letter-spacing:.02em;
     display:flex;align-items:center;gap:7px;cursor:pointer;text-decoration:none;white-space:nowrap;
+    flex-shrink:0;
   }
   .sos-btn:hover{background:#B92F24;}
+  .sos-icon{font-size:14px;line-height:1;}
+  @media (max-width:640px){
+    .statusbar{padding:8px 14px;}
+    .sos-btn{padding:9px;border-radius:50%;gap:0;width:34px;height:34px;justify-content:center;}
+    .sos-btn .sos-text{display:none;}
+    .sos-icon{font-size:16px;}
+  }
 
   /* ---- nav ---- */
   .nav{
@@ -311,7 +319,7 @@
 
 <div class="statusbar">
   <div class="loc"><span class="dot"></span> Locating from <b id="loc-label">your device…</b><span id="clock" class="mono"></span></div>
-  <button class="sos-btn" id="sos-btn">🚑 Emergency — Tap to Call Nearest Ambulance</button>
+  <button class="sos-btn" id="sos-btn" aria-label="Emergency — tap to call nearest ambulance"><span class="sos-icon">🚑</span><span class="sos-text">Emergency — Tap to Call Nearest Ambulance</span></button>
 </div>
 
 <nav class="nav">
