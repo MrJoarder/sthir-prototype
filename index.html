@@ -1,1715 +1,1388 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sthir — ICU, Ambulance &amp; Blood, Located.</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sthir — Nearest ICU bed, ambulance, or blood in under a minute</title>
+<meta name="description" content="Sthir connects families directly to partner hospitals, ambulances, and blood banks in Chattogram — located and booked in under a minute.">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
-  :root{
-    --bg:#FAF9F5;
-    --surface:#FFFFFF;
-    --ink:#1A1B22;
-    --ink-soft:#5B6470;
-    --ink-faint:#8B93A0;
-    --teal:#2E52C8;
-    --teal-dark:#10193D;
-    --teal-tint:#E9ECFB;
-    --success:#1FA870;
-    --success-tint:#E4F5EC;
-    --red:#D63A2E;
-    --red-tint:#FBE9E7;
-    --amber:#B8791C;
-    --amber-tint:#FBF0DE;
-    --line:#E2E5EC;
-    --line-soft:#ECEEF3;
-    --silver:#C7CEDC;
-    --radius:14px;
-    --shadow: 0 1px 2px rgba(30,35,55,.05), 0 8px 24px -12px rgba(30,35,55,.14);
-  }
-  *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
-  .mono{font-family:'IBM Plex Mono',monospace;}
-  .display{font-family:'Fraunces',serif;}
-  a{color:inherit;}
-  .wrap{max-width:1040px;margin:0 auto;padding:0 24px;}
-  #top,#icu,#how,#testimonials,#insights,#faq,#partner,section{scroll-margin-top:110px;}
+/* ==========================================================================
+   Sthir — Emergency Healthcare Platform
+   Design tokens: royal blue / deep navy / silver / warm white, liquid glass
+   ========================================================================== */
 
-  /* ---- utility status bar ---- */
-  .statusbar{
-    background:var(--teal-dark);color:#fff;
-    display:flex;align-items:center;justify-content:space-between;
-    padding:8px 24px;gap:12px;font-size:13px;
-  }
-  .statusbar .loc{display:flex;align-items:center;gap:8px;color:#D8DEF7;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
-  .statusbar .loc b{color:#fff;font-weight:600;}
-  .dot{width:7px;height:7px;border-radius:50%;background:#6C8DFF;flex-shrink:0;animation:blink 1.8s infinite;}
-  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.35;}}
-  .sos-btn{
-    background:var(--red);color:#fff;border:none;border-radius:999px;
-    padding:7px 16px;font-weight:700;font-size:12.5px;letter-spacing:.02em;
-    display:flex;align-items:center;gap:7px;cursor:pointer;text-decoration:none;white-space:nowrap;
-    flex-shrink:0;
-  }
-  .sos-btn:hover{background:#B92F24;}
-  .sos-icon{font-size:14px;line-height:1;}
-  @media (max-width:640px){
-    .statusbar{padding:8px 14px;}
-    .sos-btn{padding:9px;border-radius:50%;gap:0;width:34px;height:34px;justify-content:center;}
-    .sos-btn .sos-text{display:none;}
-    .sos-icon{font-size:16px;}
-  }
+:root{
+  --navy-950:#060c22;
+  --navy-900:#0a1440;
+  --navy-800:#0f1c5c;
+  --blue-700:#1737b8;
+  --blue-600:#2049e0;
+  --blue-500:#3b63ff;
+  --blue-400:#6489ff;
+  --cyan-400:#5fd8e0;
+  --cyan-300:#9be9ec;
+  --coral-500:#ef5b5b;
 
-  /* ---- nav ---- */
-  .nav{
-    position:sticky;top:0;z-index:60;background:rgba(250,249,245,.92);backdrop-filter:blur(8px);
-    border-bottom:1px solid var(--line);
-  }
-  .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;max-width:1040px;margin:0 auto;}
-  .logo{display:flex;align-items:center;gap:9px;font-family:'Fraunces',serif;font-weight:600;font-size:19px;color:var(--teal-dark);text-decoration:none;}
-  .logo .mark{width:26px;height:26px;flex-shrink:0;}
-  .navlinks{display:flex;gap:28px;font-size:13.5px;font-weight:500;}
-  .navlinks a{text-decoration:none;color:var(--ink-soft);position:relative;padding-bottom:2px;}
-  .navlinks a::after{content:'';position:absolute;left:0;right:100%;bottom:-2px;height:2px;background:linear-gradient(90deg,var(--teal),var(--silver));border-radius:2px;transition:right .25s ease;}
-  .navlinks a:hover{color:var(--teal);}
-  .navlinks a:hover::after{right:0;}
-  .nav-cta{background:var(--teal-dark);color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;}
-  @media (max-width:760px){ .navlinks{display:none;} }
+  --silver-100:#eef1f6;
+  --silver-200:#e3e8f0;
+  --silver-300:#d3dae6;
+  --silver-400:#b7c1d4;
 
-  .hamburger{display:none;flex-direction:column;justify-content:center;gap:4px;width:34px;height:34px;background:none;border:none;cursor:pointer;padding:0;}
-  .hamburger span{display:block;width:20px;height:2px;background:var(--ink);border-radius:2px;transition:transform .25s ease, opacity .25s ease;}
-  .hamburger[aria-expanded="true"] span:nth-child(1){transform:translateY(6px) rotate(45deg);}
-  .hamburger[aria-expanded="true"] span:nth-child(2){opacity:0;}
-  .hamburger[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
-  @media (max-width:760px){ .hamburger{display:flex;} }
+  --ink-900:#0c1428;
+  --ink-700:#2a3350;
+  --ink-500:#5b6580;
+  --ink-400:#7c85a0;
 
-  .mobile-drawer{display:none;flex-direction:column;gap:2px;padding:8px 20px 18px;background:var(--surface);border-top:1px solid var(--line);}
-  .mobile-drawer.open{display:flex;animation:drawerIn .2s ease;}
-  @keyframes drawerIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
-  .mobile-drawer a{padding:12px 4px;color:var(--ink-soft);text-decoration:none;font-size:14.5px;border-bottom:1px solid var(--line-soft);}
-  .mobile-drawer a:last-child{border-bottom:none;}
+  --bg:#f3f5fa;
+  --bg-warm:#f6f5f2;
+  --white:#ffffff;
 
-  /* ---- hero ---- */
-  .hero{padding-top:56px;padding-bottom:40px;}
-  .hero-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:48px;align-items:center;}
-  @media (max-width:860px){ .hero-grid{grid-template-columns:1fr;} }
-  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
-  .eyebrow::before{content:'';width:16px;height:1px;background:var(--teal);}
-  .hero h1{font-size:clamp(32px,4.4vw,48px);line-height:1.08;margin:0 0 18px;font-weight:500;letter-spacing:-.01em;}
-  .hero p.lede{font-size:16px;color:var(--ink-soft);max-width:480px;line-height:1.6;margin:0 0 28px;}
-  .locate-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:26px;}
-  .locate-btn{
-    background:var(--teal);color:#fff;border:none;padding:13px 22px;border-radius:10px;
-    font-weight:600;font-size:14px;cursor:pointer;display:flex;gap:8px;align-items:center;
-  }
-  .locate-btn:hover{background:#2740A8;}
-  .loc-status{font-size:12.5px;color:var(--ink-faint);font-family:'IBM Plex Mono',monospace;}
+  --radius-lg:26px;
+  --radius-md:18px;
+  --radius-sm:12px;
 
-  /* ---- live human figure (radar center) ---- */
-  .heart{fill:var(--red);transform-box:fill-box;transform-origin:center;animation:heartbeat 1.15s ease-in-out infinite;}
-  @keyframes heartbeat{
-    0%{transform:scale(1);} 14%{transform:scale(1.35);} 28%{transform:scale(1);}
-    42%{transform:scale(1.22);} 70%{transform:scale(1);} 100%{transform:scale(1);}
-  }
-  .radar-legend span.flash-num{color:#6C8DFF;}
+  --shadow-card: 0 1px 2px rgba(15,25,60,.04), 0 18px 40px -18px rgba(15,25,60,.18), 0 2px 8px rgba(15,25,60,.06);
+  --shadow-card-hover: 0 1px 2px rgba(15,25,60,.05), 0 28px 60px -20px rgba(15,25,60,.28), 0 4px 14px rgba(15,25,60,.08);
+  --shadow-navy: 0 1px 1px rgba(0,0,0,.2) inset, 0 30px 60px -22px rgba(10,20,70,.55);
 
-  .stat-row{display:flex;gap:0;border-top:1px solid var(--line);padding-top:22px;}
-  .stat{flex:1;padding-right:18px;}
-  .stat:last-child{padding-right:0;}
-  .stat .num{font-family:'IBM Plex Mono',monospace;font-size:23px;font-weight:600;color:var(--teal-dark);transition:color .25s;}
-  .stat .num.flash-num{color:#4C6FEF;}
-  .stat .lab{font-size:12px;color:var(--ink-faint);margin-top:3px;}
+  --ease-spring: cubic-bezier(.22,1,.36,1);
+  --ease-liquid: cubic-bezier(.4,0,.2,1);
+}
 
-  .live-badge{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal);}
-  .live-badge .dot{width:6px;height:6px;}
-  #clock{margin-left:4px;opacity:.85;}
+*,*::before,*::after{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+}
 
-  /* ---- live activity feed ---- */
-  .live-feed-wrap{padding-top:24px;}
-  .live-feed-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 22px;}
-  .lf-head{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-  .lf-head h4{font-family:'Fraunces',serif;font-weight:500;font-size:15px;margin:0;color:var(--ink);}
-  .lf-list{display:flex;flex-direction:column;}
-  .lf-item{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--line-soft);}
-  .lf-item:first-child{border-top:none;}
-  .lf-item.enter{animation:lfIn .45s ease;}
-  @keyframes lfIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
-  .lf-icon{width:30px;height:30px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
-  .lf-text{flex:1;min-width:0;}
-  .lf-main{font-size:13.5px;font-weight:600;color:var(--ink);}
-  .lf-sub{font-size:12px;color:var(--ink-faint);margin-top:1px;}
-  .lf-time{font-size:11.5px;color:var(--ink-faint);flex-shrink:0;}
+body{
+  margin:0;
+  background:
+    radial-gradient(1100px 500px at 12% -8%, rgba(59,99,255,.10), transparent 60%),
+    radial-gradient(900px 500px at 100% 10%, rgba(95,216,224,.10), transparent 55%),
+    var(--bg);
+  color:var(--ink-900);
+  font-family:'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.5;
+}
 
-  /* radar (signature 2D visual) */
-  .radar-card{
-    background:var(--teal-dark);border-radius:20px;padding:26px;position:relative;overflow:hidden;box-shadow:var(--shadow);
-  }
-  .radar-card .rhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
-  .radar-card .rtitle{color:#fff;font-size:13px;font-weight:600;font-family:'IBM Plex Mono',monospace;letter-spacing:.02em;}
-  .radar-card .rsub{color:#93A3E0;font-size:11.5px;}
-  .radar-legend{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;}
-  .radar-legend span{display:flex;align-items:center;gap:6px;font-size:11.5px;color:#D8DEF7;font-family:'IBM Plex Mono',monospace;}
-  .radar-legend i{width:8px;height:8px;border-radius:50%;display:inline-block;}
-  .radar svg circle.ring{fill:none;stroke:#253563;stroke-width:1;}
-  .radar svg line.cross{stroke:#253563;stroke-width:1;}
-  .radar svg text.ringlabel{fill:#57628F;font-size:8px;font-family:'IBM Plex Mono',monospace;}
-  .radar svg circle.user{fill:#fff;}
-  .radar svg circle.user-pulse{fill:none;stroke:#fff;stroke-width:1;opacity:.5;}
-  .radar-dot{cursor:pointer;}
-  .radar-dot:hover circle.mark{stroke:#fff;stroke-width:2;}
+h1,h2,h3,.font-display{
+  font-family:'Fraunces', 'Georgia', serif;
+  letter-spacing:-.01em;
+  margin:0;
+}
 
-  /* ---- full-body vitals monitor ---- */
-  .bodyvitals-card{
-    background:radial-gradient(circle at 72% 26%, #17224F 0%, var(--teal-dark) 70%);
-    border-radius:20px;padding:30px;box-shadow:var(--shadow);
-    display:grid;grid-template-columns:1.3fr 1fr;gap:26px;align-items:center;
-  }
-  @media (max-width:760px){ .bodyvitals-card{grid-template-columns:1fr;} }
-  .bodyvitals-card p{color:#A6AEDE;font-size:13.5px;line-height:1.6;margin:10px 0 0;max-width:340px;}
-  .bodyvitals-card h3{color:#fff;font-family:'Fraunces',serif;font-weight:500;font-size:22px;margin:0;}
-  .bv-metrics{display:flex;gap:26px;margin-top:22px;flex-wrap:wrap;}
-  .bv-val{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;color:#fff;}
-  .bv-val small{font-size:11px;font-weight:400;color:#A6AEDE;margin-left:2px;}
-  .bv-val span.flash-num,#bv-neural.flash-num{color:#6C8DFF;}
-  .bv-lab{font-size:10.5px;color:#A6AEDE;text-transform:uppercase;letter-spacing:.05em;margin-top:3px;}
-  .bv-figure{display:flex;justify-content:center;}
-  .bv-figure svg{width:100%;max-width:190px;height:auto;overflow:visible;}
-  .bv-skin{fill:none;stroke:url(#bvSkinGrad);stroke-linecap:round;opacity:.5;}
-  .bv-bone{fill:none;stroke:#D8DEF7;stroke-width:.8;opacity:.3;}
-  .bv-vessel{fill:none;stroke:url(#bvVesselGrad);stroke-width:1;opacity:.5;}
-  .bv-organ{opacity:.68;}
-  .bv-brain ellipse{fill:#F2A65A;opacity:.55;}
-  .bv-brain .bv-fold{fill:none;stroke:#3A2410;stroke-width:.7;opacity:.5;}
-  .bv-lung-l path,.bv-lung-r path{fill:#6C8DFF;opacity:.4;}
-  .bv-lung-l,.bv-lung-r{transform-box:fill-box;transform-origin:center;animation:bvBreathe 4s ease-in-out infinite;}
-  .bv-liver path{fill:#C98A3E;opacity:.5;}
-  .bv-stomach path{fill:#E8A0A0;opacity:.5;}
-  .bv-kidney ellipse{fill:#5B8CFF;opacity:.5;}
-  .bv-nerve{fill:none;stroke:#6C8DFF;stroke-width:1;opacity:.55;}
-  .bv-node{fill:#6C8DFF;}
-  .bv-scan{fill:url(#bvVesselGrad);opacity:.08;animation:bvScan 3.2s linear infinite;}
-  .bv-sway{transform-box:fill-box;transform-origin:110px 210px;animation:bvSway 6s ease-in-out infinite alternate;}
-  @keyframes bvBreathe{0%,100%{transform:scaleY(1);}50%{transform:scaleY(1.08);}}
-  @keyframes bvScan{0%{transform:translateY(0);opacity:0;}10%{opacity:.35;}90%{opacity:.35;}100%{transform:translateY(394px);opacity:0;}}
-  @keyframes bvSway{0%{transform:rotate(-1.2deg);}100%{transform:rotate(1.2deg);}}
-  /* stacked variant for the hero's right column (narrower context) */
-  .bodyvitals-card.hero-embed{grid-template-columns:1fr;padding:26px;gap:18px;text-align:center;}
-  .bodyvitals-card.hero-embed p{margin:8px auto 0;}
-  .bv-row{display:flex;align-items:center;justify-content:center;gap:18px;}
-  @media (max-width:420px){ .bv-row{flex-direction:column;} }
-  .bv-row .bv-metrics{display:flex;flex-direction:column;gap:14px;text-align:left;flex-shrink:0;}
-  .bodyvitals-card.hero-embed .bv-lab{text-align:left;}
-  .bv-row .bv-figure{flex:1;min-width:0;}
-  .bodyvitals-card.hero-embed .bv-figure svg{max-width:130px;}
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+img{ max-width:100%; display:block; }
 
-  /* ---- radar, standalone full-width variant ---- */
-  .radar-section{padding-top:24px;padding-bottom:8px;}
-  .radar-card.radar-standalone{
-    display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:center;padding:30px;
-  }
-  @media (max-width:760px){ .radar-card.radar-standalone{grid-template-columns:1fr;} }
-  .radar-card.radar-standalone .radar-legend{margin-top:18px;}
-  .bv-node.pulse{animation:nodepulse 1.8s ease-in-out infinite;transform-box:fill-box;transform-origin:center;}
-  .bv-node.brain{fill:#F2A65A;}
-  @keyframes nodepulse{0%,100%{opacity:.4;transform:scale(1);}50%{opacity:1;transform:scale(1.7);}}
-  /* ---- 3D network section ---- */
-  .threed-section{padding-top:24px;padding-bottom:8px;}
-  .threed-card{
-    background:radial-gradient(circle at 30% 20%, #17224F 0%, var(--teal-dark) 70%);
-    border-radius:20px;padding:30px 30px 20px;box-shadow:var(--shadow);
-    display:grid;grid-template-columns:1fr 1.5fr;gap:20px;align-items:center;overflow:hidden;position:relative;
-  }
-  @media (max-width:760px){ .threed-card{grid-template-columns:1fr;} }
-  .td-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#6C8DFF;margin-bottom:10px;}
-  .threed-card h3{color:#fff;font-family:'Fraunces',serif;font-weight:500;font-size:24px;margin:0 0 10px;}
-  .threed-card p{color:#A6AEDE;font-size:13.5px;line-height:1.6;margin:0;max-width:280px;}
-  #three-canvas-wrap{position:relative;width:100%;height:320px;border-radius:14px;overflow:hidden;cursor:grab;}
-  #three-canvas-wrap canvas{display:block;width:100%;height:100%;}
-  .td-hint{position:absolute;bottom:10px;right:14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#5A8B7E;letter-spacing:.03em;}
-  .td-legend{display:flex;gap:16px;margin-top:16px;flex-wrap:wrap;grid-column:1/-1;}
-  .td-legend span{display:flex;align-items:center;gap:6px;font-size:11.5px;color:#D8DEF7;font-family:'IBM Plex Mono',monospace;}
-  .td-legend i{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.wrap{ max-width:1360px; margin:0 auto; padding:0 24px; }
+@media (max-width:640px){ .wrap{ padding:0 16px; } }
 
-  /* EKG divider */
-  .ekg{width:100%;height:30px;overflow:hidden;}
-  .ekg svg{width:100%;height:100%;}
-  .ekg path{fill:none;stroke:var(--teal);stroke-width:1.4;opacity:.35;}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:12.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--blue-600);
+}
+.eyebrow .dot{ width:6px; height:6px; border-radius:50%; background:var(--blue-500); box-shadow:0 0 0 4px rgba(59,99,255,.15); }
 
-  /* ---- section headers ---- */
-  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;gap:10px;}
-  .sec-head h2{font-family:'Fraunces',serif;font-weight:500;font-size:28px;margin:0;}
-  .sec-head .sec-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:8px;}
-  .sec-head p{color:var(--ink-soft);font-size:14px;max-width:420px;margin:6px 0 0;}
+/* ---------- Buttons ---------- */
+.btn{
+  position:relative; overflow:hidden; isolation:isolate;
+  display:inline-flex; align-items:center; justify-content:center; gap:9px;
+  border:none; border-radius:999px; font-weight:700; font-size:15px;
+  padding:14px 26px; white-space:nowrap;
+  transition:transform .35s var(--ease-spring), box-shadow .35s var(--ease-spring), filter .3s;
+}
+.btn:active{ transform:scale(.97); }
+.btn-primary{
+  color:#fff;
+  background:linear-gradient(160deg, var(--blue-500) 0%, var(--blue-700) 55%, var(--navy-900) 130%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -10px 18px -8px rgba(0,0,0,.3), 0 14px 26px -12px rgba(30,60,200,.55);
+}
+.btn-primary:hover{ transform:translateY(-2px); box-shadow: inset 0 1px 0 rgba(255,255,255,.45), inset 0 -10px 18px -8px rgba(0,0,0,.3), 0 20px 34px -12px rgba(30,60,200,.6); }
+.btn-ghost{
+  color:var(--navy-900); background:rgba(255,255,255,.6);
+  border:1px solid var(--silver-300);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+}
+.btn-ghost:hover{ background:#fff; border-color:var(--silver-400); transform:translateY(-1px); }
+.btn-sm{ padding:9px 16px; font-size:13.5px; border-radius:999px; }
+.btn-emergency{
+  color:#fff; font-weight:800;
+  background:linear-gradient(135deg, #e0455a 0%, var(--blue-700) 70%, var(--navy-900) 130%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 10px 24px -10px rgba(224,69,90,.6);
+}
+.btn-emergency .pulse-ring{
+  position:absolute; inset:-6px; border-radius:inherit; border:2px solid rgba(255,255,255,.6);
+  animation:emergencyPulse 2.1s var(--ease-liquid) infinite;
+}
+@keyframes emergencyPulse{ 0%{ opacity:.9; transform:scale(.9);} 80%{opacity:0; transform:scale(1.18);} 100%{opacity:0;} }
 
-  /* ---- tabs ---- */
-  .tabs-section{padding-top:46px;padding-bottom:10px;}
-  .tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:28px;}
-  .tab{
-    background:none;border:none;padding:12px 6px;margin-right:26px;
-    font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.03em;text-transform:uppercase;
-    color:var(--ink-soft);cursor:pointer;border-bottom:2px solid transparent;position:relative;top:1px;
-  }
-  .tab.active{color:var(--teal-dark);border-bottom:2px solid var(--teal);font-weight:600;}
-  .tab .count{color:var(--ink-faint);font-weight:400;}
+.ripple{
+  position:absolute; border-radius:50%; pointer-events:none;
+  background:radial-gradient(circle, rgba(255,255,255,.75) 0%, rgba(255,255,255,.15) 45%, rgba(255,255,255,0) 70%);
+  transform:translate(-50%,-50%) scale(0);
+  animation:rippleAnim .7s var(--ease-liquid) forwards;
+  mix-blend-mode:overlay;
+}
+@keyframes rippleAnim{ to{ transform:translate(-50%,-50%) scale(1); opacity:0; } }
 
-  .panel[hidden]{display:none;}
+/* ---------- Liquid glass card ---------- */
+.glass-card{
+  position:relative; overflow:hidden; isolation:isolate;
+  background:linear-gradient(155deg, rgba(255,255,255,.92), rgba(255,255,255,.68));
+  border:1px solid rgba(255,255,255,.9);
+  outline:1px solid var(--silver-200);
+  outline-offset:-1px;
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-card);
+  backdrop-filter:blur(18px);
+  transition:transform .5s var(--ease-spring), box-shadow .5s var(--ease-spring);
+}
+.glass-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow-card-hover); }
+.glass-card::before{
+  content:''; position:absolute; inset:0; z-index:0; opacity:0; pointer-events:none;
+  background:radial-gradient(220px 220px at var(--mx,50%) var(--my,50%), rgba(95,216,224,.30), rgba(59,99,255,.14) 45%, transparent 70%);
+  transition:opacity .5s var(--ease-liquid);
+}
+.glass-card:hover::before{ opacity:1; }
+.glass-card > *{ position:relative; z-index:1; }
 
+.glass-card-navy{
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgba(95,216,224,.18), transparent 55%),
+    linear-gradient(160deg, var(--navy-800) 0%, var(--navy-900) 55%, var(--navy-950) 130%);
+  border:1px solid rgba(140,165,255,.25);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-navy);
+  color:#fff;
+  position:relative; overflow:hidden; isolation:isolate;
+}
+.glass-card-navy::before{
+  content:''; position:absolute; inset:0; z-index:0; opacity:0; pointer-events:none;
+  background:radial-gradient(260px 260px at var(--mx,50%) var(--my,50%), rgba(255,255,255,.18), transparent 65%);
+  transition:opacity .5s var(--ease-liquid);
+}
+.glass-card-navy:hover::before{ opacity:1; }
+.glass-card-navy > *{ position:relative; z-index:1; }
 
-  .list{display:flex;flex-direction:column;gap:12px;}
-  .card{
-    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-    padding:18px 20px;display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap;
-    transition:box-shadow .2s, border-color .2s;
-  }
-  .card.flash{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-tint);}
-  .card .left{flex:1;min-width:220px;}
-  .card .name-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-  .card h3{margin:0;font-family:'Fraunces',serif;font-weight:500;font-size:18px;}
-  .verified{font-size:10.5px;color:var(--success);background:var(--success-tint);padding:2px 7px;border-radius:6px;font-weight:600;font-family:'IBM Plex Mono',monospace;letter-spacing:.02em;}
-  .stars{font-size:11.5px;color:var(--amber);font-family:'IBM Plex Mono',monospace;}
-  .card .meta{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-soft);margin-top:8px;}
-  .card .meta span{display:flex;align-items:center;gap:5px;}
-  .metric{font-family:'IBM Plex Mono',monospace;color:var(--ink);}
+.hairline{ border:1px solid var(--silver-200); }
 
-  .badge{
-    font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 9px;border-radius:999px;
-    display:inline-flex;align-items:center;gap:5px;font-weight:600;letter-spacing:.02em;
-  }
-  .badge.ok{background:var(--success-tint);color:var(--success);}
-  .badge.low{background:var(--amber-tint);color:var(--amber);}
-  .badge.full{background:var(--red-tint);color:var(--red);}
-  .badge .dot{width:6px;height:6px;background:currentColor;}
+/* ---------- Header ---------- */
+.site-header{
+  position:sticky; top:0; z-index:60;
+  background:rgba(255,255,255,.78);
+  backdrop-filter:blur(16px) saturate(140%);
+  border-bottom:1px solid var(--silver-200);
+}
+.logo-mark{ width:34px; height:34px; }
+.nav-link{
+  font-size:14.5px; font-weight:600; color:var(--ink-700);
+  padding:8px 4px; position:relative;
+}
+.nav-link::after{
+  content:''; position:absolute; left:0; right:0; bottom:2px; height:2px; border-radius:2px;
+  background:var(--blue-500); transform:scaleX(0); transform-origin:left; transition:transform .3s var(--ease-spring);
+}
+.nav-link:hover::after{ transform:scaleX(1); }
+.nav-link:hover{ color:var(--navy-900); }
 
-  .right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
-  .rate{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;color:var(--teal-dark);}
-  .rate small{font-size:11px;font-weight:400;color:var(--ink-soft);}
-  .btn{border:none;border-radius:8px;padding:9px 16px;font-weight:600;font-size:13px;cursor:pointer;text-decoration:none;display:inline-block;text-align:center;}
-  .btn.primary{background:var(--teal-dark);color:#fff;}
-  .btn.primary:hover{background:#0B123A;}
-  .btn.primary:disabled{background:#C9C4B6;cursor:not-allowed;}
-  .btn.call{background:var(--red);color:#fff;}
-  .btn.call:hover{background:#B92F24;}
-  .btn.ghost{background:none;border:1px solid var(--line);color:var(--ink);}
-  .blood-units{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
-  .unit-chip{font-family:'IBM Plex Mono',monospace;font-size:12px;border:1px solid var(--line);border-radius:8px;padding:5px 9px;background:var(--bg);}
-  .unit-chip.low{border-color:var(--amber);color:var(--amber);}
-  .unit-chip.zero{border-color:var(--red);color:var(--red);opacity:.7;}
-  .filter-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
-  .search-input{flex:1;min-width:180px;padding:9px 14px;border:1px solid var(--line);border-radius:8px;font-size:13.5px;font-family:'Inter',sans-serif;background:var(--surface);color:var(--ink);}
-  .search-input:focus{outline:none;border-color:var(--teal);}
-  .sort-select{padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:'IBM Plex Mono',monospace;background:var(--surface);color:var(--ink-soft);}
-  .filter-check{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-soft);white-space:nowrap;cursor:pointer;}
-  .filter-check input{accent-color:var(--teal);cursor:pointer;}
-  .empty-state{padding:40px 20px;text-align:center;color:var(--ink-faint);font-size:13.5px;background:var(--surface);border:1px dashed var(--line);border-radius:12px;}
-  .sort-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:12.5px;color:var(--ink-faint);}
+/* ---------- Emergency bar ---------- */
+.emergency-bar{ background:var(--navy-950); color:#dfe6ff; }
+.status-dot{ width:7px; height:7px; border-radius:50%; background:var(--cyan-400); position:relative; }
+.status-dot::after{
+  content:''; position:absolute; inset:-5px; border-radius:50%; border:1px solid var(--cyan-400);
+  animation:statusPing 1.8s ease-out infinite;
+}
+@keyframes statusPing{ 0%{ opacity:.8; transform:scale(.6);} 100%{ opacity:0; transform:scale(1.9);} }
 
-  /* ---- how it works ---- */
-  .how{padding-top:64px;padding-bottom:64px;}
-  .how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
-  @media (max-width:760px){ .how-grid{grid-template-columns:1fr;} }
-  .how-step{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;}
-  .how-step .n{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--teal);margin-bottom:14px;}
-  .how-step h3{font-family:'Fraunces',serif;font-weight:500;font-size:19px;margin:0 0 8px;}
-  .how-step p{color:var(--ink-soft);font-size:13.5px;line-height:1.55;margin:0;}
-  .how-step .icon{width:34px;height:34px;margin-bottom:16px;color:var(--teal);}
+/* ---------- Hero ---------- */
+.hero-heading{ font-size:clamp(2.1rem, 4.4vw, 3.55rem); line-height:1.06; font-weight:600; color:var(--navy-950); }
+.hero-heading .accent{ color:var(--blue-600); font-style:italic; }
 
-  /* ---- stats/insights (2D charts) ---- */
-  .insights{padding-top:20px;padding-bottom:64px;}
-  .insight-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:22px;}
-  @media (max-width:860px){ .insight-grid{grid-template-columns:1fr;} }
-  .chart-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;}
-  .chart-card h4{font-family:'Fraunces',serif;font-weight:500;font-size:16px;margin:0 0 4px;}
-  .chart-card .csub{font-size:12px;color:var(--ink-faint);margin-bottom:18px;}
-  .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:11px;}
-  .bar-row .blabel{width:150px;font-size:12px;color:var(--ink-soft);flex-shrink:0;}
-  .bar-track{flex:1;height:9px;background:var(--line-soft);border-radius:6px;overflow:hidden;}
-  .bar-fill{height:100%;border-radius:6px;background:var(--teal);transition:width .9s cubic-bezier(.22,.9,.35,1);}
-  @media (prefers-reduced-motion: reduce){ .bar-fill{transition:none;} }
-  .bar-row .bval{width:34px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-soft);}
+/* vitals */
+.vital-value{ font-family:'Fraunces',serif; font-size:1.9rem; font-weight:600; }
+.vital-label{ font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:#a9b6e8; }
 
-  /* ---- FAQ ---- */
-  .faq{padding-top:20px;padding-bottom:70px;}
-  .faq-list{max-width:760px;}
-  details{border-bottom:1px solid var(--line);padding:16px 0;}
-  details summary{cursor:pointer;font-weight:600;font-size:14.5px;list-style:none;display:flex;justify-content:space-between;align-items:center;}
-  details summary::-webkit-details-marker{display:none;}
+/* body diagram */
+.body-stage{ position:relative; }
+.body-figure{ filter:drop-shadow(0 20px 40px rgba(0,0,0,.35)); }
+@keyframes breathe{ 0%,100%{ transform:scaleY(1);} 50%{ transform:scaleY(1.018);} }
+.breathe{ transform-origin:center 60%; animation:breathe 4.5s ease-in-out infinite; }
+@keyframes heartbeat{ 0%,100%{ transform:scale(1); } 12%{ transform:scale(1.18);} 24%{ transform:scale(1);} 34%{ transform:scale(1.1);} 46%{ transform:scale(1);} }
+.heartbeat{ transform-box:fill-box; transform-origin:center; animation:heartbeat 1.7s ease-in-out infinite; }
+@keyframes neuralPulse{ 0%{ stroke-dashoffset:120; opacity:0;} 10%{ opacity:1;} 90%{ opacity:1;} 100%{ stroke-dashoffset:0; opacity:0;} }
+.neural-line{ stroke-dasharray:14 8; animation:neuralPulse 3.2s linear infinite; }
+@keyframes ripplewave{ 0%{ transform:scale(.4); opacity:.55;} 100%{ transform:scale(2.4); opacity:0;} }
+.foot-ripple{ animation:ripplewave 3s var(--ease-liquid) infinite; transform-origin:center; }
 
-  /* ---- hospital partner section ---- */
-  .partner-section{padding-top:8px;padding-bottom:20px;}
-  .partner-card{
-    background:var(--surface);border:1px solid var(--line);border-radius:22px;
-    padding:38px;box-shadow:var(--shadow);
-    display:grid;grid-template-columns:1.15fr 1fr;gap:32px;align-items:center;
-  }
-  @media (max-width:800px){ .partner-card{grid-template-columns:1fr;} }
-  .partner-copy h2{font-size:26px;line-height:1.2;margin:8px 0 12px;font-weight:500;}
-  .partner-copy p{color:var(--ink-soft);font-size:14px;line-height:1.6;max-width:440px;margin:0;}
-  .partner-features{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;}
-  .pf-item{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 14px;}
-  .pf-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);flex-shrink:0;}
+/* ---------- Network 3D-ish ---------- */
+.network-stage{ position:relative; touch-action:none; }
+.net-node{ transition:transform .3s var(--ease-spring), filter .3s; cursor:pointer; }
+.net-node:hover{ filter:drop-shadow(0 0 10px currentColor); }
+@keyframes orbit{ from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
+@keyframes orbitRev{ from{ transform:rotate(360deg);} to{ transform:rotate(0deg);} }
+.orbit-cw{ animation:orbit 46s linear infinite; transform-origin:center; }
+.orbit-ccw{ animation:orbitRev 60s linear infinite; transform-origin:center; }
+.net-line{ stroke-dasharray:4 6; animation:dashMove 3s linear infinite; }
+@keyframes dashMove{ to{ stroke-dashoffset:-40; } }
 
-  /* ---- global 3D tilt effect ---- */
-  .tilt-3d{transition:transform .18s ease-out, box-shadow .18s ease-out; will-change:transform;}
-  .tilt-3d:hover{box-shadow:0 18px 34px -18px rgba(30,35,55,.24), 0 0 0 1px rgba(199,206,220,.7);}
+/* ---------- Stat cards ---------- */
+.stat-num{ font-family:'Fraunces',serif; font-size:2.1rem; font-weight:600; color:var(--navy-950); }
 
-  /* ---- liquid / water interaction ---- */
-  .liquid{position:relative;overflow:hidden;isolation:isolate;}
-  .liquid::before{
-    content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
-    background:radial-gradient(150px circle at var(--mx,50%) var(--my,50%), rgba(220,228,245,.5), rgba(220,228,245,0) 62%);
-    opacity:0;transition:opacity .4s ease;
-    mix-blend-mode:overlay;
-  }
-  .liquid:hover::before,.liquid:focus-visible::before{opacity:1;}
-  .liquid-fx{
-    position:absolute;border-radius:50%;z-index:3;pointer-events:none;
-    background:radial-gradient(circle, rgba(245,247,252,.7) 0%, rgba(199,206,220,.28) 45%, rgba(199,206,220,0) 70%);
-    transform:scale(0);opacity:.9;
-    animation:liquidRipple .65s cubic-bezier(.25,.7,.4,1) forwards;
-  }
-  @keyframes liquidRipple{
-    0%{transform:scale(0);opacity:.85;}
-    100%{transform:scale(1);opacity:0;}
-  }
-  .liquid-wave:hover,.liquid-wave:focus-visible{filter:url(#liquidDistort);}
-  .liquid-glow-blue:hover,.liquid-glow-blue:focus-visible{
-    box-shadow:0 8px 22px -6px rgba(46,82,200,.45), 0 0 0 1px rgba(199,206,220,.6);
-  }
-  @media (prefers-reduced-motion: reduce){
-    .liquid::before{transition:none;}
-    .liquid-fx{animation:none;display:none;}
-    .liquid-wave:hover,.liquid-wave:focus-visible{filter:none;}
-  }
+/* ---------- Tabs ---------- */
+.tab-btn{
+  padding:10px 18px; border-radius:999px; font-weight:700; font-size:13.5px; letter-spacing:.02em;
+  color:var(--ink-500); background:transparent; border:1px solid transparent; white-space:nowrap;
+  transition:all .3s var(--ease-spring);
+}
+.tab-btn.active{ background:var(--navy-950); color:#fff; box-shadow:0 8px 18px -8px rgba(10,20,60,.5); }
+.tab-btn:not(.active):hover{ background:var(--silver-100); color:var(--navy-900); }
 
-  details summary::after{content:'+';font-family:'IBM Plex Mono',monospace;font-size:18px;color:var(--teal);font-weight:400;display:inline-block;transition:transform .35s ease;}
-  details[open] summary::after{transform:rotateX(180deg);}
-  details[open] summary::after{content:'−';}
-  details p{color:var(--ink-soft);font-size:13.5px;line-height:1.6;margin:12px 0 0;max-width:640px;}
+/* ---------- Hospital / resource cards ---------- */
+.resource-card{ transition:transform .4s var(--ease-spring), box-shadow .4s var(--ease-spring); }
+.resource-card:hover{ transform:translateY(-2px); }
+.avail-pill{ font-size:12px; font-weight:700; padding:3px 10px; border-radius:999px; background:var(--silver-100); color:var(--ink-700); }
+.avail-pill.low{ background:#fdecec; color:#c0313a; }
+.verified-pill{ font-size:11px; font-weight:700; color:var(--blue-600); background:#eaf0ff; padding:2px 8px; border-radius:999px; }
 
-  /* ---- testimonials ---- */
-  .testimonials{padding-top:20px;padding-bottom:20px;}
-  .testimonial-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
-  @media (max-width:760px){ .testimonial-grid{grid-template-columns:1fr;} }
-  .testimonial-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;}
-  .testimonial-card .stars{color:var(--teal);font-size:13px;letter-spacing:.05em;margin-bottom:14px;}
-  .testimonial-card .quote{font-size:14px;color:var(--ink);line-height:1.65;margin:0 0 18px;}
-  .testimonial-card .who{font-size:13.5px;font-weight:600;color:var(--ink);}
-  .testimonial-card .rel{font-size:11.5px;color:var(--ink-faint);margin-top:1px;}
+/* ---------- Steps ---------- */
+.step-num{ font-family:'Fraunces',serif; font-size:13px; font-weight:600; color:var(--blue-500); }
 
-  /* ---- emergency hotline banner ---- */
-  .emergency-wrap{padding-top:8px;padding-bottom:20px;}
-  .emergency-banner{
-    background:linear-gradient(120deg, #B92F24 0%, var(--red) 60%, #C4453A 100%);
-    border-radius:20px;padding:34px 38px;box-shadow:var(--shadow);
-    display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;color:#fff;
-  }
-  .eb-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#FFD9D4;margin-bottom:8px;}
-  .emergency-banner h2{font-family:'Fraunces',serif;font-weight:500;font-size:24px;margin:0 0 8px;}
-  .emergency-banner p{font-size:13.5px;color:#FBDFDB;max-width:440px;margin:0;line-height:1.6;}
-  .eb-call-btn{
-    background:#fff;color:var(--red);border-radius:999px;padding:14px 28px;font-weight:700;font-size:15px;
-    text-decoration:none;white-space:nowrap;flex-shrink:0;box-shadow:0 8px 20px -8px rgba(0,0,0,.35);
-  }
-  .eb-call-btn:hover{background:#FBE9E7;}
+/* ---------- Testimonials ---------- */
+.stars{ color:#f0a93a; letter-spacing:2px; }
 
-  /* ---- footer ---- */
-  footer{border-top:1px solid var(--line);padding:44px 0 32px;}
-  .foot-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:30px;margin-bottom:36px;}
-  @media (max-width:760px){ .foot-grid{grid-template-columns:1fr 1fr;} }
-  .foot-col h5{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin:0 0 12px;font-family:'IBM Plex Mono',monospace;}
-  .foot-col a, .foot-col div{display:block;font-size:13.5px;color:var(--ink-soft);text-decoration:none;margin-bottom:9px;}
-  .foot-col a:hover{color:var(--teal-dark);}
-  .foot-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--ink-faint);border-top:1px solid var(--line);padding-top:20px;}
-  .network-strip{display:flex;gap:22px;flex-wrap:wrap;padding-top:22px;padding-bottom:22px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-top:8px;margin-bottom:44px;font-family:'Fraunces',serif;color:var(--ink-faint);font-size:14px;}
+/* ---------- Progress bars ---------- */
+.bar-track{ height:9px; border-radius:999px; background:var(--silver-200); overflow:hidden; }
+.bar-fill{ height:100%; border-radius:999px; background:linear-gradient(90deg, var(--blue-500), var(--navy-900)); width:0; transition:width 1.1s var(--ease-spring); }
 
-  /* ---- modal ---- */
-  .overlay{position:fixed;inset:0;background:rgba(20,24,40,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:200;}
-  .modal{background:var(--surface);border-radius:16px;max-width:420px;width:100%;padding:28px;max-height:88vh;overflow:auto;position:relative;}
-  .modal h2{font-family:'Fraunces',serif;font-weight:500;font-size:22px;margin:0 0 6px;}
-  .modal .sub{color:var(--ink-soft);font-size:13px;margin-bottom:20px;}
-  .field{margin-bottom:14px;}
-  .field label{display:block;font-size:12px;font-weight:600;margin-bottom:6px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
-  .field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;background:var(--bg);}
-  .field textarea{resize:vertical;min-height:56px;}
-  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  .modal-actions{display:flex;gap:10px;margin-top:20px;}
-  .modal-actions .btn{flex:1;}
-  .close-x{position:absolute;top:18px;right:20px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--ink-soft);}
-  .confirm{text-align:center;padding:6px 0;}
-  .confirm .check{width:52px;height:52px;border-radius:50%;background:var(--teal-tint);color:var(--teal);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;}
-  .confirm .id{font-family:'IBM Plex Mono',monospace;font-size:13px;background:var(--bg);padding:8px 12px;border-radius:8px;display:inline-block;margin-top:10px;}
-  .confirm-details{text-align:left;background:var(--bg);border-radius:10px;padding:14px 16px;margin:16px 0;}
-  .confirm-details .cd-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--line);}
-  .confirm-details .cd-row:last-child{border-bottom:none;}
-  .confirm-details .cd-row span:first-child{color:var(--ink-faint);}
-  .confirm-details .cd-row span:last-child{font-weight:600;color:var(--ink);text-align:right;}
+/* ---------- Blood grid ---------- */
+.blood-chip{
+  border-radius:16px; padding:16px 14px; text-align:center; border:1px solid var(--silver-200);
+  background:#fff; transition:all .35s var(--ease-spring);
+}
+.blood-chip:hover{ transform:translateY(-3px); box-shadow:var(--shadow-card); }
+.blood-chip.low{ border-color:#f3c6c6; background:#fff6f6; }
+
+/* ---------- FAQ ---------- */
+.faq-item{ border-bottom:1px solid var(--silver-200); }
+.faq-q{ display:flex; align-items:center; justify-content:space-between; width:100%; text-align:left; padding:20px 0; background:none; border:none; font-weight:700; font-size:15.5px; color:var(--navy-950); }
+.faq-icon{ transition:transform .35s var(--ease-spring); flex:none; }
+.faq-item.open .faq-icon{ transform:rotate(45deg); }
+.faq-a{ max-height:0; overflow:hidden; transition:max-height .4s var(--ease-liquid), padding .4s; color:var(--ink-500); font-size:14.5px; padding-bottom:0; }
+.faq-item.open .faq-a{ max-height:220px; padding-bottom:20px; }
+
+/* ---------- Modal ---------- */
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(8,12,32,.55); backdrop-filter:blur(6px);
+  display:flex; align-items:flex-end; justify-content:center; z-index:100;
+  opacity:0; pointer-events:none; transition:opacity .35s var(--ease-liquid);
+}
+@media (min-width:720px){ .modal-backdrop{ align-items:center; } }
+.modal-backdrop.show{ opacity:1; pointer-events:auto; }
+.modal-panel{
+  width:100%; max-width:560px; max-height:92vh; overflow-y:auto;
+  background:#fff; border-radius:26px 26px 0 0; padding:28px; box-shadow:0 40px 90px -20px rgba(10,20,60,.4);
+  transform:translateY(30px); transition:transform .45s var(--ease-spring);
+}
+@media (min-width:720px){ .modal-panel{ border-radius:26px; transform:translateY(16px) scale(.97); } }
+.modal-backdrop.show .modal-panel{ transform:translateY(0) scale(1); }
+.field label{ font-size:12.5px; font-weight:700; color:var(--ink-700); margin-bottom:6px; display:block; }
+.field input, .field select, .field textarea{
+  width:100%; border:1px solid var(--silver-300); border-radius:12px; padding:11px 13px; font-size:14.5px;
+  font-family:inherit; background:#fbfcfe; transition:border-color .25s, box-shadow .25s;
+}
+.field input:focus, .field select:focus, .field textarea:focus{
+  outline:none; border-color:var(--blue-500); box-shadow:0 0 0 4px rgba(59,99,255,.14); background:#fff;
+}
+
+/* ---------- Mobile nav ---------- */
+.mobile-drawer{
+  position:fixed; inset:0 0 0 auto; width:min(320px,86vw); background:#fff; z-index:90;
+  box-shadow:-20px 0 50px rgba(10,20,60,.25); transform:translateX(100%); transition:transform .45s var(--ease-spring);
+  padding:22px; overflow-y:auto;
+}
+.mobile-drawer.open{ transform:translateX(0); }
+.mobile-overlay{
+  position:fixed; inset:0; background:rgba(8,12,32,.4); z-index:89; opacity:0; pointer-events:none; transition:opacity .35s;
+}
+.mobile-overlay.show{ opacity:1; pointer-events:auto; }
+
+/* ---------- Reveal on scroll ---------- */
+.reveal{ opacity:0; transform:translateY(22px); transition:opacity .8s var(--ease-liquid), transform .8s var(--ease-liquid); }
+.reveal.in{ opacity:1; transform:translateY(0); }
+
+/* ---------- Scrollbars for horizontal carousels ---------- */
+.scroll-x{ display:flex; gap:18px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:6px; -webkit-overflow-scrolling:touch; }
+.scroll-x::-webkit-scrollbar{ height:0; }
+.scroll-x > *{ scroll-snap-align:start; }
+
+/* ---------- Focus states ---------- */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible{
+  outline:2.5px solid var(--blue-500); outline-offset:3px; border-radius:6px;
+}
+
+/* ---------- Section spacing ---------- */
+.section{ padding:88px 0; }
+@media (max-width:768px){ .section{ padding:56px 0; } }
+.section-head{ max-width:640px; }
+
+/* toast */
+.toast{
+  position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px); z-index:200;
+  background:var(--navy-950); color:#fff; padding:14px 22px; border-radius:14px; font-weight:600; font-size:14px;
+  box-shadow:0 20px 40px -12px rgba(0,0,0,.4); opacity:0; pointer-events:none; transition:all .4s var(--ease-spring);
+}
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+.no-scroll{ overflow:hidden; }
+
 </style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute;overflow:hidden;">
-  <filter id="liquidDistort" x="-20%" y="-20%" width="140%" height="140%">
-    <feTurbulence type="fractalNoise" baseFrequency="0.012 0.045" numOctaves="2" seed="7" result="bvNoise">
-      <animate attributeName="baseFrequency" values="0.012 0.045;0.017 0.055;0.012 0.045" dur="7s" repeatCount="indefinite"/>
-    </feTurbulence>
-    <feDisplacementMap in="SourceGraphic" in2="bvNoise" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
-  </filter>
-</svg>
 
-<div class="statusbar">
-  <div class="loc"><span class="dot"></span> Locating from <b id="loc-label">your device…</b><span id="clock" class="mono"></span></div>
-  <button class="sos-btn liquid" id="sos-btn" aria-label="Emergency — tap to call nearest ambulance"><span class="sos-icon">🚑</span><span class="sos-text">Emergency — Tap to Call Nearest Ambulance</span></button>
-</div>
-
-<nav class="nav">
-  <div class="nav-inner">
-    <a class="logo" href="#top">
-      <svg class="mark" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="12" stroke="#3454D1" stroke-width="1.4"/><path d="M4 13H9L11 8L14.5 18L17 13H22" stroke="#3454D1" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Sthir
-    </a>
-    <div class="navlinks">
-      <a href="#icu">ICU Beds</a>
-      <a href="#ambulance-link" onclick="showTab('ambulance');return false;">Ambulance</a>
-      <a href="#blood-link" onclick="showTab('blood');return false;">Blood Bank</a>
-      <a href="#how">How it works</a>
-      <a href="#testimonials">Stories</a>
-      <a href="#insights">Network stats</a>
-      <a href="#faq">FAQ</a>
+<!-- ============================= HEADER ============================= -->
+<header class="site-header">
+  <div class="emergency-bar text-[12.5px] sm:text-[13px]">
+    <div class="wrap flex items-center justify-between py-2 gap-3">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="status-dot"></span>
+        <span class="truncate">Locating from your device…</span>
+      </div>
+      <button class="btn btn-emergency btn-sm emergency-call flex-none">
+        <span class="pulse-ring"></span>
+        🚑&nbsp; <span class="hidden xs:inline">Emergency — </span>Tap to Call
+      </button>
     </div>
-    <a class="nav-cta liquid liquid-wave liquid-glow-blue" href="#partner">For hospitals</a>
-    <button class="hamburger" id="hamburger-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-drawer">
-      <span></span><span></span><span></span>
+  </div>
+
+  <div class="wrap flex items-center justify-between py-3.5">
+    <a href="#top" class="flex items-center gap-2.5">
+      <svg class="logo-mark" viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="19" fill="#eef2ff" stroke="#2049e0" stroke-width="1.4"/>
+        <path d="M7 20h5l2.5-7 5 15 3-11 2 3h8.5" stroke="#2049e0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span class="font-display text-[20px] font-semibold text-[var(--navy-950)]">Sthir</span>
+    </a>
+
+    <nav class="hidden lg:flex items-center gap-7">
+      <a href="#resources" class="nav-link">ICU Beds</a>
+      <a href="#ambulance" class="nav-link">Ambulance</a>
+      <a href="#blood" class="nav-link">Blood Bank</a>
+      <a href="#how" class="nav-link">How it works</a>
+      <a href="#stories" class="nav-link">Stories</a>
+      <a href="#network" class="nav-link">Network stats</a>
+      <a href="#faq" class="nav-link">FAQ</a>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a href="#partner" class="btn btn-primary btn-sm hidden sm:inline-flex">For hospitals</a>
+      <button id="hamburgerBtn" aria-label="Open menu" class="lg:hidden w-10 h-10 rounded-full flex items-center justify-center border border-[var(--silver-300)] bg-white/70">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0c1428" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile drawer -->
+<div id="mobileOverlay" class="mobile-overlay"></div>
+<aside id="mobileDrawer" class="mobile-drawer">
+  <div class="flex items-center justify-between mb-6">
+    <span class="font-display text-[18px] font-semibold">Menu</span>
+    <button id="drawerClose" aria-label="Close menu" class="w-9 h-9 rounded-full flex items-center justify-center border border-[var(--silver-300)]">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0c1428" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
   </div>
-  <div class="mobile-drawer" id="mobile-drawer" hidden>
-    <a href="#icu">ICU Beds</a>
-    <a href="#ambulance-link" onclick="showTab('ambulance');closeDrawer();return false;">Ambulance</a>
-    <a href="#blood-link" onclick="showTab('blood');closeDrawer();return false;">Blood Bank</a>
-    <a href="#how">How it works</a>
-    <a href="#testimonials">Stories</a>
-    <a href="#insights">Network stats</a>
-    <a href="#faq">FAQ</a>
-    <a class="nav-cta liquid" href="#partner" style="margin-top:10px;text-align:center;">For hospitals</a>
-  </div>
-</nav>
+  <nav class="flex flex-col gap-1">
+    <a href="#resources" class="py-3 border-b border-[var(--silver-200)] font-semibold">ICU Beds</a>
+    <a href="#ambulance" class="py-3 border-b border-[var(--silver-200)] font-semibold">Ambulance</a>
+    <a href="#blood" class="py-3 border-b border-[var(--silver-200)] font-semibold">Blood Bank</a>
+    <a href="#how" class="py-3 border-b border-[var(--silver-200)] font-semibold">How it works</a>
+    <a href="#stories" class="py-3 border-b border-[var(--silver-200)] font-semibold">Stories</a>
+    <a href="#network" class="py-3 border-b border-[var(--silver-200)] font-semibold">Network stats</a>
+    <a href="#faq" class="py-3 border-b border-[var(--silver-200)] font-semibold">FAQ</a>
+    <a href="#partner" class="btn btn-primary mt-5 justify-center">For hospitals</a>
+  </nav>
+</aside>
 
-<div class="wrap hero" id="top">
-  <div class="hero-grid">
-    <div>
-      <div class="eyebrow">Chattogram <span class="live-badge"><span class="dot"></span>LIVE</span></div>
-      <h1 class="display">Nearest ICU bed, ambulance,<br>or blood — located and booked<br>in under a minute.</h1>
-      <p class="lede">Sthir connects patients' families directly to partner hospitals and blood banks, so you spend your time getting there — not calling around.</p>
-      <div class="locate-row">
-        <button class="locate-btn liquid liquid-wave liquid-glow-blue" id="locate-btn">📍 Use my current location</button>
-        <span class="loc-status" id="loc-status">location not shared — showing default distances for Chattogram</span>
-      </div>
-      <div class="stat-row">
-        <div class="stat"><div class="num" id="stat-beds">–</div><div class="lab">ICU beds free right now</div></div>
-        <div class="stat"><div class="num" id="stat-eta">–</div><div class="lab">Avg. ambulance ETA</div></div>
-        <div class="stat"><div class="num" id="stat-blood">–</div><div class="lab">Blood units in network</div></div>
-      </div>
-    </div>
-    <div class="bodyvitals-card tilt-3d liquid hero-embed">
-      <div class="bv-intro">
-        <div class="td-eyebrow"><span class="live-badge" style="color:#6C8DFF;"><span class="dot"></span>LIVE</span> — full-body monitoring</div>
-        <h3 class="display">Every vital sign, tracked down to the nerve.</h3>
-        <p>Partner ICUs monitor more than a bed number — heart, breath, and neural signal, streamed live from admission.</p>
-      </div>
-      <div class="bv-row">
-        <div class="bv-metrics">
-          <div>
-            <div class="bv-val"><span id="bv-hr">76</span><small>bpm</small></div>
-            <div class="bv-lab">Heart rate</div>
-          </div>
-          <div>
-            <div class="bv-val"><span id="bv-spo2">98</span><small>%</small></div>
-            <div class="bv-lab">SpO₂</div>
-          </div>
-          <div>
-            <div class="bv-val" id="bv-neural">Steady</div>
-            <div class="bv-lab">Neural activity</div>
+<main id="top">
+
+  <!-- ============================= HERO ============================= -->
+  <section class="section pt-10 sm:pt-14 !pb-10">
+    <div class="wrap">
+      <div class="grid lg:grid-cols-2 gap-6 items-start">
+
+        <!-- Left: copy -->
+        <div class="reveal">
+          <span class="eyebrow"><span class="dot"></span>CHATTOGRAM &nbsp;•&nbsp; LIVE</span>
+          <h1 class="hero-heading mt-4">Nearest ICU bed,<br>ambulance,<br>or blood — located and booked<br><span class="accent">in under a minute.</span></h1>
+          <p class="mt-5 text-[16px] leading-relaxed text-[var(--ink-500)] max-w-[480px]">
+            Sthir connects patients' families directly to partner hospitals and blood banks, so you spend your time getting there — not calling around.
+          </p>
+          <div class="mt-7 flex flex-col items-start gap-2.5">
+            <button id="useLocationBtn" class="btn btn-primary">
+              📍&nbsp; <span class="btn-label">Use my current location</span>
+            </button>
+            <span id="locStatus" class="text-[12.5px] text-[var(--ink-400)]">location not shared — showing default distances for Chattogram</span>
           </div>
         </div>
-        <div class="bv-figure">
-        <svg viewBox="0 0 220 420" fill="none">
-          <defs>
-            <linearGradient id="bvSkinGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#9FB4FF"/>
-              <stop offset="100%" stop-color="#34449E"/>
-            </linearGradient>
-            <linearGradient id="bvVesselGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#E8756B"/>
-              <stop offset="100%" stop-color="#6C8DFF"/>
-            </linearGradient>
-            <filter id="bvGlow" x="-60%" y="-60%" width="220%" height="220%">
-              <feGaussianBlur stdDeviation="2.2" result="blur"/>
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
 
-          <g class="bv-sway">
-            <!-- ===== skin / body mass (translucent holographic capsules) ===== -->
-            <g class="bv-skin">
-              <circle cx="110" cy="42" r="22" stroke-width="2.2"/>
-              <line x1="110" y1="64" x2="110" y2="188" stroke-width="34"/>
-              <line x1="108" y1="92" x2="58" y2="182" stroke-width="14"/>
-              <line x1="112" y1="92" x2="162" y2="182" stroke-width="14"/>
-              <line x1="58" y1="182" x2="42" y2="252" stroke-width="12"/>
-              <line x1="162" y1="182" x2="178" y2="252" stroke-width="12"/>
-              <line x1="98" y1="184" x2="82" y2="300" stroke-width="18"/>
-              <line x1="122" y1="184" x2="138" y2="300" stroke-width="18"/>
-              <line x1="82" y1="300" x2="76" y2="390" stroke-width="13"/>
-              <line x1="138" y1="300" x2="144" y2="390" stroke-width="13"/>
-            </g>
+        <!-- Right: two stacked cards on mobile, side-by-side handled by grid below hero on lg -->
+        <div class="grid sm:grid-cols-2 gap-5 reveal">
 
-            <!-- ===== skeletal hints ===== -->
-            <g class="bv-bone">
-              <path d="M92,84 C100,90 120,90 128,84" />
-              <path d="M88,102 C100,108 120,108 132,102" />
-              <path d="M86,120 C100,126 120,126 134,120" />
-              <path d="M110,64 L110,180" />
-            </g>
+          <!-- Live monitoring card -->
+          <div class="glass-card-navy p-6 sm:col-span-2 lg:col-span-1">
+            <span class="eyebrow" style="color:#9be9ec"><span class="dot" style="background:#5fd8e0"></span>LIVE — FULL-BODY MONITORING</span>
+            <h3 class="font-display text-[21px] font-semibold mt-3 leading-snug">Every vital sign, tracked down to the nerve.</h3>
+            <p class="text-[13.5px] leading-relaxed mt-2" style="color:#b7c1e6">Partner ICUs monitor more than a bed number — heart, breath, and neural signal, streamed live from admission.</p>
 
-            <!-- ===== major vessels ===== -->
-            <g class="bv-vessel">
-              <path d="M110,66 L110,110" />
-              <path d="M110,124 C104,140 96,150 92,170 C88,190 84,220 82,300" />
-              <path d="M110,124 C116,140 124,150 128,170 C132,190 136,220 138,300" />
-              <path d="M104,110 C90,104 70,98 58,96" />
-              <path d="M116,110 C130,104 150,98 162,96" />
-            </g>
+            <div class="flex gap-6 mt-5">
+              <div><div class="vital-value">69<span class="text-[13px] font-sans font-medium" style="color:#a9b6e8"> bpm</span></div><div class="vital-label">Heart rate</div></div>
+              <div><div class="vital-value">99<span class="text-[13px] font-sans font-medium" style="color:#a9b6e8">%</span></div><div class="vital-label">SpO₂</div></div>
+              <div><div class="vital-value" style="font-size:1.5rem">Steady</div><div class="vital-label">Neural activity</div></div>
+            </div>
 
-            <!-- ===== organs ===== -->
-            <!-- brain -->
-            <g class="bv-organ bv-brain" filter="url(#bvGlow)">
-              <ellipse cx="110" cy="37" rx="13.5" ry="10.5"/>
-              <path class="bv-fold" d="M100,33 C104,29 108,37 112,32 C116,28 118,35 121,32"/>
-              <path class="bv-fold" d="M101,41 C105,38 109,43 113,39 C117,36 119,41 120,39"/>
-            </g>
-            <!-- lungs -->
-            <g class="bv-organ bv-lung-l" filter="url(#bvGlow)">
-              <path d="M96,88 C84,92 80,110 84,128 C87,138 96,140 100,132 C103,120 102,100 96,88 Z"/>
-            </g>
-            <g class="bv-organ bv-lung-r" filter="url(#bvGlow)">
-              <path d="M124,88 C136,92 140,110 136,128 C133,138 124,140 120,132 C117,120 118,100 124,88 Z"/>
-            </g>
-            <!-- heart -->
-            <circle class="heart" cx="110" cy="118" r="6" filter="url(#bvGlow)"/>
-            <!-- liver -->
-            <g class="bv-organ bv-liver" filter="url(#bvGlow)">
-              <path d="M117,142 C130,140 142,146 143,156 C144,166 132,170 120,168 C112,166 111,146 117,142 Z"/>
-            </g>
-            <!-- stomach -->
-            <g class="bv-organ bv-stomach" filter="url(#bvGlow)">
-              <path d="M100,144 C92,146 86,154 88,164 C90,174 100,178 106,172 C110,166 108,148 100,144 Z"/>
-            </g>
-            <!-- kidneys -->
-            <g class="bv-organ bv-kidney" filter="url(#bvGlow)">
-              <ellipse cx="82" cy="178" rx="6" ry="9"/>
-              <ellipse cx="138" cy="178" rx="6" ry="9"/>
-            </g>
+            <div class="body-stage mt-4 flex justify-center">
+              <svg class="body-figure" width="200" height="260" viewBox="0 0 200 260" fill="none">
+                <ellipse class="foot-ripple" cx="80" cy="250" rx="16" ry="5" stroke="#5fd8e0" stroke-width="1.5" opacity=".5"/>
+                <ellipse class="foot-ripple" cx="120" cy="250" rx="16" ry="5" stroke="#5fd8e0" stroke-width="1.5" opacity=".5" style="animation-delay:1.2s"/>
+                <g class="breathe" opacity=".9" stroke="#7fa8ff" stroke-width="1.2" fill="none">
+                  <circle cx="100" cy="34" r="16"/>
+                  <path d="M84 34c-4 4-4 10 0 14M116 34c4 4 4 10 0 14" stroke="#5fd8e0" stroke-width=".8" opacity=".6"/>
+                  <path d="M100 50v40M100 60h-24l-8 14M100 60h24l8 14M76 90l-6 46M124 90l6 46M94 90v70M106 90v70M94 160l-8 46M106 160l8 46" stroke-linecap="round"/>
+                </g>
+                <path class="neural-line" d="M100 50q-14 8 -10 24t 8 22" stroke="#9be9ec" stroke-width="1" fill="none" opacity=".8"/>
+                <path class="neural-line" d="M100 50q14 10 10 26t-6 20" stroke="#9be9ec" stroke-width="1" fill="none" opacity=".8" style="animation-delay:1s"/>
+                <path d="M92 78c3-6 5-6 8 0s5 6 8 0" stroke="#ff8b8b" stroke-width="1.6" fill="none" class="heartbeat"/>
+                <g opacity=".55" stroke="#5fd8e0" stroke-width=".7" fill="none">
+                  <path d="M88 96c-2 8-2 14 2 18M112 96c2 8 2 14-2 18"/>
+                  <ellipse cx="100" cy="120" rx="9" ry="12"/>
+                </g>
+              </svg>
+            </div>
+          </div>
 
-            <!-- ===== nervous system overlay ===== -->
-            <g class="bv-nerve-group">
-              <path class="bv-nerve" d="M110,64 L110,188"/>
-              <path class="bv-nerve" d="M110,90 L58,182 L42,252"/>
-              <path class="bv-nerve" d="M110,90 L162,182 L178,252"/>
-              <path class="bv-nerve" d="M110,150 L98,184 L82,300 L76,390"/>
-              <path class="bv-nerve" d="M110,150 L122,184 L138,300 L144,390"/>
-            </g>
+          <!-- Network card -->
+          <div class="glass-card p-6 sm:col-span-2 lg:col-span-1">
+            <span class="eyebrow"><span class="dot"></span>LIVE — 3D NETWORK</span>
+            <h3 class="font-display text-[20px] font-semibold mt-3 leading-snug text-[var(--navy-950)]">Your care network, mapped in real time.</h3>
+            <p class="text-[13.5px] leading-relaxed mt-2 text-[var(--ink-500)]">Every connected ICU, ambulance, and blood bank orbiting the Sthir dispatch hub. Move your cursor to look around.</p>
 
-            <!-- pulsing nerve nodes, staggered to suggest signal spreading outward -->
-            <circle class="bv-node brain" cx="110" cy="37" r="3.4"/>
-            <circle class="bv-node pulse" cx="110" cy="90" r="2.6" style="animation-delay:.1s"/>
-            <circle class="bv-node pulse" cx="58" cy="182" r="2.6" style="animation-delay:.25s"/>
-            <circle class="bv-node pulse" cx="162" cy="182" r="2.6" style="animation-delay:.25s"/>
-            <circle class="bv-node pulse" cx="42" cy="252" r="2.6" style="animation-delay:.4s"/>
-            <circle class="bv-node pulse" cx="178" cy="252" r="2.6" style="animation-delay:.4s"/>
-            <circle class="bv-node pulse" cx="98" cy="184" r="2.6" style="animation-delay:.2s"/>
-            <circle class="bv-node pulse" cx="122" cy="184" r="2.6" style="animation-delay:.2s"/>
-            <circle class="bv-node pulse" cx="82" cy="300" r="2.6" style="animation-delay:.35s"/>
-            <circle class="bv-node pulse" cx="138" cy="300" r="2.6" style="animation-delay:.35s"/>
-            <circle class="bv-node pulse" cx="76" cy="390" r="2.6" style="animation-delay:.5s"/>
-            <circle class="bv-node pulse" cx="144" cy="390" r="2.6" style="animation-delay:.5s"/>
+            <div id="networkStage" class="network-stage mt-3 -mx-2" style="touch-action:none; cursor:grab;">
+              <svg id="networkSvg" viewBox="0 0 520 420" class="w-full h-auto" style="transition:transform .2s linear"></svg>
+            </div>
 
-            <!-- scan sweep -->
-            <rect class="bv-scan" x="0" y="0" width="220" height="26"/>
-          </g>
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[12px] text-[var(--ink-500)] mt-2">
+              <span class="flex items-center gap-1.5"><i class="inline-block w-2.5 h-2.5 rounded-full" style="background:#3fbf7f"></i>ICU beds</span>
+              <span class="flex items-center gap-1.5"><i class="inline-block w-2.5 h-2.5 rounded-full" style="background:#f0954a"></i>Ambulance</span>
+              <span class="flex items-center gap-1.5"><i class="inline-block w-2.5 h-2.5 rounded-full" style="background:#ef5b5b"></i>Blood bank</span>
+              <span class="flex items-center gap-1.5"><i class="inline-block w-2.5 h-2.5 rounded-full border border-[var(--silver-400)]" style="background:#fff"></i>Dispatch hub</span>
+              <span class="ml-auto text-[var(--ink-400)]">drag to explore</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Quick stats -->
+      <div class="grid grid-cols-3 gap-3 sm:gap-5 mt-8 reveal">
+        <div class="glass-card p-4 sm:p-5 flex items-center gap-3">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2049e0" stroke-width="1.8" class="flex-none"><path d="M12 21c-4.5-3-8-6.5-8-10.5A5.5 5.5 0 0 1 12 6.2 5.5 5.5 0 0 1 20 10.5C20 14.5 16.5 18 12 21Z"/></svg>
+          <div><div class="stat-num" data-count data-target="15">0</div><div class="text-[12px] sm:text-[13px] text-[var(--ink-500)] leading-tight">ICU beds free right now</div></div>
+        </div>
+        <div class="glass-card p-4 sm:p-5 flex items-center gap-3">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e0653a" stroke-width="1.8" class="flex-none"><path d="M3 17h1a2 2 0 1 0 4 0h8a2 2 0 1 0 4 0h1v-5l-3-4h-4V6H6a2 2 0 0 0-2 2v9Z"/></svg>
+          <div><div class="stat-num" data-count data-target="7" data-suffix="m">0</div><div class="text-[12px] sm:text-[13px] text-[var(--ink-500)] leading-tight">Avg. ambulance ETA</div></div>
+        </div>
+        <div class="glass-card p-4 sm:p-5 flex items-center gap-3">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#ef5b5b" class="flex-none"><path d="M12 2s7 8.2 7 13a7 7 0 1 1-14 0c0-4.8 7-13 7-13Z"/></svg>
+          <div><div class="stat-num" data-count data-target="147">0</div><div class="text-[12px] sm:text-[13px] text-[var(--ink-500)] leading-tight">Blood units in network</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== HOW STHIR WORKS ====================== -->
+  <section id="how" class="section">
+    <div class="wrap">
+      <div class="flex flex-wrap items-end justify-between gap-4 reveal">
+        <div class="section-head">
+          <span class="eyebrow"><span class="dot"></span>PROCESS</span>
+          <h2 class="font-display text-[28px] sm:text-[34px] font-semibold text-[var(--navy-950)] mt-2">How Sthir works</h2>
+        </div>
+        <p class="text-[14.5px] text-[var(--ink-500)] max-w-[320px]">Three steps between a family and the care they need.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-5 mt-8">
+        <div class="glass-card p-6 reveal">
+          <span class="step-num">01</span>
+          <h3 class="font-bold text-[16.5px] text-[var(--navy-950)] mt-2">Share your location</h3>
+          <p class="text-[14px] text-[var(--ink-500)] leading-relaxed mt-2">One tap gives you live distance and ETA to every partner hospital, ambulance, and blood bank nearby — no address typing.</p>
+        </div>
+        <div class="glass-card p-6 reveal" style="transition-delay:.08s">
+          <span class="step-num">02</span>
+          <h3 class="font-bold text-[16.5px] text-[var(--navy-950)] mt-2">Compare in real time</h3>
+          <p class="text-[14px] text-[var(--ink-500)] leading-relaxed mt-2">See per-day ICU rates, free beds, ambulance type, and blood units side by side — sorted by what's actually closest and available.</p>
+        </div>
+        <div class="glass-card p-6 reveal" style="transition-delay:.16s">
+          <span class="step-num">03</span>
+          <h3 class="font-bold text-[16.5px] text-[var(--navy-950)] mt-2">Book or dispatch instantly</h3>
+          <p class="text-[14px] text-[var(--ink-500)] leading-relaxed mt-2">Reserve an ICU bed, call an ambulance, or request blood — get a confirmation ID immediately, with no back-and-forth calls.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== RESOURCE SEARCH (ICU / AMB / BLOOD) ====================== -->
+  <section id="resources" class="section !pt-0">
+    <div class="wrap">
+      <div class="glass-card p-4 sm:p-6 reveal">
+
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex items-center gap-2 overflow-x-auto scroll-x !pb-0">
+            <button class="tab-btn active" data-tab="icu">ICU Beds (6)</button>
+            <button class="tab-btn" data-tab="ambulance" id="ambulance">Ambulance (4)</button>
+            <button class="tab-btn" data-tab="blood" id="blood">Blood Bank (4)</button>
+          </div>
+          <div class="flex items-center gap-2">
+            <input id="resourceSearch" type="text" placeholder="Search hospitals…" class="hidden sm:block text-[13.5px] px-3.5 py-2 rounded-full border border-[var(--silver-300)] bg-white/70 w-[180px] focus:outline-none focus:ring-2" style="--tw-ring-color:rgba(59,99,255,.25)">
+            <span class="text-[12.5px] text-[var(--ink-400)] whitespace-nowrap">updated 03:38 AM</span>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between mt-4 flex-wrap gap-3">
+          <div id="sortControls" class="flex items-center gap-2 text-[13px]">
+            <span class="text-[var(--ink-400)] mr-1">Sort by</span>
+            <button class="tab-btn sort-btn active" data-sort="distance">Distance</button>
+            <button class="tab-btn sort-btn" data-sort="price">Price</button>
+            <button class="tab-btn sort-btn" data-sort="rating">Rating</button>
+          </div>
+          <span class="text-[13px] text-[var(--ink-500)]"><span id="resultCount">6</span> results</span>
+        </div>
+
+        <div id="resourceList" class="grid gap-4 mt-5"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== NETWORK STATS ====================== -->
+  <section id="network" class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow"><span class="dot"></span>ANALYTICS</span>
+        <h2 class="font-display text-[28px] sm:text-[34px] font-semibold text-[var(--navy-950)] mt-2">Network performance, at a glance.</h2>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-5 mt-8">
+        <div class="glass-card p-6 reveal">
+          <h3 class="font-bold text-[16px] text-[var(--navy-950)]">ICU bed occupancy today</h3>
+          <p class="text-[13px] text-[var(--ink-500)] mt-1">Filled vs. total beds, by hospital</p>
+          <div id="occupancyList" class="flex flex-col gap-4 mt-6"></div>
+        </div>
+        <div class="glass-card p-6 reveal" style="transition-delay:.1s">
+          <h3 class="font-bold text-[16px] text-[var(--navy-950)]">Avg. ambulance response time</h3>
+          <p class="text-[13px] text-[var(--ink-500)] mt-1">Minutes from request to arrival, last 7 days</p>
+          <div id="responseChart" class="mt-4"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== BLOOD BANK OVERVIEW ====================== -->
+  <section class="section !pt-0">
+    <div class="wrap">
+      <div class="glass-card-navy p-6 sm:p-8 reveal">
+        <div class="flex items-start justify-between flex-wrap gap-4">
+          <div>
+            <span class="eyebrow" style="color:#ffb3b3"><span class="dot" style="background:#ef5b5b"></span>BLOOD BANK NETWORK</span>
+            <h3 class="font-display text-[22px] sm:text-[26px] font-semibold mt-3">Eight blood groups, tracked live across four partner banks.</h3>
+            <p class="text-[13.5px] mt-2 max-w-[520px]" style="color:#b7c1e6">Low-stock groups are flagged automatically so critical requests get routed to whichever bank actually has supply.</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-4 sm:grid-cols-8 gap-2.5 mt-6" id="bloodOverview">
+          <!-- filled by aggregate below -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== TESTIMONIALS ====================== -->
+  <section id="stories" class="section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow"><span class="dot"></span>STORIES</span>
+        <h2 class="font-display text-[28px] sm:text-[34px] font-semibold text-[var(--navy-950)] mt-2">Families who found care in minutes.</h2>
+      </div>
+      <div id="testimonialTrack" class="scroll-x mt-8 reveal"></div>
+    </div>
+  </section>
+
+  <!-- ====================== FAQ ====================== -->
+  <section id="faq" class="section !pt-0">
+    <div class="wrap max-w-[820px]">
+      <div class="section-head reveal">
+        <span class="eyebrow"><span class="dot"></span>FAQ</span>
+        <h2 class="font-display text-[28px] sm:text-[34px] font-semibold text-[var(--navy-950)] mt-2">Common questions</h2>
+      </div>
+      <div id="faqList" class="mt-6 reveal"></div>
+    </div>
+  </section>
+
+  <!-- ====================== HOSPITAL PARTNER CTA ====================== -->
+  <section id="partner" class="section">
+    <div class="wrap">
+      <div class="glass-card-navy p-8 sm:p-12 reveal grid lg:grid-cols-[1.3fr,1fr] gap-8 items-center">
+        <div>
+          <span class="eyebrow" style="color:#9be9ec"><span class="dot" style="background:#5fd8e0"></span>FOR HOSPITALS</span>
+          <h2 class="font-display text-[26px] sm:text-[32px] font-semibold mt-3 leading-snug">Connect your beds, ambulances, and blood inventory to families who need them.</h2>
+          <a href="#" class="btn btn-primary mt-6">Partner with Sthir</a>
+        </div>
+        <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-[14px]" style="color:#dfe6ff">
+          <li class="flex items-center gap-2">✓ Live ICU inventory</li>
+          <li class="flex items-center gap-2">✓ Ambulance management</li>
+          <li class="flex items-center gap-2">✓ Blood inventory</li>
+          <li class="flex items-center gap-2">✓ Patient requests</li>
+          <li class="flex items-center gap-2">✓ Booking management</li>
+          <li class="flex items-center gap-2">✓ Analytics</li>
+          <li class="flex items-center gap-2">✓ Hospital verification</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================= FOOTER ============================= -->
+<footer class="border-t border-[var(--silver-200)] pt-14 pb-8">
+  <div class="wrap grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+    <div>
+      <div class="flex items-center gap-2.5">
+        <svg class="logo-mark" width="30" height="30" viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="19" fill="#eef2ff" stroke="#2049e0" stroke-width="1.4"/>
+          <path d="M7 20h5l2.5-7 5 15 3-11 2 3h8.5" stroke="#2049e0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         </svg>
-        </div>
+        <span class="font-display text-[18px] font-semibold text-[var(--navy-950)]">Sthir</span>
       </div>
+      <p class="text-[13.5px] text-[var(--ink-500)] mt-3 leading-relaxed max-w-[240px]">Emergency healthcare infrastructure for faster access to care.</p>
     </div>
-  </div>
-</div>
-
-<div class="wrap live-feed-wrap">
-  <div class="live-feed-card tilt-3d liquid">
-    <div class="lf-head"><span class="live-badge"><span class="dot"></span>LIVE</span><h4 class="display">Network activity</h4></div>
-    <div class="lf-list" id="activity-feed"></div>
-  </div>
-</div>
-
-<div class="wrap threed-section">
-  <div class="threed-card liquid">
     <div>
-      <div class="td-eyebrow"><span class="live-badge" style="color:#6C8DFF;"><span class="dot"></span>LIVE</span> — 3D network</div>
-      <h3 class="display">Your care network, mapped in real time.</h3>
-      <p>Every connected ICU, ambulance, and blood bank orbiting the Sthir dispatch hub. Move your cursor to look around.</p>
+      <h4 class="font-bold text-[13.5px] text-[var(--navy-950)] mb-3">Navigation</h4>
+      <ul class="flex flex-col gap-2.5 text-[13.5px] text-[var(--ink-500)]">
+        <li><a href="#resources" class="hover:text-[var(--navy-900)]">ICU Beds</a></li>
+        <li><a href="#ambulance" class="hover:text-[var(--navy-900)]">Ambulance</a></li>
+        <li><a href="#blood" class="hover:text-[var(--navy-900)]">Blood Bank</a></li>
+        <li><a href="#how" class="hover:text-[var(--navy-900)]">How it works</a></li>
+        <li><a href="#stories" class="hover:text-[var(--navy-900)]">Stories</a></li>
+        <li><a href="#faq" class="hover:text-[var(--navy-900)]">FAQ</a></li>
+      </ul>
     </div>
-    <div id="three-canvas-wrap">
-      <canvas id="three-canvas"></canvas>
-      <div class="td-hint">drag to explore</div>
-    </div>
-    <div class="td-legend">
-      <span><i style="background:#1FA870"></i>ICU beds</span>
-      <span><i style="background:#F2A65A"></i>Ambulance</span>
-      <span><i style="background:#E8756B"></i>Blood bank</span>
-      <span><i style="background:#fff"></i>Dispatch hub</span>
-    </div>
-  </div>
-</div>
-
-<div class="ekg"><svg viewBox="0 0 800 30" preserveAspectRatio="none"><path d="M0,15 L120,15 L140,15 L150,3 L162,27 L174,8 L184,15 L260,15 L280,15 L290,3 L302,27 L314,8 L324,15 L400,15 L420,15 L430,3 L442,27 L454,8 L464,15 L540,15 L560,15 L570,3 L582,27 L594,8 L604,15 L680,15 L700,15 L710,3 L722,27 L734,8 L744,15 L800,15"/></svg></div>
-
-<div class="wrap tabs-section" id="icu">
-  <div class="tabs">
-    <button class="tab active" data-tab="icu">ICU Beds <span class="count" id="count-icu"></span></button>
-    <button class="tab" data-tab="ambulance">Ambulance <span class="count" id="count-amb"></span></button>
-    <button class="tab" data-tab="blood">Blood Bank <span class="count" id="count-blood"></span></button>
-  </div>
-
-  <section class="panel" id="panel-icu">
-    <div class="filter-row">
-      <input class="search-input liquid" id="icu-search" type="text" placeholder="Search hospital or area…" oninput="renderICU()">
-      <select class="sort-select liquid" id="icu-sort" onchange="renderICU()">
-        <option value="distance">Sort: Distance</option>
-        <option value="price-asc">Sort: Price (low to high)</option>
-        <option value="rating">Sort: Rating</option>
-      </select>
-      <label class="filter-check"><input type="checkbox" id="icu-available-only" onchange="renderICU()"> Available only</label>
-      <label class="filter-check"><input type="checkbox" id="icu-verified-only" onchange="renderICU()"> Verified only</label>
-    </div>
-    <div class="sort-row"><span>Sorted by distance</span><span id="icu-updated" class="mono"></span></div>
-    <div class="list" id="icu-list"></div>
-  </section>
-
-  <section class="panel" id="panel-ambulance" hidden>
-    <div class="filter-row">
-      <input class="search-input liquid" id="amb-search" type="text" placeholder="Search ambulance service…" oninput="renderAmbulance()">
-      <select class="sort-select liquid" id="amb-sort" onchange="renderAmbulance()">
-        <option value="distance">Sort: Distance</option>
-        <option value="eta">Sort: ETA</option>
-      </select>
-    </div>
-    <div class="sort-row"><span>Sorted by distance</span><span id="amb-updated" class="mono"></span></div>
-    <div class="list" id="amb-list"></div>
-  </section>
-
-  <section class="panel" id="panel-blood" hidden>
-    <div class="filter-row">
-      <input class="search-input liquid" id="blood-search" type="text" placeholder="Search blood bank…" oninput="renderBlood()">
-      <select class="sort-select liquid" id="blood-sort" onchange="renderBlood()">
-        <option value="distance">Sort: Distance</option>
-        <option value="units">Sort: Most units</option>
-      </select>
-    </div>
-    <div class="sort-row"><span>Sorted by distance</span><span id="blood-updated" class="mono"></span></div>
-    <div class="list" id="blood-list"></div>
-  </section>
-</div>
-
-<div class="wrap how" id="how">
-  <div class="sec-head">
-    <div><div class="sec-eyebrow">Process</div><h2 class="display">How Sthir works</h2></div>
-    <p>Three steps between a family and the care they need.</p>
-  </div>
-  <div class="how-grid">
-    <div class="how-step tilt-3d liquid">
-      <svg class="icon" viewBox="0 0 34 34" fill="none"><circle cx="17" cy="14" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M17 30C17 30 27 21 27 14C27 8 22.5 3 17 3C11.5 3 7 8 7 14C7 21 17 30 17 30Z" stroke="currentColor" stroke-width="1.6"/></svg>
-      <div class="n">01</div>
-      <h3>Share your location</h3>
-      <p>One tap gives you live distance and ETA to every partner hospital, ambulance, and blood bank nearby — no address typing.</p>
-    </div>
-    <div class="how-step tilt-3d liquid">
-      <svg class="icon" viewBox="0 0 34 34" fill="none"><path d="M6 24L14 16L19 21L28 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 10H28V16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <div class="n">02</div>
-      <h3>Compare in real time</h3>
-      <p>See per-day ICU rates, free beds, ambulance type, and blood units side by side — sorted by what's actually closest and available.</p>
-    </div>
-    <div class="how-step tilt-3d liquid">
-      <svg class="icon" viewBox="0 0 34 34" fill="none"><rect x="6" y="9" width="22" height="18" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M6 14H28" stroke="currentColor" stroke-width="1.6"/><path d="M11 5V11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M23 5V11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-      <div class="n">03</div>
-      <h3>Book or dispatch instantly</h3>
-      <p>Reserve an ICU bed, call an ambulance, or request blood — get a confirmation ID immediately, no back-and-forth calls.</p>
-    </div>
-  </div>
-</div>
-
-<div class="wrap network-strip">
-  <span>Chattogram Medical College</span><span>·</span><span>Max Hospital</span><span>·</span><span>Imperial Hospital</span><span>·</span><span>Red Crescent</span><span>·</span><span>Sandhani Blood Bank</span><span>·</span><span>+ 37 more</span>
-</div>
-
-<div class="wrap testimonials" id="testimonials">
-  <div class="sec-head">
-    <div><div class="sec-eyebrow">Trusted by families</div><h2 class="display">What people are saying</h2></div>
-    <p>Real moments where a few minutes made the difference.</p>
-  </div>
-  <div class="testimonial-grid">
-    <div class="testimonial-card tilt-3d liquid">
-      <div class="stars">★★★★★</div>
-      <p class="quote">"Sthir found us an ICU bed at Chattogram Medical College in under four minutes. We didn't have to call a single hospital ourselves."</p>
-      <div class="who">Rafiq Ahmed</div>
-      <div class="rel">Son of patient, Panchlaish</div>
-    </div>
-    <div class="testimonial-card tilt-3d liquid">
-      <div class="stars">★★★★★</div>
-      <p class="quote">"The ambulance arrived faster than we expected — the driver already had our location pinned before we even called. That kind of speed matters."</p>
-      <div class="who">Nasrin Sultana</div>
-      <div class="rel">Family member, GEC Circle</div>
-    </div>
-    <div class="testimonial-card tilt-3d liquid">
-      <div class="stars">★★★★★</div>
-      <p class="quote">"We needed O- blood at 2am. Sandhani had it reserved for us within minutes of requesting through the app. This service is a lifeline."</p>
-      <div class="who">Kamal Hossain</div>
-      <div class="rel">Patient's brother, Chawkbazar</div>
-    </div>
-  </div>
-</div>
-
-<div class="wrap insights" id="insights">
-  <div class="sec-head">
-    <div><div class="sec-eyebrow">Transparency</div><h2 class="display">Network at a glance</h2></div>
-    <p>Aggregated, anonymized figures from partner facilities.</p>
-  </div>
-  <div class="insight-grid">
-    <div class="chart-card tilt-3d liquid">
-      <h4>ICU bed occupancy today</h4>
-      <div class="csub">Filled vs. total beds, by hospital</div>
-      <div id="occupancy-chart"></div>
-    </div>
-    <div class="chart-card tilt-3d liquid">
-      <h4>Avg. ambulance response time</h4>
-      <div class="csub">Minutes from request to arrival, last 7 days</div>
-      <svg id="response-chart" viewBox="0 0 320 170" width="100%" height="170"></svg>
-    </div>
-  </div>
-</div>
-
-<div class="wrap faq" id="faq">
-  <div class="sec-head">
-    <div><div class="sec-eyebrow">Questions</div><h2 class="display">Frequently asked</h2></div>
-  </div>
-  <div class="faq-list">
-    <details open>
-      <summary>Is the availability shown actually real-time?</summary>
-      <p>In this prototype, bed counts and blood units are mock data refreshed on load. In production, each partner facility updates their own dashboard, and figures sync to Sthir within a couple of minutes.</p>
-    </details>
-    <details>
-      <summary>What happens after I book an ICU bed?</summary>
-      <p>You get a booking ID immediately and the hospital's admissions desk calls the contact number you provided to confirm and guide check-in.</p>
-    </details>
-    <details>
-      <summary>Can I request blood without a Sthir account?</summary>
-      <p>Yes — blood and ambulance requests only need a working phone number. Accounts are only needed to view your booking history later.</p>
-    </details>
-    <details>
-      <summary>How are hospitals verified?</summary>
-      <p>Partner facilities go through a registration check against government hospital licenses before they can list beds or rates.</p>
-    </details>
-  </div>
-</div>
-
-<div class="wrap partner-section" id="partner">
-  <div class="partner-card tilt-3d liquid">
-    <div class="partner-copy">
-      <div class="sec-eyebrow">For hospitals</div>
-      <h2 class="display">Connect your beds, ambulances, and blood inventory to families who need them.</h2>
-      <p>Join the Sthir network as a verified partner and reach patients the moment they're searching — not after they've already called five other hospitals.</p>
-      <a class="btn primary liquid liquid-wave liquid-glow-blue" href="#partner" style="display:inline-block;margin-top:22px;">Partner with Sthir</a>
-    </div>
-    <div class="partner-features">
-      <div class="pf-item"><span class="pf-dot"></span>Live ICU inventory</div>
-      <div class="pf-item"><span class="pf-dot"></span>Ambulance management</div>
-      <div class="pf-item"><span class="pf-dot"></span>Blood inventory sync</div>
-      <div class="pf-item"><span class="pf-dot"></span>Patient requests</div>
-      <div class="pf-item"><span class="pf-dot"></span>Booking management</div>
-      <div class="pf-item"><span class="pf-dot"></span>Real-time analytics</div>
-      <div class="pf-item"><span class="pf-dot"></span>Hospital verification</div>
-      <div class="pf-item"><span class="pf-dot"></span>24/7 support desk</div>
-    </div>
-  </div>
-</div>
-
-<div class="wrap emergency-wrap">
-  <div class="emergency-banner tilt-3d liquid">
     <div>
-      <div class="eb-eyebrow">24/7 emergency dispatch</div>
-      <h2>Medical emergency right now?</h2>
-      <p>Don't wait to search — call our dispatch line directly and we'll route the nearest ambulance to you immediately.</p>
+      <h4 class="font-bold text-[13.5px] text-[var(--navy-950)] mb-3">For hospitals</h4>
+      <ul class="flex flex-col gap-2.5 text-[13.5px] text-[var(--ink-500)]">
+        <li><a href="#partner" class="hover:text-[var(--navy-900)]">Partner with us</a></li>
+        <li><a href="#" class="hover:text-[var(--navy-900)]">Hospital login</a></li>
+        <li><a href="#network" class="hover:text-[var(--navy-900)]">Network information</a></li>
+      </ul>
     </div>
-    <a class="eb-call-btn liquid liquid-wave" href="tel:16263">📞 Call 16263 now</a>
+    <div>
+      <h4 class="font-bold text-[13.5px] text-[var(--navy-950)] mb-3">Emergency</h4>
+      <button class="btn btn-emergency btn-sm emergency-call">🚑&nbsp; Call nearest ambulance</button>
+    </div>
   </div>
-</div>
-
-<footer>
-  <div class="wrap">
-    <div class="foot-grid">
-      <div class="foot-col">
-        <h5>Sthir</h5>
-        <div style="color:var(--ink-soft);font-size:13.5px;line-height:1.6;max-width:260px;">Emergency medical access for Chattogram — ICU beds, ambulances, and blood, located and booked in one place.</div>
-      </div>
-      <div class="foot-col">
-        <h5>Product</h5>
-        <a href="#icu">ICU beds</a>
-        <a href="#" onclick="showTab('ambulance');return false;">Ambulance</a>
-        <a href="#" onclick="showTab('blood');return false;">Blood bank</a>
-        <a href="#insights">Network stats</a>
-      </div>
-      <div class="foot-col">
-        <h5>Partners</h5>
-        <a href="#">List your hospital</a>
-        <a href="#">Ambulance operator sign-up</a>
-        <a href="#">Blood bank dashboard</a>
-      </div>
-      <div class="foot-col">
-        <h5>Contact</h5>
-        <div>Dispatch desk: 16263</div>
-        <div>support@sthir.example</div>
-        <div>Panchlaish, Chattogram</div>
-      </div>
-    </div>
-    <div class="foot-bottom">
-      <span>© 2026 Sthir. Prototype for demonstration — not for use in a real emergency.</span>
-      <span>Availability and rates shown are mock data.</span>
-    </div>
+  <div class="wrap mt-10 pt-6 border-t border-[var(--silver-200)] text-[12.5px] text-[var(--ink-400)]">
+    © <span id="year"></span> Sthir. All rights reserved.
   </div>
 </footer>
 
-<div id="modal-root"></div>
+<!-- ============================= BOOKING MODAL ============================= -->
+<div id="bookingModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="bookingTitle">
+  <div class="modal-panel">
 
-<script>
-// ---------- state ----------
-let userLoc = {lat: 22.3569, lng: 91.7832, label: "Chattogram (default)"};
+    <div id="bookingStepForm">
+      <div class="flex items-center justify-between mb-1">
+        <h3 id="bookingTitle" class="font-display text-[21px] font-semibold text-[var(--navy-950)]">Book ICU bed</h3>
+        <button id="bookingClose" aria-label="Close" class="w-9 h-9 rounded-full flex items-center justify-center border border-[var(--silver-300)]">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0c1428" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
 
-const ICU = [
-  {id:"icu1", name:"Chattogram Medical College Hospital", area:"Panchlaish", lat:22.3620, lng:91.8107, rate:3500, beds:4, totalBeds:20, rating:4.6, verified:true},
-  {id:"icu2", name:"Max Hospital Chattogram", area:"O.R. Nizam Rd", lat:22.3556, lng:91.8235, rate:8500, beds:6, totalBeds:16, rating:4.8, verified:true},
-  {id:"icu3", name:"Imperial Hospital", area:"Zakir Hossain Rd", lat:22.3667, lng:91.8100, rate:7200, beds:1, totalBeds:14, rating:4.5, verified:true},
-  {id:"icu4", name:"Metropolitan Hospital", area:"GEC Circle", lat:22.3600, lng:91.8256, rate:5000, beds:3, totalBeds:12, rating:4.3, verified:true},
-  {id:"icu5", name:"Chevron Clinical & General Hospital", area:"Chawkbazar", lat:22.3540, lng:91.8080, rate:6000, beds:2, totalBeds:10, rating:4.2, verified:false},
-  {id:"icu6", name:"Park View Hospital", area:"Panchlaish", lat:22.3650, lng:91.8175, rate:4800, beds:0, totalBeds:8, rating:4.0, verified:true},
-];
+      <div class="grid grid-cols-2 gap-3 mt-4 mb-6 text-[13.5px]">
+        <div class="bg-[var(--silver-100)] rounded-xl p-3"><div class="text-[var(--ink-400)] text-[11.5px]">Hospital</div><div id="bmHospital" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
+        <div class="bg-[var(--silver-100)] rounded-xl p-3"><div class="text-[var(--ink-400)] text-[11.5px]">Distance</div><div id="bmDistance" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
+        <div class="bg-[var(--silver-100)] rounded-xl p-3"><div class="text-[var(--ink-400)] text-[11.5px]">Available beds</div><div id="bmBeds" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
+        <div class="bg-[var(--silver-100)] rounded-xl p-3"><div class="text-[var(--ink-400)] text-[11.5px]">Price / day</div><div id="bmPrice" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
+        <div class="bg-[var(--silver-100)] rounded-xl p-3 col-span-2"><div class="text-[var(--ink-400)] text-[11.5px]">Estimated arrival</div><div id="bmEta" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
+      </div>
 
-const AMBULANCE = [
-  {id:"amb1", name:"Red Crescent Ambulance Service", type:"ALS — ventilator equipped", lat:22.3610, lng:91.8140, phone:"+880130000001"},
-  {id:"amb2", name:"Chattogram Medical Ambulance", type:"BLS — basic life support", lat:22.3630, lng:91.8060, phone:"+880130000002"},
-  {id:"amb3", name:"Prime ICU Ambulance", type:"ICU on wheels", lat:22.3580, lng:91.8300, phone:"+880130000003"},
-  {id:"amb4", name:"City Freezer & Ambulance Service", type:"Freezer / mortuary transport", lat:22.3520, lng:91.8020, phone:"+880130000004"},
-];
-
-const BLOOD = [
-  {id:"bl1", name:"Chattogram Blood Bank", lat:22.3600, lng:91.8090, units:{"O+":14,"O-":2,"A+":9,"A-":0,"B+":11,"B-":1,"AB+":4,"AB-":0}},
-  {id:"bl2", name:"Red Crescent Blood Center", lat:22.3660, lng:91.8200, units:{"O+":6,"O-":3,"A+":5,"A-":2,"B+":7,"B-":1,"AB+":2,"AB-":1}},
-  {id:"bl3", name:"Sandhani Blood Bank, CMC", lat:22.3625, lng:91.8115, units:{"O+":20,"O-":5,"A+":15,"A-":3,"B+":18,"B-":4,"AB+":6,"AB-":1}},
-  {id:"bl4", name:"Quantum Blood Foundation", lat:22.3540, lng:91.8260, units:{"O+":3,"O-":0,"A+":2,"A-":0,"B+":4,"B-":0,"AB+":1,"AB-":0}},
-];
-
-// ---------- helpers ----------
-function haversine(lat1, lng1, lat2, lng2){
-  const R = 6371;
-  const dLat = (lat2-lat1) * Math.PI/180;
-  const dLng = (lng2-lng1) * Math.PI/180;
-  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-}
-function withDistance(list){
-  return list.map(x => {
-    const d = haversine(userLoc.lat, userLoc.lng, x.lat, x.lng);
-    return {...x, dist: d, eta: Math.max(4, Math.round(d/28*60))};
-  }).sort((a,b) => a.dist - b.dist);
-}
-function fmtDist(km){ return km < 1 ? `${Math.round(km*1000)} m` : `${km.toFixed(1)} km`; }
-function nowStamp(){ return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
-function genId(prefix){ return prefix + '-' + Math.random().toString(36).slice(2,8).toUpperCase(); }
-function stars(r){ const full = Math.round(r); return '★'.repeat(full) + '☆'.repeat(5-full) + ' ' + r.toFixed(1); }
-
-// ---------- geolocation ----------
-document.getElementById('locate-btn').addEventListener('click', () => {
-  const statusEl = document.getElementById('loc-status');
-  if(!navigator.geolocation){ statusEl.textContent = "geolocation not supported by this browser"; return; }
-  statusEl.textContent = "requesting location…";
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      userLoc = {lat: pos.coords.latitude, lng: pos.coords.longitude, label: "your current location"};
-      document.getElementById('loc-label').textContent = "your current location";
-      statusEl.textContent = "location shared — results updated";
-      renderAll();
-    },
-    err => { statusEl.textContent = "location denied — showing default distances for Chattogram"; }
-  );
-});
-
-// ---------- mobile nav drawer ----------
-const hamburgerBtn = document.getElementById('hamburger-btn');
-const mobileDrawer = document.getElementById('mobile-drawer');
-function closeDrawer(){
-  mobileDrawer.classList.remove('open');
-  mobileDrawer.hidden = true;
-  hamburgerBtn.setAttribute('aria-expanded', 'false');
-}
-function openDrawer(){
-  mobileDrawer.hidden = false;
-  mobileDrawer.classList.add('open');
-  hamburgerBtn.setAttribute('aria-expanded', 'true');
-}
-hamburgerBtn.addEventListener('click', () => {
-  if(mobileDrawer.classList.contains('open')) closeDrawer(); else openDrawer();
-});
-mobileDrawer.querySelectorAll('a').forEach(a => {
-  a.addEventListener('click', () => { if(!a.hasAttribute('onclick')) closeDrawer(); });
-});
-
-// ---------- tabs ----------
-function showTab(name){
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
-  ['icu','ambulance','blood'].forEach(n => { document.getElementById('panel-'+n).hidden = (n !== name); });
-  document.getElementById('icu').scrollIntoView({behavior:'smooth', block:'start'});
-}
-document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => showTab(tab.dataset.tab)));
-
-// ---------- radar (2D map visualization) ----------
-function buildRadar(containerId, entities, opts){
-  if(!document.getElementById(containerId)) return;
-  const size = opts.size || 240;
-  const c = size/2;
-  const maxR = c - (opts.pad || 34);
-  const maxDist = Math.max(0.4, ...entities.map(e => e.dist));
-  const rings = [0.33, 0.66, 1];
-  let svg = `<svg viewBox="0 0 ${size} ${size}" width="100%" height="${size}">`;
-  rings.forEach(f => {
-    svg += `<circle class="ring" cx="${c}" cy="${c}" r="${maxR*f}"></circle>`;
-    svg += `<text class="ringlabel" x="${c+4}" y="${c-maxR*f+3}">${(maxDist*f).toFixed(1)}km</text>`;
-  });
-  svg += `<line class="cross" x1="${c-maxR}" y1="${c}" x2="${c+maxR}" y2="${c}"></line>`;
-  svg += `<line class="cross" x1="${c}" y1="${c-maxR}" x2="${c}" y2="${c+maxR}"></line>`;
-
-  entities.forEach(e => {
-    const bearing = Math.atan2(e.lng - userLoc.lng, e.lat - userLoc.lat);
-    const r = (e.dist / maxDist) * maxR * 0.92;
-    const x = c + r * Math.sin(bearing);
-    const y = c - r * Math.cos(bearing);
-    const color = opts.colorFn(e);
-    const jump = opts.onClick ? `onclick="${opts.onClick}('${e.id}')"` : '';
-    svg += `<g class="radar-dot" ${jump}><title>${e.name} — ${fmtDist(e.dist)}</title>
-      <circle class="mark" cx="${x}" cy="${y}" r="6.5" fill="${color}" stroke="${opts.strokeUser || 'none'}"></circle>
-    </g>`;
-  });
-
-  svg += `<circle class="user-pulse" cx="${c}" cy="${c}" r="12"></circle>`;
-  if(opts.humanCenter){
-    const s = 0.62;
-    const tx = (c - 17*s).toFixed(1), ty = (c - 27*s).toFixed(1);
-    svg += `<g transform="translate(${tx},${ty}) scale(${s})" stroke="#fff" stroke-width="1.8" fill="none">
-      <circle cx="17" cy="8" r="6"/>
-      <path d="M17 16C10 16 6 21 6 28V40C6 42 8 44 10 44H24C26 44 28 42 28 40V28C28 21 24 16 17 16Z"/>
-      <path class="heart" d="M17 30C17 30 12.5 27 12.5 23.5C12.5 21.5 14 20.3 15.7 20.8C16.4 21 17 21.8 17 21.8C17 21.8 17.6 21 18.3 20.8C20 20.3 21.5 21.5 21.5 23.5C21.5 27 17 30 17 30Z" stroke="none"/>
-    </g>`;
-  } else {
-    svg += `<circle class="user" cx="${c}" cy="${c}" r="4"></circle>`;
-  }
-  svg += `</svg>`;
-  document.getElementById(containerId).innerHTML = svg;
-}
-
-function icuColor(h){ return h.beds===0 ? '#E8756B' : (h.beds<=1 ? '#F2A65A' : '#1FA870'); }
-
-function scrollToCard(id){
-  const el = document.getElementById('card-'+id);
-  if(!el) return;
-  el.scrollIntoView({behavior:'smooth', block:'center'});
-  el.classList.add('flash');
-  setTimeout(() => el.classList.remove('flash'), 1400);
-}
-
-// ---------- render ICU ----------
-function renderICU(){
-  let list = withDistance(ICU);
-  const q = (document.getElementById('icu-search')?.value || '').trim().toLowerCase();
-  if(q) list = list.filter(h => h.name.toLowerCase().includes(q) || h.area.toLowerCase().includes(q));
-  if(document.getElementById('icu-available-only')?.checked) list = list.filter(h => h.beds > 0);
-  if(document.getElementById('icu-verified-only')?.checked) list = list.filter(h => h.verified);
-  const sortBy = document.getElementById('icu-sort')?.value || 'distance';
-  if(sortBy === 'price-asc') list = [...list].sort((a,b) => a.rate - b.rate);
-  else if(sortBy === 'rating') list = [...list].sort((a,b) => b.rating - a.rating);
-
-  document.getElementById('count-icu').textContent = `(${withDistance(ICU).filter(x=>x.beds>0).length})`;
-  document.getElementById('icu-updated').textContent = 'updated ' + nowStamp();
-  const el = document.getElementById('icu-list');
-  if(list.length === 0){ el.innerHTML = `<div class="empty-state">No hospitals match your search.</div>`; return; }
-  el.innerHTML = list.map(h => {
-    const badge = h.beds === 0 ? `<span class="badge full"><span class="dot"></span>Full</span>`
-                : h.beds <= 1 ? `<span class="badge low"><span class="dot"></span>${h.beds} bed left</span>`
-                : `<span class="badge ok"><span class="dot"></span>${h.beds} of ${h.totalBeds} free</span>`;
-    return `
-    <div class="card tilt-3d liquid" id="card-${h.id}">
-      <div class="left">
-        <div class="name-row"><h3>${h.name}</h3>${h.verified?'<span class="verified">✓ Verified</span>':''}</div>
-        <div class="meta">
-          <span>${h.area}</span>
-          <span class="stars">${stars(h.rating)}</span>
+      <form id="bookingForm" class="flex flex-col gap-4">
+        <h4 class="font-bold text-[14px] text-[var(--navy-950)] -mb-1">Patient information</h4>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="field"><label for="fName">Patient name</label><input id="fName" required placeholder="Full name"></div>
+          <div class="field"><label for="fPhone">Phone</label><input id="fPhone" required type="tel" placeholder="01XXX-XXXXXX"></div>
         </div>
-        <div class="meta">
-          <span class="metric">${fmtDist(h.dist)} away</span>
-          <span class="metric">~${h.eta} min</span>
-          ${badge}
-        </div>
-      </div>
-      <div class="right">
-        <div class="rate">৳${h.rate.toLocaleString()}<small> / day</small></div>
-        <button class="btn primary liquid" ${h.beds===0?'disabled':''} onclick="openBooking('${h.id}')">${h.beds===0?'Unavailable':'Book bed'}</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ---------- render Ambulance ----------
-function renderAmbulance(){
-  let list = withDistance(AMBULANCE);
-  const q = (document.getElementById('amb-search')?.value || '').trim().toLowerCase();
-  if(q) list = list.filter(a => a.name.toLowerCase().includes(q) || a.type.toLowerCase().includes(q));
-  const sortBy = document.getElementById('amb-sort')?.value || 'distance';
-  if(sortBy === 'eta') list = [...list].sort((a,b) => a.eta - b.eta);
-
-  document.getElementById('count-amb').textContent = `(${withDistance(AMBULANCE).length})`;
-  document.getElementById('amb-updated').textContent = 'updated ' + nowStamp();
-  const el = document.getElementById('amb-list');
-  if(list.length === 0){ el.innerHTML = `<div class="empty-state">No ambulance services match your search.</div>`; return; }
-  el.innerHTML = list.map(a => `
-    <div class="card tilt-3d liquid" id="card-${a.id}">
-      <div class="left">
-        <h3>${a.name}</h3>
-        <div class="meta">
-          <span>${a.type}</span>
-        </div>
-        <div class="meta">
-          <span class="metric">${fmtDist(a.dist)} away</span>
-          <span class="metric">~${a.eta} min ETA</span>
-          <span class="badge ok"><span class="dot"></span>Available</span>
-        </div>
-      </div>
-      <div class="right">
-        <a class="btn call liquid" href="tel:${a.phone}">📞 Call now</a>
-        <button class="btn ghost liquid" onclick="dispatchAmbulance('${a.id}')">Request dispatch</button>
-      </div>
-    </div>`).join('');
-}
-
-// ---------- render Blood ----------
-function renderBlood(){
-  let list = withDistance(BLOOD);
-  const q = (document.getElementById('blood-search')?.value || '').trim().toLowerCase();
-  if(q) list = list.filter(b => b.name.toLowerCase().includes(q));
-  const sortBy = document.getElementById('blood-sort')?.value || 'distance';
-  if(sortBy === 'units') list = [...list].sort((a,b) => {
-    const totalA = Object.values(a.units).reduce((s,c)=>s+c,0);
-    const totalB = Object.values(b.units).reduce((s,c)=>s+c,0);
-    return totalB - totalA;
-  });
-
-  document.getElementById('count-blood').textContent = `(${withDistance(BLOOD).length})`;
-  document.getElementById('blood-updated').textContent = 'updated ' + nowStamp();
-  const el = document.getElementById('blood-list');
-  if(list.length === 0){ el.innerHTML = `<div class="empty-state">No blood banks match your search.</div>`; return; }
-  el.innerHTML = list.map(b => {
-    const chips = Object.entries(b.units).map(([g,u]) => {
-      const cls = u === 0 ? 'zero' : (u <= 2 ? 'low' : '');
-      return `<span class="unit-chip ${cls}">${g} · ${u}</span>`;
-    }).join('');
-    return `
-    <div class="card tilt-3d liquid" id="card-${b.id}">
-      <div class="left" style="flex-basis:100%;">
-        <h3>${b.name}</h3>
-        <div class="meta"><span class="metric">${fmtDist(b.dist)} away</span><span class="metric">~${b.eta} min</span></div>
-        <div class="blood-units">${chips}</div>
-      </div>
-      <div class="right" style="flex-basis:100%;align-items:flex-start;">
-        <button class="btn primary liquid" onclick="openBloodRequest('${b.id}')">Request blood</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ---------- hero combined radar ----------
-function renderHeroRadar(){
-  const combined = [
-    ...withDistance(ICU).map(e => ({...e, color:icuColor(e)})),
-    ...withDistance(AMBULANCE).map(e => ({...e, color:'#F2A65A'})),
-    ...withDistance(BLOOD).map(e => ({...e, color:'#E8756B'})),
-  ].sort((a,b)=>a.dist-b.dist);
-  const updatedEl = document.getElementById('radar-updated');
-  if(updatedEl) updatedEl.textContent = 'updated ' + nowStamp();
-  buildRadar('hero-radar', combined, {size:260, pad:38, colorFn: e => e.color, strokeUser:'#10193D', humanCenter:true});
-}
-
-// ---------- insight charts ----------
-function renderOccupancyChart(){
-  const list = ICU.map(h => ({name:h.name, pct: Math.round(((h.totalBeds-h.beds)/h.totalBeds)*100)}));
-  const el = document.getElementById('occupancy-chart');
-  el.innerHTML = list.map(h => `
-    <div class="bar-row">
-      <div class="blabel">${h.name}</div>
-      <div class="bar-track"><div class="bar-fill" data-pct="${h.pct}" style="width:${prefersReducedMotion ? h.pct : 0}%;background:${h.pct>=90?'#D63A2E':h.pct>=70?'#B8791C':'#3454D1'}"></div></div>
-      <div class="bval">${h.pct}%</div>
-    </div>`).join('');
-  if(!prefersReducedMotion){
-    requestAnimationFrame(() => {
-      el.querySelectorAll('.bar-fill').forEach(bar => { bar.style.width = bar.dataset.pct + '%'; });
-    });
-  }
-}
-
-function renderResponseChart(){
-  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const values = [7.2, 6.8, 8.1, 6.1, 5.9, 6.4, 6.0];
-  const w = 320, h = 170, padL = 26, padB = 22, padT = 14, padR = 10;
-  const maxV = Math.max(...values) * 1.15;
-  const stepX = (w - padL - padR) / (values.length - 1);
-  const pts = values.map((v,i) => {
-    const x = padL + i*stepX;
-    const y = padT + (h-padT-padB) * (1 - v/maxV);
-    return [x,y];
-  });
-  const path = pts.map((p,i) => (i===0?'M':'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
-  const area = path + ` L${pts[pts.length-1][0]},${h-padB} L${pts[0][0]},${h-padB} Z`;
-  let svg = `
-    <line x1="${padL}" y1="${h-padB}" x2="${w-padR}" y2="${h-padB}" stroke="#E1DDD1" stroke-width="1"/>
-    <path d="${area}" fill="#E9ECFB"/>
-    <path id="response-line" d="${path}" fill="none" stroke="#3454D1" stroke-width="2"/>`;
-  pts.forEach((p,i) => {
-    svg += `<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#3454D1"/>`;
-    svg += `<text x="${p[0]}" y="${h-6}" font-size="9" font-family="IBM Plex Mono" fill="#8B968F" text-anchor="middle">${days[i]}</text>`;
-  });
-  document.getElementById('response-chart').innerHTML = svg;
-
-  if(prefersReducedMotion) return;
-  const lineEl = document.getElementById('response-line');
-  const len = lineEl.getTotalLength();
-  lineEl.style.strokeDasharray = len;
-  lineEl.style.strokeDashoffset = len;
-  const insightsSection = document.getElementById('insights');
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting){
-        lineEl.style.transition = 'stroke-dashoffset 1.1s cubic-bezier(.22,.9,.35,1)';
-        lineEl.style.strokeDashoffset = '0';
-        io.disconnect();
-      }
-    });
-  }, {threshold:0.3});
-  if(insightsSection) io.observe(insightsSection);
-}
-
-function renderAll(){ renderICU(); renderAmbulance(); renderBlood(); renderHeroRadar(); }
-
-// ---------- live clock ----------
-function updateClock(){
-  const el = document.getElementById('clock');
-  if(el) el.textContent = ' · ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-}
-updateClock();
-setInterval(updateClock, 1000);
-
-// ---------- live computed hero stats ----------
-let lastStats = {beds:null, eta:null, blood:null};
-function computeStats(){
-  const bedsFree = ICU.reduce((s,h)=>s+h.beds, 0);
-  const ambList = withDistance(AMBULANCE);
-  const avgEta = Math.round(ambList.reduce((s,a)=>s+a.eta, 0) / ambList.length);
-  const bloodTotal = BLOOD.reduce((s,b)=> s + Object.values(b.units).reduce((a,c)=>a+c,0), 0);
-  return {beds: bedsFree, eta: avgEta, blood: bloodTotal};
-}
-function flashStat(id){
-  const el = document.getElementById(id);
-  el.classList.add('flash-num');
-  setTimeout(() => el.classList.remove('flash-num'), 700);
-}
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-function animateCount(el, from, to, duration, suffixHtml){
-  if(prefersReducedMotion || from === to){ el.innerHTML = to + (suffixHtml || ''); return; }
-  const start = performance.now();
-  function step(now){
-    const t = Math.min(1, (now - start) / duration);
-    const eased = 1 - Math.pow(1 - t, 3);
-    const val = Math.round(from + (to - from) * eased);
-    el.innerHTML = val + (suffixHtml || '');
-    if(t < 1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
-}
-
-function renderHeroStats(){
-  const s = computeStats();
-  const bedsEl = document.getElementById('stat-beds');
-  const etaEl = document.getElementById('stat-eta');
-  const bloodEl = document.getElementById('stat-blood');
-  animateCount(bedsEl, lastStats.beds ?? 0, s.beds, 700, '');
-  animateCount(etaEl, lastStats.eta ?? 0, s.eta, 700, '<small style="font-size:13px;">m</small>');
-  animateCount(bloodEl, lastStats.blood ?? 0, s.blood, 700, '');
-  if(lastStats.beds !== null && s.beds !== lastStats.beds) flashStat('stat-beds');
-  if(lastStats.eta !== null && s.eta !== lastStats.eta) flashStat('stat-eta');
-  if(lastStats.blood !== null && s.blood !== lastStats.blood) flashStat('stat-blood');
-  lastStats = s;
-}
-
-// ---------- live activity feed ----------
-const activity = [];
-function pushActivity(ev){
-  activity.unshift({...ev, time: nowStamp()});
-  if(activity.length > 6) activity.pop();
-  renderActivityFeed();
-}
-function renderActivityFeed(){
-  const el = document.getElementById('activity-feed');
-  if(!el) return;
-  el.innerHTML = activity.map((a,i) => `
-    <div class="lf-item ${i===0?'enter':''}">
-      <div class="lf-icon">${a.icon}</div>
-      <div class="lf-text"><div class="lf-main">${a.text}</div><div class="lf-sub">${a.sub}</div></div>
-      <div class="lf-time mono">${a.time}</div>
-    </div>`).join('');
-}
-
-// ---------- live data engine ----------
-const NODE_COLOR = {icu:0x1FA870, ambulance:0xF2A65A, blood:0xE8756B};
-
-function randomLiveEvent(){
-  const roll = Math.random();
-  if(roll < 0.4){
-    const h = ICU[Math.floor(Math.random()*ICU.length)];
-    const delta = Math.random() < 0.55 ? 1 : -1;
-    const prev = h.beds;
-    h.beds = Math.max(0, Math.min(h.totalBeds, h.beds + delta));
-    if(h.beds === prev) return null;
-    const verb = h.beds > prev ? 'freed up' : 'occupied';
-    return {icon:'🛏️', text:`ICU bed ${verb} — ${h.name}`, sub:`${h.beds} of ${h.totalBeds} beds free now`, cat:'icu'};
-  } else if(roll < 0.7){
-    const a = AMBULANCE[Math.floor(Math.random()*AMBULANCE.length)];
-    a.lat += (Math.random()-0.5) * 0.005;
-    a.lng += (Math.random()-0.5) * 0.005;
-    const d = haversine(userLoc.lat, userLoc.lng, a.lat, a.lng);
-    return {icon:'🚑', text:`${a.name} repositioned`, sub:`Now ${fmtDist(d)} from you`, cat:'ambulance'};
-  } else {
-    const b = BLOOD[Math.floor(Math.random()*BLOOD.length)];
-    const groups = Object.keys(b.units);
-    const g = groups[Math.floor(Math.random()*groups.length)];
-    const delta = Math.random() < 0.5 ? 1 : -1;
-    const prev = b.units[g];
-    b.units[g] = Math.max(0, b.units[g] + delta);
-    if(b.units[g] === prev) return null;
-    const verb = b.units[g] > prev ? 'donated' : 'requested';
-    return {icon:'🩸', text:`1 unit ${g} ${verb} — ${b.name}`, sub:`${b.units[g]} units ${g} in stock now`, cat:'blood'};
-  }
-}
-
-function tickLive(){
-  const ev = randomLiveEvent();
-  if(ev){
-    pushActivity(ev);
-    if(window.__tdTriggerBurst) window.__tdTriggerBurst(NODE_COLOR[ev.cat]);
-  }
-  renderHeroStats();
-  renderHeroRadar();
-  renderICU();
-  renderAmbulance();
-  renderBlood();
-  renderOccupancyChart();
-}
-
-// ---------- live human vitals ticker ----------
-let lastBpm = 76;
-let lastSpo2 = 98;
-function flashEl(el){
-  if(!el) return;
-  el.classList.add('flash-num');
-  setTimeout(() => el.classList.remove('flash-num'), 500);
-}
-function tickVitals(){
-  const next = Math.max(68, Math.min(88, lastBpm + Math.round((Math.random()-0.5)*6)));
-  lastBpm = next;
-  const legendEl = document.getElementById('vitals-bpm');
-  if(legendEl){ legendEl.textContent = next; flashEl(legendEl.parentElement); }
-  const hrEl = document.getElementById('bv-hr');
-  if(hrEl){ hrEl.textContent = next; flashEl(hrEl); }
-
-  lastSpo2 = Math.max(94, Math.min(99, lastSpo2 + Math.round((Math.random()-0.5)*2)));
-  const spo2El = document.getElementById('bv-spo2');
-  if(spo2El){ spo2El.textContent = lastSpo2; flashEl(spo2El); }
-}
-setInterval(tickVitals, 2600);
-
-const NEURAL_STATES = ['Steady', 'Normal', 'Stable', 'Active'];
-setInterval(() => {
-  const el = document.getElementById('bv-neural');
-  if(!el) return;
-  el.textContent = NEURAL_STATES[Math.floor(Math.random()*NEURAL_STATES.length)];
-  flashEl(el);
-}, 6200);
-
-// seed feed with a couple of entries so it isn't empty on load
-pushActivity({icon:'🛏️', text:'ICU network synced', sub:`${ICU.reduce((s,h)=>s+h.beds,0)} beds free across Chattogram`});
-pushActivity({icon:'📡', text:'Sthir dispatch hub online', sub:'Tracking 14 partner facilities'});
-renderHeroStats();
-setInterval(tickLive, 4500);
-
-
-// ---------- modals ----------
-function closeModal(){ document.getElementById('modal-root').innerHTML = ''; }
-
-function openBooking(icuId){
-  const h = ICU.find(x => x.id === icuId);
-  document.getElementById('modal-root').innerHTML = `
-    <div class="overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <button class="close-x" onclick="closeModal()">×</button>
-        <h2 class="display">Book ICU bed</h2>
-        <div class="sub">${h.name} · ${fmtDist(h.dist)} away · ৳${h.rate.toLocaleString()} / day</div>
-        <div class="field"><label>Patient name</label><input id="bk-name" placeholder="Full name"></div>
-        <div class="field-row">
-          <div class="field"><label>Contact phone</label><input id="bk-phone" placeholder="01XXXXXXXXX"></div>
-          <div class="field"><label>Bed type</label>
-            <select id="bk-bedtype">
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="field"><label for="fEmergencyContact">Emergency contact</label><input id="fEmergencyContact" required placeholder="Name & phone"></div>
+          <div class="field">
+            <label for="fBedType">Required bed type</label>
+            <select id="fBedType">
               <option>General ICU</option>
               <option>Cardiac ICU</option>
               <option>Neonatal ICU</option>
-              <option>Surgical ICU</option>
+              <option>Trauma ICU</option>
             </select>
           </div>
         </div>
-        <div class="field-row">
-          <div class="field"><label>Admission date</label><input id="bk-date" type="date"></div>
-          <div class="field"><label>Expected stay (days)</label><input id="bk-days" type="number" min="1" value="1"></div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label>Emergency contact name</label><input id="bk-ec-name" placeholder="Full name"></div>
-          <div class="field"><label>Emergency contact phone</label><input id="bk-ec-phone" placeholder="01XXXXXXXXX"></div>
-        </div>
-        <div class="field"><label>Notes for the hospital (optional)</label><textarea id="bk-notes" placeholder="Allergies, current medication, mobility needs…"></textarea></div>
-        <div class="modal-actions">
-          <button class="btn ghost liquid" onclick="closeModal()">Cancel</button>
-          <button class="btn primary liquid" onclick="confirmBooking('${icuId}')">Confirm ICU booking</button>
-        </div>
+        <div class="field"><label for="fNotes">Notes (optional)</label><textarea id="fNotes" rows="3" placeholder="Condition summary, allergies, or anything the hospital should know"></textarea></div>
+        <button type="submit" class="btn btn-primary w-full justify-center mt-1">Confirm ICU Booking</button>
+      </form>
+    </div>
+
+    <div id="bookingStepConfirm" style="display:none">
+      <div class="flex items-center justify-between mb-4">
+        <span class="w-11 h-11 rounded-full flex items-center justify-center" style="background:#e8f8ee">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#20a55a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </span>
+        <button id="bookingClose2" aria-label="Close" class="w-9 h-9 rounded-full flex items-center justify-center border border-[var(--silver-300)]">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0c1428" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
       </div>
-    </div>`;
-}
+      <h3 class="font-display text-[22px] font-semibold text-[var(--navy-950)]">Booking confirmed</h3>
+      <p class="text-[13.5px] text-[var(--ink-500)] mt-1">Confirmation ID</p>
+      <p id="confId" class="font-display text-[24px] font-semibold text-[var(--blue-600)] mb-5"></p>
 
-async function confirmBooking(icuId){
-  const h = ICU.find(x => x.id === icuId);
-  const name = document.getElementById('bk-name').value.trim();
-  const phone = document.getElementById('bk-phone').value.trim();
-  const bedType = document.getElementById('bk-bedtype').value;
-  const date = document.getElementById('bk-date').value;
-  const days = document.getElementById('bk-days').value || 1;
-  const ecName = document.getElementById('bk-ec-name').value.trim();
-  const ecPhone = document.getElementById('bk-ec-phone').value.trim();
-  const notes = document.getElementById('bk-notes').value.trim();
-  if(!name || !phone || !date){ alert('Please fill in name, phone, and date.'); return; }
-  const bookingId = genId('ICU');
-  const bedNumber = bedType.slice(0,1) + '-' + (10 + Math.floor(Math.random()*89));
-  const bookedAt = nowStamp();
-  const record = {bookingId, hospital: h.name, name, phone, bedType, bedNumber, date, days, ecName, ecPhone, notes, rate: h.rate, total: h.rate*days, ts: Date.now()};
-  try{ await window.storage.set('icu-booking:' + bookingId, JSON.stringify(record), false); }catch(e){ console.error('storage failed', e); }
-  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${h.lat},${h.lng}`;
-  document.getElementById('modal-root').innerHTML = `
-    <div class="overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <button class="close-x" onclick="closeModal()">×</button>
-        <div class="confirm">
-          <div class="check">✓</div>
-          <h2 class="display">Bed reserved</h2>
-          <div class="sub">${h.name} has confirmed your ${bedType} bed for ${days} day(s).</div>
-          <div class="confirm-details">
-            <div class="cd-row"><span>Hospital</span><span>${h.name}</span></div>
-            <div class="cd-row"><span>Bed number</span><span>${bedNumber}</span></div>
-            <div class="cd-row"><span>Booking time</span><span>${bookedAt}</span></div>
-            ${ecName ? `<div class="cd-row"><span>Emergency contact</span><span>${ecName}${ecPhone ? ' · '+ecPhone : ''}</span></div>` : ''}
-          </div>
-          <div class="id mono">Booking ID: ${bookingId}</div>
-        </div>
-        <div class="modal-actions">
-          <a class="btn ghost liquid" style="flex:1;text-align:center;" href="${directionsUrl}" target="_blank" rel="noopener">Get directions</a>
-          <button class="btn primary liquid" style="flex:1;" onclick="closeModal()">Done</button>
-        </div>
+      <div class="grid grid-cols-2 gap-3 text-[13.5px]">
+        <div class="bg-[var(--silver-100)] rounded-xl p-3"><div class="text-[var(--ink-400)] text-[11.5px]">Hospital</div><div id="confHospital" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
+        <div class="bg-[var(--silver-100)] rounded-xl p-3"><div class="text-[var(--ink-400)] text-[11.5px]">Bed number</div><div id="confBed" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
+        <div class="bg-[var(--silver-100)] rounded-xl p-3"><div class="text-[var(--ink-400)] text-[11.5px]">Booking time</div><div id="confTime" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
+        <div class="bg-[var(--silver-100)] rounded-xl p-3"><div class="text-[var(--ink-400)] text-[11.5px]">Emergency contact</div><div id="confContact" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
       </div>
-    </div>`;
-}
 
-function dispatchAmbulance(ambId){
-  const a = AMBULANCE.find(x => x.id === ambId);
-  const list = withDistance(AMBULANCE);
-  const withEta = list.find(x=>x.id===ambId);
-  const reqId = genId('AMB');
-  document.getElementById('modal-root').innerHTML = `
-    <div class="overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <button class="close-x" onclick="closeModal()">×</button>
-        <div class="confirm">
-          <div class="check">✓</div>
-          <h2 class="display">Ambulance requested</h2>
-          <div class="sub">${a.name} is dispatching to your location. ETA ~${withEta.eta} min.</div>
-          <div class="id mono">Request ID: ${reqId}</div>
-        </div>
-        <div class="modal-actions"><button class="btn primary liquid" style="width:100%" onclick="closeModal()">Done</button></div>
-      </div>
-    </div>`;
-}
+      <button id="directionsBtn" class="btn btn-primary w-full justify-center mt-6">Get directions</button>
+    </div>
 
-function openBloodRequest(bankId){
-  const b = BLOOD.find(x => x.id === bankId);
-  const options = Object.entries(b.units).map(([g,u]) => `<option value="${g}" ${u===0?'disabled':''}>${g} (${u} units)</option>`).join('');
-  document.getElementById('modal-root').innerHTML = `
-    <div class="overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <button class="close-x" onclick="closeModal()">×</button>
-        <h2 class="display">Request blood</h2>
-        <div class="sub">${b.name}</div>
-        <div class="field"><label>Blood group</label><select id="bl-group">${options}</select></div>
-        <div class="field"><label>Units needed</label><input id="bl-units" type="number" min="1" value="1"></div>
-        <div class="field"><label>Contact phone</label><input id="bl-phone" placeholder="01XXXXXXXXX"></div>
-        <div class="modal-actions">
-          <button class="btn ghost liquid" onclick="closeModal()">Cancel</button>
-          <button class="btn primary liquid" onclick="confirmBloodRequest('${bankId}')">Send request</button>
-        </div>
-      </div>
-    </div>`;
-}
+  </div>
+</div>
 
-function confirmBloodRequest(bankId){
-  const b = BLOOD.find(x => x.id === bankId);
-  const phone = document.getElementById('bl-phone').value.trim();
-  if(!phone){ alert('Please enter a contact phone.'); return; }
-  const reqId = genId('BLD');
-  document.getElementById('modal-root').innerHTML = `
-    <div class="overlay" onclick="if(event.target===this)closeModal()">
-      <div class="modal">
-        <button class="close-x" onclick="closeModal()">×</button>
-        <div class="confirm">
-          <div class="check">✓</div>
-          <h2 class="display">Request sent</h2>
-          <div class="sub">${b.name} will confirm availability and contact ${phone}.</div>
-          <div class="id mono">Request ID: ${reqId}</div>
-        </div>
-        <div class="modal-actions"><button class="btn primary liquid" style="width:100%" onclick="closeModal()">Done</button></div>
-      </div>
-    </div>`;
-}
+<div id="toast" class="toast"></div>
 
-document.getElementById('sos-btn').addEventListener('click', () => {
-  const list = withDistance(AMBULANCE);
-  window.location.href = 'tel:' + list[0].phone;
-});
+<script>
+/* ==========================================================================
+   Sthir — app.js
+   Mock data + all interactive behaviour (no build step, no frameworks)
+   ========================================================================== */
 
-renderAll();
-renderOccupancyChart();
-renderResponseChart();
+(function(){
+  "use strict";
 
-// ---------- 3D network visualization ----------
-function init3D(){
-  const wrap = document.getElementById('three-canvas-wrap');
-  const canvas = document.getElementById('three-canvas');
-  if(!wrap || !canvas || typeof THREE === 'undefined') return;
+  /* ---------------------------------------------------------------------
+     1. MOCK DATA
+     --------------------------------------------------------------------- */
 
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, wrap.clientWidth / wrap.clientHeight, 0.1, 100);
-  camera.position.set(0, 0.6, 7.2);
-  camera.lookAt(0,0,0);
-
-  const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setSize(wrap.clientWidth, wrap.clientHeight);
-
-  const group = new THREE.Group();
-  scene.add(group);
-  window.__tdNodesByColor = {};
-  window.__tdHubGlow = null;
-
-  // dispatch hub — wireframe icosahedron
-  const hub = new THREE.Mesh(
-    new THREE.IcosahedronGeometry(0.55, 1),
-    new THREE.MeshBasicMaterial({color:0xffffff, wireframe:true, transparent:true, opacity:0.85})
-  );
-  group.add(hub);
-  const hubGlow = new THREE.Mesh(
-    new THREE.SphereGeometry(0.32, 16, 16),
-    new THREE.MeshBasicMaterial({color:0x6C8DFF, transparent:true, opacity:0.5})
-  );
-  group.add(hubGlow);
-
-  // node categories: icu (6), ambulance (4), blood (4) — fibonacci sphere distribution
-  const categories = [
-    {count:6, color:0x1FA870},
-    {count:4, color:0xF2A65A},
-    {count:4, color:0xE8756B},
+  const hospitals = [
+    { id:'h1', name:'Chevron Clinical & General Hospital', area:'Chawkbazar', rating:4.2, verified:false, distanceKm:2.6, etaMin:6, freeBeds:3, totalBeds:10, price:6000 },
+    { id:'h2', name:'Chattogram Medical College Hospital', area:'Panchlaish', rating:4.6, verified:true, distanceKm:2.9, etaMin:6, freeBeds:5, totalBeds:20, price:3500 },
+    { id:'h3', name:'Imperial Hospital', area:'Zakir Hossain Rd', rating:4.5, verified:true, distanceKm:3.0, etaMin:6, freeBeds:4, totalBeds:14, price:7200 },
+    { id:'h4', name:'Park View Hospital', area:'Panchlaish', rating:4.0, verified:true, distanceKm:3.6, etaMin:8, freeBeds:2, totalBeds:8, price:4800 },
+    { id:'h5', name:'Max Hospital Chattogram', area:'GEC Circle', rating:4.3, verified:true, distanceKm:4.1, etaMin:9, freeBeds:6, totalBeds:24, price:5200 },
+    { id:'h6', name:'Metropolitan Hospital', area:'Agrabad', rating:4.1, verified:false, distanceKm:5.0, etaMin:11, freeBeds:1, totalBeds:6, price:4200 },
   ];
-  const nodes = [];
-  const total = categories.reduce((s,c)=>s+c.count,0);
-  let idx = 0;
-  const R = 3.1;
-  categories.forEach(cat => {
-    for(let i=0;i<cat.count;i++){
-      const y = 1 - (idx/(total-1))*2;
-      const radiusAtY = Math.sqrt(1 - y*y);
-      const theta = idx * 2.399963; // golden angle
-      const x = Math.cos(theta) * radiusAtY;
-      const z = Math.sin(theta) * radiusAtY;
-      const pos = new THREE.Vector3(x*R, y*R, z*R);
 
-      const mesh = new THREE.Mesh(
-        new THREE.SphereGeometry(0.1, 14, 14),
-        new THREE.MeshBasicMaterial({color:cat.color})
-      );
-      mesh.position.copy(pos);
-      mesh.userData.phase = Math.random()*Math.PI*2;
-      mesh.userData.burstUntil = 0;
-      group.add(mesh);
-      nodes.push(mesh);
-      if(!window.__tdNodesByColor[cat.color]) window.__tdNodesByColor[cat.color] = [];
-      window.__tdNodesByColor[cat.color].push(mesh);
+  const ambulances = [
+    { id:'a1', type:'Basic Ambulance', location:'Chawkbazar Stand', etaMin:6, driver:'Available', destinationHint:'Any partner hospital', available:true },
+    { id:'a2', type:'ICU Ambulance', location:'GEC Circle Base', etaMin:8, driver:'Available', destinationHint:'ICU-equipped hospitals', available:true },
+    { id:'a3', type:'Advanced Life Support', location:'Agrabad Base', etaMin:11, driver:'On another call', destinationHint:'Trauma & cardiac centers', available:false },
+    { id:'a4', type:'Neonatal Ambulance', location:'Panchlaish Base', etaMin:9, driver:'Available', destinationHint:'NICU-equipped hospitals', available:true },
+  ];
 
-      const lineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0), pos]);
-      const lineMat = new THREE.LineBasicMaterial({color:cat.color, transparent:true, opacity:0.28});
-      group.add(new THREE.Line(lineGeo, lineMat));
+  const bloodBanks = [
+    { id:'b1', name:'Chattogram Central Blood Bank', area:'Panchlaish', distanceKm:2.4, updated:'12 min ago',
+      stock:{ 'A+':38,'A-':6,'B+':44,'B-':4,'AB+':11,'AB-':2,'O+':52,'O-':3 } },
+    { id:'b2', name:'Red Crescent Blood Center', area:'Agrabad', distanceKm:3.8, updated:'25 min ago',
+      stock:{ 'A+':21,'A-':3,'B+':19,'B-':2,'AB+':7,'AB-':1,'O+':30,'O-':5 } },
+    { id:'b3', name:'CMCH Blood Bank', area:'Panchlaish', distanceKm:2.9, updated:'8 min ago',
+      stock:{ 'A+':44,'A-':9,'B+':37,'B-':6,'AB+':13,'AB-':3,'O+':60,'O-':8 } },
+    { id:'b4', name:'Quantum Blood Services', area:'Chawkbazar', distanceKm:2.7, updated:'40 min ago',
+      stock:{ 'A+':15,'A-':2,'B+':12,'B-':1,'AB+':4,'AB-':0,'O+':22,'O-':2 } },
+  ];
 
-      idx++;
-    }
-  });
+  const testimonials = [
+    { quote:"Sthir found us an ICU bed at Chattogram Medical College in under four minutes. We didn't have to call a single hospital ourselves.", name:'Rafiq Ahmed', context:'Son of patient, Panchlaish' },
+    { quote:"The ambulance arrived faster than we expected — the driver already had our location pinned before we even called. That kind of speed matters.", name:'Nasrin Sultana', context:'Family member, GEC Circle' },
+    { quote:"We needed O- blood at 2am. Sthir had it reserved for us within minutes of requesting through the app. This service is a lifeline.", name:'Kamal Hossain', context:"Patient's brother, Chawkbazar" },
+  ];
 
-  // faint outer wireframe sphere for scale/context
-  const outer = new THREE.Mesh(
-    new THREE.SphereGeometry(R, 20, 14),
-    new THREE.MeshBasicMaterial({color:0x1B2C63, wireframe:true, transparent:true, opacity:0.12})
-  );
-  group.add(outer);
+  const faqs = [
+    { q:'How does Sthir find nearby ICU beds?', a:'Sthir reads live inventory feeds from every partner hospital and ranks them by distance from your device, current availability, and ICU tier — so the list you see is already sorted by what you can actually reach fastest.' },
+    { q:'Is my location shared?', a:'Only if you tap "Use my current location." It is used to calculate distance and ETA in your browser session and is never stored or shared with hospitals until you submit a booking.' },
+    { q:'How quickly can I book an ICU bed?', a:'Most families complete a booking in under a minute — search, compare, and confirm inside the same screen, with a confirmation ID generated instantly.' },
+    { q:'Can I request an ambulance?', a:'Yes. Choose from basic, ICU, advanced life support, or neonatal ambulances in the Ambulance tab, and dispatch the nearest available unit with one tap.' },
+    { q:'Can I reserve blood?', a:'Yes. The Blood Bank section shows live unit counts by blood group across partner banks near you, with a one-tap reserve action.' },
+    { q:'How are hospital prices determined?', a:'Per-day ICU rates are set directly by each partner hospital and refreshed regularly. Sthir does not add booking fees on top of the listed rate.' },
+    { q:'Is Sthir available 24/7?', a:'Yes — dispatch, booking, and blood reservation are available around the clock, including overnight and holidays.' },
+    { q:'How does hospital verification work?', a:'Verified hospitals have confirmed live bed inventory, licensing, and response-time accuracy with the Sthir network team on a recurring basis.' },
+  ];
 
-  let autoRotY = 0;
-  let tiltX = 0, tiltY = 0, targetTiltX = 0, targetTiltY = 0;
-  const clock = new THREE.Clock();
+  const occupancy = [
+    { name:'Chattogram Medical College Hospital', pct:80 },
+    { name:'Max Hospital Chattogram', pct:75 },
+    { name:'Imperial Hospital', pct:71 },
+    { name:'Metropolitan Hospital', pct:83 },
+    { name:'Chevron Clinical & General Hospital', pct:60 },
+    { name:'Park View Hospital', pct:50 },
+  ];
 
-  wrap.addEventListener('mousemove', e => {
-    const rect = wrap.getBoundingClientRect();
-    const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-    targetTiltY = nx * 0.5;
-    targetTiltX = ny * 0.25;
-  });
-  wrap.addEventListener('mouseleave', () => { targetTiltX = 0; targetTiltY = 0; });
-  wrap.addEventListener('touchmove', e => {
-    if(!e.touches[0]) return;
-    const rect = wrap.getBoundingClientRect();
-    const nx = ((e.touches[0].clientX - rect.left) / rect.width) * 2 - 1;
-    const ny = ((e.touches[0].clientY - rect.top) / rect.height) * 2 - 1;
-    targetTiltY = nx * 0.5;
-    targetTiltX = ny * 0.25;
-  }, {passive:true});
+  const responseTimes = [
+    { day:'Mon', min:8.2 }, { day:'Tue', min:7.1 }, { day:'Wed', min:9.4 },
+    { day:'Thu', min:6.8 }, { day:'Fri', min:7.6 }, { day:'Sat', min:7.9 }, { day:'Sun', min:6.4 },
+  ];
 
-  function onResize(){
-    const w = wrap.clientWidth, h = wrap.clientHeight;
-    if(w === 0 || h === 0) return;
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-    renderer.setSize(w, h);
-  }
-  window.addEventListener('resize', onResize);
+  const networkNodes = [
+    { type:'icu', label:'CMCH ICU' }, { type:'ambulance', label:'Basic Amb.' },
+    { type:'blood', label:'Central Blood' }, { type:'icu', label:'Imperial ICU' },
+    { type:'ambulance', label:'ALS Unit' }, { type:'blood', label:'Red Crescent' },
+    { type:'icu', label:'Max ICU' }, { type:'ambulance', label:'Neonatal Amb.' },
+    { type:'blood', label:'Quantum Blood' }, { type:'icu', label:'Park View ICU' },
+  ];
 
-  function animate(){
-    requestAnimationFrame(animate);
-    const t = clock.getElapsedTime();
-    autoRotY += 0.0022;
-    tiltX += (targetTiltX - tiltX) * 0.04;
-    tiltY += (targetTiltY - tiltY) * 0.04;
-    group.rotation.y = autoRotY + tiltY;
-    group.rotation.x = tiltX;
-    hub.rotation.y -= 0.01;
-    hub.rotation.x += 0.006;
-    hubGlow.scale.setScalar(1 + Math.sin(t*2.4)*0.12);
-    window.__tdHubGlow = hubGlow;
-    const now = performance.now();
-    nodes.forEach(n => {
-      let s = 1 + Math.sin(t*2 + n.userData.phase) * 0.22;
-      if(n.userData.burstUntil > now){
-        const remain = (n.userData.burstUntil - now) / 700;
-        s += remain * 1.1;
-      }
-      n.scale.setScalar(s);
+  const NODE_COLOR = { icu:'#3fbf7f', ambulance:'#f0954a', blood:'#ef5b5b', hub:'#ffffff' };
+
+  /* ---------------------------------------------------------------------
+     2. UTILITIES
+     --------------------------------------------------------------------- */
+
+  const $  = (sel, ctx=document) => ctx.querySelector(sel);
+  const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
+
+  function fmtTaka(n){ return '৳' + n.toLocaleString('en-US'); }
+
+  function attachRipple(el){
+    el.addEventListener('click', (e) => {
+      const rect = el.getBoundingClientRect();
+      const r = document.createElement('span');
+      r.className = 'ripple';
+      const size = Math.max(rect.width, rect.height) * 1.8;
+      r.style.width = r.style.height = size + 'px';
+      r.style.left = (e.clientX - rect.left) + 'px';
+      r.style.top = (e.clientY - rect.top) + 'px';
+      el.appendChild(r);
+      setTimeout(() => r.remove(), 720);
     });
-    renderer.render(scene, camera);
   }
-  animate();
-  window.__tdTriggerBurst = function(colorHex){
-    const arr = window.__tdNodesByColor[colorHex];
-    if(!arr || !arr.length) return;
-    const n = arr[Math.floor(Math.random()*arr.length)];
-    n.userData.burstUntil = performance.now() + 700;
-  };
-}
+  $$('.btn, .tab-btn, .blood-chip, .amb-dispatch').forEach(attachRipple);
 
-// ---------- global 3D tilt effect (all sections) ----------
-(function initTiltDelegation(){
-  const MAX = 6;
-  document.addEventListener('mousemove', (e) => {
-    const el = e.target.closest('.tilt-3d');
-    if(!el) return;
-    const r = el.getBoundingClientRect();
-    if(r.width === 0 || r.height === 0) return;
-    const px = (e.clientX - r.left) / r.width;
-    const py = (e.clientY - r.top) / r.height;
-    const rx = (0.5 - py) * MAX;
-    const ry = (px - 0.5) * MAX;
-    el.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(2px)`;
+  // Cursor-tracked liquid highlight on glass cards
+  $$('.glass-card, .glass-card-navy').forEach(card => {
+    card.addEventListener('pointermove', (e) => {
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX - rect.left) + 'px');
+      card.style.setProperty('--my', (e.clientY - rect.top) + 'px');
+    });
   });
-  document.addEventListener('mouseout', (e) => {
-    const el = e.target.closest('.tilt-3d');
-    if(!el) return;
-    if(e.relatedTarget && el.contains(e.relatedTarget)) return;
-    el.style.transform = '';
+
+  function toast(msg){
+    const t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  /* ---------------------------------------------------------------------
+     3. SCROLL REVEAL
+     --------------------------------------------------------------------- */
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); revealObserver.unobserve(en.target); } });
+  }, { threshold:.14 });
+  $$('.reveal').forEach(el => revealObserver.observe(el));
+
+  /* ---------------------------------------------------------------------
+     4. MOBILE NAV
+     --------------------------------------------------------------------- */
+
+  const drawer = $('#mobileDrawer'), overlay = $('#mobileOverlay');
+  function openDrawer(){ drawer.classList.add('open'); overlay.classList.add('show'); document.body.classList.add('no-scroll'); }
+  function closeDrawer(){ drawer.classList.remove('open'); overlay.classList.remove('show'); document.body.classList.remove('no-scroll'); }
+  $('#hamburgerBtn').addEventListener('click', openDrawer);
+  $('#drawerClose').addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  $$('#mobileDrawer a').forEach(a => a.addEventListener('click', closeDrawer));
+
+  /* ---------------------------------------------------------------------
+     5. EMERGENCY CALL BUTTON
+     --------------------------------------------------------------------- */
+
+  $$('.emergency-call').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const nearest = [...ambulances].filter(a=>a.available).sort((a,b)=>a.etaMin-b.etaMin)[0];
+      window.location.href = 'tel:999';
+      toast(`Calling nearest ambulance — ${nearest.type}, ~${nearest.etaMin} min away`);
+    });
   });
+
+  /* ---------------------------------------------------------------------
+     6. GEOLOCATION — "Use my current location"
+     --------------------------------------------------------------------- */
+
+  const locStatusEl = $('#locStatus');
+  const locBtn = $('#useLocationBtn');
+
+  locBtn.addEventListener('click', () => {
+    if (!('geolocation' in navigator)) {
+      locStatusEl.textContent = 'geolocation isn\u2019t supported on this device — showing default distances for Chattogram';
+      return;
+    }
+    locBtn.querySelector('.btn-label').textContent = 'Locating…';
+    locBtn.disabled = true;
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        locStatusEl.textContent = `location shared \u2014 (${latitude.toFixed(3)}, ${longitude.toFixed(3)}) \u2014 distances updated`;
+        locBtn.querySelector('.btn-label').textContent = 'Location active';
+        locBtn.disabled = false;
+        // Simulate refreshed distances/ETAs
+        hospitals.forEach(h => {
+          h.distanceKm = Math.max(0.4, +(h.distanceKm + (Math.random()*1.4-0.7)).toFixed(1));
+          h.etaMin = Math.max(2, Math.round(h.distanceKm * 2.1));
+        });
+        ambulances.forEach(a => { a.etaMin = Math.max(2, Math.round(a.etaMin + (Math.random()*4-2))); });
+        renderResourceList();
+        renderAmbulances();
+        toast('Nearby distances and ETAs refreshed from your location');
+      },
+      (err) => {
+        locStatusEl.textContent = 'location not shared \u2014 showing default distances for Chattogram';
+        locBtn.querySelector('.btn-label').textContent = 'Use my current location';
+        locBtn.disabled = false;
+      },
+      { enableHighAccuracy:true, timeout:8000 }
+    );
+  });
+
+  /* ---------------------------------------------------------------------
+     7. QUICK STATS — count-up animation
+     --------------------------------------------------------------------- */
+
+  function countUp(el, target, suffix=''){
+    const dur = 1400, start = performance.now();
+    function tick(now){
+      const p = Math.min(1, (now-start)/dur);
+      const eased = 1 - Math.pow(1-p, 3);
+      el.textContent = Math.round(eased*target) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        const el = en.target;
+        countUp(el, +el.dataset.target, el.dataset.suffix || '');
+        statObserver.unobserve(el);
+      }
+    });
+  }, { threshold:.6 });
+  $$('[data-count]').forEach(el => statObserver.observe(el));
+
+  /* ---------------------------------------------------------------------
+     8. RESOURCE TABS — ICU / Ambulance / Blood
+     --------------------------------------------------------------------- */
+
+  let activeTab = 'icu';
+  let sortMode = 'distance';
+  let searchQuery = '';
+
+  function renderStars(rating){
+    const full = Math.round(rating);
+    return `<span class="stars" aria-hidden="true">${'★'.repeat(full)}${'☆'.repeat(5-full)}</span>`;
+  }
+
+  function hospitalCard(h){
+    const availClass = h.freeBeds <= 2 ? 'low' : '';
+    return `
+    <div class="resource-card glass-card p-4 sm:p-5 flex items-center gap-4" data-id="${h.id}">
+      <div class="w-14 h-14 rounded-2xl flex-none flex items-center justify-center" style="background:linear-gradient(155deg,#eef2ff,#e3e8f8)">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2049e0" stroke-width="1.8"><path d="M12 21c-4.5-3-8-6.5-8-10.5A5.5 5.5 0 0 1 12 6.2 5.5 5.5 0 0 1 20 10.5C20 14.5 16.5 18 12 21Z"/></svg>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <h4 class="font-bold text-[15px] text-[var(--navy-950)] truncate">${h.name}</h4>
+          ${h.verified ? '<span class="verified-pill">✓ Verified</span>' : ''}
+        </div>
+        <div class="text-[13px] text-[var(--ink-500)] mt-0.5">${h.area} &nbsp;·&nbsp; ${renderStars(h.rating)} ${h.rating}</div>
+        <div class="flex items-center gap-3 mt-2 text-[13px] text-[var(--ink-500)] flex-wrap">
+          <span>${h.distanceKm} km away</span><span>~${h.etaMin} min</span>
+          <span class="avail-pill ${availClass}">${h.freeBeds} of ${h.totalBeds} free</span>
+        </div>
+      </div>
+      <div class="text-right flex-none">
+        <div class="font-bold text-[15px] text-[var(--navy-950)]">${fmtTaka(h.price)}<span class="text-[12px] font-medium text-[var(--ink-400)]"> /day</span></div>
+        <button class="btn btn-primary btn-sm mt-2 book-btn" data-id="${h.id}">Book bed</button>
+      </div>
+    </div>`;
+  }
+
+  function ambulanceCard(a){
+    return `
+    <div class="resource-card glass-card p-4 sm:p-5 flex items-center gap-4">
+      <div class="w-14 h-14 rounded-2xl flex-none flex items-center justify-center" style="background:linear-gradient(155deg,#fff1ea,#ffe4d3)">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#e0653a" stroke-width="1.8"><path d="M3 17h1a2 2 0 1 0 4 0h8a2 2 0 1 0 4 0h1v-5l-3-4h-4V6H6a2 2 0 0 0-2 2v9Z"/><path d="M13 8v5M10.5 10.5h5"/></svg>
+      </div>
+      <div class="flex-1 min-w-0">
+        <h4 class="font-bold text-[15px] text-[var(--navy-950)]">${a.type}</h4>
+        <div class="text-[13px] text-[var(--ink-500)] mt-0.5">${a.location} → ${a.destinationHint}</div>
+        <div class="flex items-center gap-3 mt-2 text-[13px] flex-wrap">
+          <span class="avail-pill ${a.available ? '' : 'low'}">${a.driver}</span>
+          <span class="text-[var(--ink-500)]">ETA ~${a.etaMin} min</span>
+        </div>
+      </div>
+      <button class="btn ${a.available ? 'btn-primary' : 'btn-ghost'} btn-sm amb-dispatch flex-none" ${a.available ? '' : 'disabled style="opacity:.5;cursor:not-allowed"'} data-id="${a.id}">
+        ${a.available ? 'Dispatch' : 'Busy'}
+      </button>
+    </div>`;
+  }
+
+  function bloodCard(b){
+    const totalUnits = Object.values(b.stock).reduce((s,n)=>s+n,0);
+    return `
+    <div class="resource-card glass-card p-4 sm:p-5">
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-2xl flex-none flex items-center justify-center" style="background:linear-gradient(155deg,#ffecec,#ffdcdc)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#ef5b5b"><path d="M12 2s7 8.2 7 13a7 7 0 1 1-14 0c0-4.8 7-13 7-13Z"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h4 class="font-bold text-[15px] text-[var(--navy-950)]">${b.name}</h4>
+          <div class="text-[13px] text-[var(--ink-500)] mt-0.5">${b.area} · ${b.distanceKm} km away · updated ${b.updated}</div>
+        </div>
+        <div class="text-right flex-none">
+          <div class="font-bold text-[15px] text-[var(--navy-950)]">${totalUnits}</div>
+          <div class="text-[11px] text-[var(--ink-400)] uppercase tracking-wide">units total</div>
+        </div>
+      </div>
+      <div class="grid grid-cols-4 gap-2 mt-4">
+        ${Object.entries(b.stock).map(([g,u])=>`
+          <button class="blood-chip ${u<=2?'low':''} reserve-blood" data-bank="${b.id}" data-group="${g}">
+            <div class="font-bold text-[14px] text-[var(--navy-950)]">${g}</div>
+            <div class="text-[11px] text-[var(--ink-500)] mt-0.5">${u} units</div>
+          </button>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  function sortedHospitals(){
+    let list = hospitals.filter(h => h.name.toLowerCase().includes(searchQuery));
+    if (sortMode === 'distance') list = [...list].sort((a,b)=>a.distanceKm-b.distanceKm);
+    if (sortMode === 'price') list = [...list].sort((a,b)=>a.price-b.price);
+    if (sortMode === 'rating') list = [...list].sort((a,b)=>b.rating-a.rating);
+    return list;
+  }
+
+  function renderResourceList(){
+    const el = $('#resourceList');
+    if (activeTab === 'icu') {
+      const list = sortedHospitals();
+      el.innerHTML = list.length ? list.map(hospitalCard).join('') : emptyState('No hospitals match your search.');
+      $$('.book-btn', el).forEach(btn => btn.addEventListener('click', () => openBooking(btn.dataset.id)));
+    } else if (activeTab === 'ambulance') {
+      renderAmbulances();
+    } else {
+      const el2 = $('#resourceList');
+      el2.innerHTML = bloodBanks.map(bloodCard).join('');
+      $$('.reserve-blood', el2).forEach(btn => attachRipple(btn));
+      $$('.reserve-blood', el2).forEach(btn => btn.addEventListener('click', () => {
+        toast(`${btn.dataset.group} reserved at ${bloodBanks.find(b=>b.id===btn.dataset.bank).name}`);
+      }));
+    }
+    $('#resultCount').textContent = activeTab === 'icu' ? sortedHospitals().length : (activeTab === 'ambulance' ? ambulances.length : bloodBanks.length);
+  }
+
+  function renderAmbulances(){
+    const el = $('#resourceList');
+    el.innerHTML = ambulances.map(ambulanceCard).join('');
+    $$('.amb-dispatch', el).forEach(btn => {
+      attachRipple(btn);
+      if (!btn.disabled) btn.addEventListener('click', () => {
+        const a = ambulances.find(x=>x.id===btn.dataset.id);
+        toast(`${a.type} dispatched — arriving in ~${a.etaMin} min`);
+      });
+    });
+  }
+
+  function emptyState(msg){
+    return `<div class="glass-card p-10 text-center text-[var(--ink-500)]">${msg}</div>`;
+  }
+
+  $$('.tab-btn[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeTab = btn.dataset.tab;
+      $$('.tab-btn[data-tab]').forEach(b => b.classList.toggle('active', b === btn));
+      $('#sortControls').style.display = activeTab === 'icu' ? 'flex' : 'none';
+      renderResourceList();
+    });
+  });
+
+  $$('.sort-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      sortMode = btn.dataset.sort;
+      $$('.sort-btn').forEach(b => b.classList.toggle('active', b === btn));
+      renderResourceList();
+    });
+  });
+
+  $('#resourceSearch').addEventListener('input', (e) => {
+    searchQuery = e.target.value.toLowerCase();
+    renderResourceList();
+  });
+
+  /* ---------------------------------------------------------------------
+     9. BOOKING FLOW
+     --------------------------------------------------------------------- */
+
+  const bookingBackdrop = $('#bookingModal');
+  let currentHospital = null;
+
+  function openBooking(id){
+    currentHospital = hospitals.find(h => h.id === id);
+    if (!currentHospital) return;
+    $('#bookingStepForm').style.display = 'block';
+    $('#bookingStepConfirm').style.display = 'none';
+    $('#bmHospital').textContent = currentHospital.name;
+    $('#bmDistance').textContent = currentHospital.distanceKm + ' km away';
+    $('#bmBeds').textContent = `${currentHospital.freeBeds} of ${currentHospital.totalBeds} free`;
+    $('#bmPrice').textContent = fmtTaka(currentHospital.price) + ' / day';
+    $('#bmEta').textContent = '~' + currentHospital.etaMin + ' min';
+    $('#bookingForm').reset();
+    bookingBackdrop.classList.add('show');
+    document.body.classList.add('no-scroll');
+  }
+
+  function closeBooking(){
+    bookingBackdrop.classList.remove('show');
+    document.body.classList.remove('no-scroll');
+  }
+
+  $('#bookingClose').addEventListener('click', closeBooking);
+  $('#bookingClose2').addEventListener('click', closeBooking);
+  bookingBackdrop.addEventListener('click', (e) => { if (e.target === bookingBackdrop) closeBooking(); });
+
+  $('#bookingForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!currentHospital) return;
+    const id = 'STH-' + Math.random().toString(36).slice(2,8).toUpperCase();
+    const bedNum = 'ICU-' + (Math.floor(Math.random()*20)+1);
+    const now = new Date();
+    $('#confId').textContent = id;
+    $('#confHospital').textContent = currentHospital.name;
+    $('#confBed').textContent = bedNum;
+    $('#confTime').textContent = now.toLocaleString('en-US', { hour:'2-digit', minute:'2-digit', day:'2-digit', month:'short' });
+    $('#confContact').textContent = $('#fEmergencyContact').value || '—';
+    currentHospital.freeBeds = Math.max(0, currentHospital.freeBeds - 1);
+    $('#bookingStepForm').style.display = 'none';
+    $('#bookingStepConfirm').style.display = 'block';
+    renderResourceList();
+  });
+
+  $('#directionsBtn').addEventListener('click', () => {
+    if (currentHospital) window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentHospital.name + ' Chattogram')}`, '_blank');
+  });
+
+  /* ---------------------------------------------------------------------
+     10. HOW IT WORKS / TESTIMONIALS / FAQ / OCCUPANCY / RESPONSE CHART
+     --------------------------------------------------------------------- */
+
+  function renderTestimonials(){
+    $('#testimonialTrack').innerHTML = testimonials.map(t => `
+      <div class="glass-card p-6 w-[280px] sm:w-[320px] flex-none">
+        <div class="stars">${'★'.repeat(5)}</div>
+        <p class="mt-3 text-[14.5px] leading-relaxed text-[var(--ink-700)]">“${t.quote}”</p>
+        <div class="mt-4 text-[13.5px]">
+          <div class="font-bold text-[var(--navy-950)]">${t.name}</div>
+          <div class="text-[var(--ink-400)]">${t.context}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderFAQ(){
+    $('#faqList').innerHTML = faqs.map((f,i) => `
+      <div class="faq-item" data-i="${i}">
+        <button class="faq-q" aria-expanded="false">
+          <span>${f.q}</span>
+          <span class="faq-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+        </button>
+        <div class="faq-a">${f.a}</div>
+      </div>`).join('');
+    $$('.faq-q').forEach(btn => btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const willOpen = !item.classList.contains('open');
+      item.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(willOpen));
+    }));
+  }
+
+  function renderOccupancy(){
+    const el = $('#occupancyList');
+    el.innerHTML = occupancy.map(o => `
+      <div>
+        <div class="flex justify-between text-[13.5px] mb-1.5">
+          <span class="font-semibold text-[var(--ink-700)]">${o.name}</span>
+          <span class="font-bold text-[var(--navy-950)]">${o.pct}%</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" data-pct="${o.pct}"></div></div>
+      </div>`).join('');
+  }
+
+  const occObserver = new IntersectionObserver((entries) => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        $$('.bar-fill', en.target).forEach(b => b.style.width = b.dataset.pct + '%');
+        occObserver.unobserve(en.target);
+      }
+    });
+  }, { threshold:.3 });
+
+  function renderResponseChart(){
+    const w = 560, h = 200, pad = 28;
+    const max = Math.max(...responseTimes.map(d=>d.min)) * 1.2;
+    const stepX = (w - pad*2) / (responseTimes.length - 1);
+    const pts = responseTimes.map((d,i) => {
+      const x = pad + i*stepX;
+      const y = h - pad - (d.min/max)*(h-pad*1.6);
+      return [x,y];
+    });
+    const linePath = pts.map((p,i) => (i===0?'M':'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+    const areaPath = linePath + ` L${pts[pts.length-1][0]},${h-pad} L${pts[0][0]},${h-pad} Z`;
+    const dots = pts.map((p,i) => `<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="#fff" stroke="#2049e0" stroke-width="2.5"><title>${responseTimes[i].day}: ${responseTimes[i].min} min</title></circle>`).join('');
+    const labels = responseTimes.map((d,i) => `<text x="${pts[i][0]}" y="${h-6}" font-size="11" fill="#7c85a0" text-anchor="middle">${d.day}</text>`).join('');
+
+    $('#responseChart').innerHTML = `
+      <svg viewBox="0 0 ${w} ${h}" class="w-full h-auto" role="img" aria-label="Average ambulance response time, last 7 days">
+        <defs>
+          <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3b63ff" stop-opacity=".28"/>
+            <stop offset="100%" stop-color="#3b63ff" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path d="${areaPath}" fill="url(#areaGrad)" class="chart-area" />
+        <path d="${linePath}" fill="none" stroke="#2049e0" stroke-width="2.5" class="chart-line" />
+        ${dots}
+        ${labels}
+      </svg>`;
+
+    const line = $('.chart-line'), area = $('.chart-area');
+    const len = line.getTotalLength();
+    line.style.strokeDasharray = len; line.style.strokeDashoffset = len;
+    area.style.opacity = 0;
+    const chartObserver = new IntersectionObserver((entries) => {
+      entries.forEach(en => {
+        if (en.isIntersecting) {
+          line.style.transition = 'stroke-dashoffset 1.4s var(--ease-liquid)';
+          line.style.strokeDashoffset = 0;
+          area.style.transition = 'opacity 1.2s ease .3s';
+          area.style.opacity = 1;
+          chartObserver.disconnect();
+        }
+      });
+    }, { threshold:.4 });
+    chartObserver.observe($('#responseChart'));
+  }
+
+  function renderBloodOverview(){
+    const groups = ['A+','A-','B+','B-','AB+','AB-','O+','O-'];
+    const totals = {};
+    groups.forEach(g => totals[g] = bloodBanks.reduce((s,b) => s + (b.stock[g]||0), 0));
+    $('#bloodOverview').innerHTML = groups.map(g => `
+      <div class="rounded-2xl p-3.5 text-center" style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16)">
+        <div class="font-display text-[18px] font-semibold ${totals[g] <= 8 ? 'text-red-300' : 'text-white'}">${g}</div>
+        <div class="text-[11.5px] mt-1" style="color:#b7c1e6">${totals[g]} units</div>
+        ${totals[g] <= 8 ? '<div class="text-[10px] mt-1 font-bold" style="color:#ff9b9b">LOW STOCK</div>' : ''}
+      </div>`).join('');
+  }
+
+  /* ---------------------------------------------------------------------
+     11. NETWORK VISUALIZATION (SVG orbit, drag-to-rotate, hover legend)
+     --------------------------------------------------------------------- */
+
+  function renderNetwork(){
+    const svg = $('#networkSvg');
+    const cx = 260, cy = 210, r1 = 95, r2 = 155;
+    let html = `
+      <defs>
+        <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+          <stop offset="100%" stop-color="#8fb3ff" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <circle cx="${cx}" cy="${cy}" r="${r2+34}" fill="url(#hubGlow)" opacity=".25"/>`;
+
+    const lines = [];
+    const nodesHtml = [];
+    networkNodes.forEach((n,i) => {
+      const ring = i % 2 === 0 ? r1 : r2;
+      const angle = (i / networkNodes.length) * Math.PI * 2;
+      const x = cx + ring * Math.cos(angle);
+      const y = cy + ring * Math.sin(angle);
+      lines.push(`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="${NODE_COLOR[n.type]}" stroke-opacity=".35" stroke-width="1.4" class="net-line"/>`);
+      nodesHtml.push(`
+        <g class="net-node" tabindex="0" role="img" aria-label="${n.label}">
+          <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="9" fill="${NODE_COLOR[n.type]}" stroke="#fff" stroke-width="2"></circle>
+          <title>${n.label}</title>
+        </g>`);
+    });
+
+    html += `<g id="netOrbitA" class="orbit-cw">${lines.filter((_,i)=>i%2===0).join('')}</g>`;
+    html += `<g id="netOrbitB" class="orbit-ccw">${lines.filter((_,i)=>i%2!==0).join('')}</g>`;
+    html += `<g id="netNodesA" class="orbit-cw">${nodesHtml.filter((_,i)=>i%2===0).join('')}</g>`;
+    html += `<g id="netNodesB" class="orbit-ccw">${nodesHtml.filter((_,i)=>i%2!==0).join('')}</g>`;
+    html += `<circle cx="${cx}" cy="${cy}" r="22" fill="#0e1c5c" stroke="#8fb3ff" stroke-width="1.5"/>`;
+    html += `<circle cx="${cx}" cy="${cy}" r="22" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="2 4"><animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="14s" repeatCount="indefinite"/></circle>`;
+    html += `<text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="9" fill="#fff" font-weight="700" letter-spacing="0.5">STHIR</text>`;
+
+    svg.innerHTML = html;
+
+    // Drag to rotate the whole stage
+    const stage = $('#networkStage');
+    let dragging = false, lastX = 0, rot = 0;
+    stage.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; stage.setPointerCapture(e.pointerId); });
+    stage.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      rot += (e.clientX - lastX) * 0.4;
+      lastX = e.clientX;
+      svg.style.transform = `rotate(${rot}deg)`;
+      svg.querySelectorAll('text').forEach(t => t.style.transform = `rotate(${-rot}deg)`);
+    });
+    ['pointerup','pointerleave'].forEach(ev => stage.addEventListener(ev, () => dragging = false));
+  }
+
+  /* ---------------------------------------------------------------------
+     12. INIT
+     --------------------------------------------------------------------- */
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderResourceList();
+    renderTestimonials();
+    renderFAQ();
+    renderOccupancy();
+    renderResponseChart();
+    renderNetwork();
+    renderBloodOverview();
+    occObserver.observe($('#occupancyList'));
+    $$('.reveal').forEach(el => revealObserver.observe(el));
+    $('#year').textContent = new Date().getFullYear();
+  });
+
 })();
 
-// ---------- liquid / water interaction (hover shine + click ripple) ----------
-(function initLiquid(){
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // cursor-tracking highlight, drives the --mx/--my custom properties read by .liquid::before
-  document.addEventListener('mousemove', (e) => {
-    const el = e.target.closest('.liquid');
-    if(!el) return;
-    const r = el.getBoundingClientRect();
-    if(r.width === 0 || r.height === 0) return;
-    el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
-    el.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
-  });
-
-  if(reduceMotion) return; // skip ripple entirely for reduced-motion users
-
-  // expanding water ripple from the exact click point, purely visual — never blocks the real click
-  document.addEventListener('pointerdown', (e) => {
-    const el = e.target.closest('.liquid');
-    if(!el) return;
-    const r = el.getBoundingClientRect();
-    const size = Math.max(r.width, r.height) * 1.6;
-    const fx = document.createElement('span');
-    fx.className = 'liquid-fx';
-    fx.style.width = fx.style.height = size + 'px';
-    fx.style.left = (e.clientX - r.left - size / 2) + 'px';
-    fx.style.top = (e.clientY - r.top - size / 2) + 'px';
-    el.appendChild(fx);
-    fx.addEventListener('animationend', () => fx.remove());
-  });
-})();
-
-if(typeof THREE !== 'undefined'){ init3D(); }
-else { window.addEventListener('load', () => { if(typeof THREE !== 'undefined') init3D(); }); }
 </script>
 </body>
 </html>
