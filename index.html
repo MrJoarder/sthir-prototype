@@ -1,1388 +1,2194 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sthir — Nearest ICU bed, ambulance, or blood in under a minute</title>
-<meta name="description" content="Sthir connects families directly to partner hospitals, ambulances, and blood banks in Chattogram — located and booked in under a minute.">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sthir — Emergency ICU, Ambulance &amp; Blood, Located in Under a Minute</title>
+<meta name="description" content="Sthir connects patients' families directly to partner hospitals and blood banks in Chattogram — find and book an ICU bed, ambulance, or blood in under a minute.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <style>
-/* ==========================================================================
-   Sthir — Emergency Healthcare Platform
-   Design tokens: royal blue / deep navy / silver / warm white, liquid glass
-   ========================================================================== */
-
+/* ============================= DESIGN TOKENS ============================= */
 :root{
-  --navy-950:#060c22;
-  --navy-900:#0a1440;
-  --navy-800:#0f1c5c;
-  --blue-700:#1737b8;
-  --blue-600:#2049e0;
-  --blue-500:#3b63ff;
-  --blue-400:#6489ff;
-  --cyan-400:#5fd8e0;
-  --cyan-300:#9be9ec;
-  --coral-500:#ef5b5b;
-
+  --navy-950:#0a1436;
+  --navy-900:#0e1b46;
+  --navy-800:#122459;
+  --royal-700:#1c3aa8;
+  --royal-600:#2647c9;
+  --royal-500:#3557e0;
+  --cyan-400:#5fe8dd;
+  --cyan-300:#8ff2e8;
   --silver-100:#eef1f6;
-  --silver-200:#e3e8f0;
-  --silver-300:#d3dae6;
-  --silver-400:#b7c1d4;
-
-  --ink-900:#0c1428;
-  --ink-700:#2a3350;
-  --ink-500:#5b6580;
-  --ink-400:#7c85a0;
-
-  --bg:#f3f5fa;
-  --bg-warm:#f6f5f2;
+  --silver-200:#e2e7f0;
+  --silver-300:#ccd3e0;
+  --silver-400:#aab3c8;
+  --ink-900:#0d1327;
+  --ink-700:#333d5c;
+  --ink-500:#5b6584;
+  --ink-400:#7a83a0;
+  --bg-app:#f3f4f8;
   --white:#ffffff;
-
+  --green-500:#22a06b;
+  --orange-500:#e08a2c;
+  --coral-500:#e0553f;
+  --red-600:#d1382e;
+  --font-display:'Fraunces', ui-serif, Georgia, serif;
+  --font-body:'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono:'JetBrains Mono', ui-monospace, monospace;
   --radius-lg:26px;
-  --radius-md:18px;
-  --radius-sm:12px;
-
-  --shadow-card: 0 1px 2px rgba(15,25,60,.04), 0 18px 40px -18px rgba(15,25,60,.18), 0 2px 8px rgba(15,25,60,.06);
-  --shadow-card-hover: 0 1px 2px rgba(15,25,60,.05), 0 28px 60px -20px rgba(15,25,60,.28), 0 4px 14px rgba(15,25,60,.08);
-  --shadow-navy: 0 1px 1px rgba(0,0,0,.2) inset, 0 30px 60px -22px rgba(10,20,70,.55);
-
-  --ease-spring: cubic-bezier(.22,1,.36,1);
-  --ease-liquid: cubic-bezier(.4,0,.2,1);
+  --radius-md:20px;
+  --radius-sm:14px;
+  --shadow-card: 0 1px 2px rgba(13,19,39,.04), 0 18px 40px -20px rgba(20,35,90,.28), 0 2px 10px -2px rgba(20,35,90,.10);
+  --shadow-card-hover: 0 1px 2px rgba(13,19,39,.05), 0 30px 60px -24px rgba(20,35,90,.38), 0 4px 16px -2px rgba(20,35,90,.14);
+  --shadow-dark-card: 0 1px 1px rgba(255,255,255,.06) inset, 0 30px 70px -24px rgba(6,12,40,.65);
 }
 
-*,*::before,*::after{ box-sizing:border-box; }
-html{ scroll-behavior:smooth; }
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
 @media (prefers-reduced-motion: reduce){
-  html{ scroll-behavior:auto; }
-  *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+  html{scroll-behavior:auto;}
+  *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important;}
 }
-
 body{
   margin:0;
   background:
-    radial-gradient(1100px 500px at 12% -8%, rgba(59,99,255,.10), transparent 60%),
-    radial-gradient(900px 500px at 100% 10%, rgba(95,216,224,.10), transparent 55%),
-    var(--bg);
+    radial-gradient(1100px 520px at 14% -8%, rgba(53,87,224,.10), transparent 60%),
+    radial-gradient(900px 460px at 96% 4%, rgba(95,232,221,.10), transparent 55%),
+    var(--bg-app);
   color:var(--ink-900);
-  font-family:'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:var(--font-body);
   -webkit-font-smoothing:antialiased;
   line-height:1.5;
 }
+h1,h2,h3,.font-display{font-family:var(--font-display);}
+.font-mono{font-family:var(--font-mono);}
+img,svg{display:block;max-width:100%;}
+a{color:inherit; text-decoration:none;}
+button{font-family:inherit;}
+.liquid-btn, .liquid-btn:hover, .liquid-btn:focus, .liquid-btn:active,
+.nav-links a, .footer-grid a, .mobile-drawer a, .logo, .footer-logo{text-decoration:none !important;}
+.wrap{max-width:1360px;margin-inline:auto;padding-inline:24px;}
+@media (max-width:640px){.wrap{padding-inline:16px;}}
 
-h1,h2,h3,.font-display{
-  font-family:'Fraunces', 'Georgia', serif;
-  letter-spacing:-.01em;
-  margin:0;
+:focus-visible{outline:2.5px solid var(--royal-500); outline-offset:3px; border-radius:8px;}
+
+/* ============================= LIQUID GLASS SYSTEM ============================= */
+.glass-card{
+  position:relative;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.62)),
+    linear-gradient(160deg, rgba(255,255,255,.9), rgba(226,231,240,.5));
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255,255,255,.9);
+  border-radius:var(--radius-lg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  overflow:hidden;
+  isolation:isolate;
+  transition:transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s cubic-bezier(.2,.8,.2,1), border-color .5s ease;
+}
+.glass-card::before{
+  content:"";
+  position:absolute; inset:0;
+  border-radius:inherit;
+  background: radial-gradient(220px 220px at var(--mx,50%) var(--my,20%), rgba(53,87,224,.16), rgba(95,232,221,.10) 42%, transparent 68%);
+  opacity:.55;
+  transition:opacity .6s ease;
+  pointer-events:none;
+  z-index:1;
+}
+.glass-card:hover::before{opacity:1;}
+.glass-card::after{
+  content:"";
+  position:absolute; inset:-45%;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(95,232,221,.14) 60deg, transparent 130deg, rgba(53,87,224,.12) 230deg, transparent 300deg);
+  animation: liquidDrift 13s linear infinite;
+  opacity:.65;
+  pointer-events:none;
+  z-index:0;
+  mix-blend-mode:multiply;
+}
+@keyframes liquidDrift{ to{ transform:rotate(360deg); } }
+.glass-card:hover{transform:translateY(-4px); box-shadow:var(--shadow-card-hover); border-color:rgba(255,255,255,1);}
+.glass-card > *{position:relative; z-index:2;}
+.glass-card.dark{
+  background:
+    radial-gradient(680px 380px at 90% -10%, rgba(95,232,221,.16), transparent 55%),
+    linear-gradient(160deg, var(--navy-800), var(--navy-950) 72%);
+  border:1px solid rgba(140,160,230,.22);
+  box-shadow: var(--shadow-dark-card);
+  color:var(--silver-100);
+}
+.glass-card.dark::before{
+  background: radial-gradient(240px 240px at var(--mx,50%) var(--my,20%), rgba(95,232,221,.22), rgba(53,87,224,.14) 45%, transparent 70%);
+}
+.glass-card.dark::after{
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(95,232,221,.22) 60deg, transparent 130deg, rgba(120,150,255,.18) 230deg, transparent 300deg);
+  mix-blend-mode:screen; opacity:.55;
 }
 
-a{ color:inherit; text-decoration:none; }
-button{ font-family:inherit; cursor:pointer; }
-img{ max-width:100%; display:block; }
-
-.wrap{ max-width:1360px; margin:0 auto; padding:0 24px; }
-@media (max-width:640px){ .wrap{ padding:0 16px; } }
-
-.eyebrow{
-  display:inline-flex; align-items:center; gap:8px;
-  font-size:12.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
-  color:var(--blue-600);
+.ripple-ink{
+  position:absolute; border-radius:50%; pointer-events:none;
+  background:radial-gradient(circle, rgba(255,255,255,.75), rgba(140,170,255,.28) 46%, transparent 72%);
+  transform:translate(-50%,-50%) scale(0);
+  animation:rippleGrow 900ms cubic-bezier(.2,.7,.2,1) forwards;
+  z-index:3; mix-blend-mode:screen;
 }
-.eyebrow .dot{ width:6px; height:6px; border-radius:50%; background:var(--blue-500); box-shadow:0 0 0 4px rgba(59,99,255,.15); }
+.dark .ripple-ink{background:radial-gradient(circle, rgba(255,255,255,.5), rgba(95,232,221,.22) 46%, transparent 72%);}
+@keyframes rippleGrow{ to{ transform:translate(-50%,-50%) scale(1); opacity:0; } }
 
-/* ---------- Buttons ---------- */
-.btn{
+.liquid-btn{
   position:relative; overflow:hidden; isolation:isolate;
   display:inline-flex; align-items:center; justify-content:center; gap:9px;
-  border:none; border-radius:999px; font-weight:700; font-size:15px;
-  padding:14px 26px; white-space:nowrap;
-  transition:transform .35s var(--ease-spring), box-shadow .35s var(--ease-spring), filter .3s;
+  font-family:var(--font-body); font-weight:600; font-size:15px; letter-spacing:.1px;
+  color:#fff; cursor:pointer; border:none;
+  padding:14px 24px; border-radius:999px;
+  background:linear-gradient(160deg, var(--royal-500), var(--royal-700) 78%);
+  box-shadow: 0 1px 0 rgba(255,255,255,.35) inset, 0 14px 26px -10px rgba(28,58,168,.55);
+  transition:transform .35s cubic-bezier(.3,1.4,.4,1), box-shadow .35s ease, filter .35s ease;
 }
-.btn:active{ transform:scale(.97); }
-.btn-primary{
-  color:#fff;
-  background:linear-gradient(160deg, var(--blue-500) 0%, var(--blue-700) 55%, var(--navy-900) 130%);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -10px 18px -8px rgba(0,0,0,.3), 0 14px 26px -12px rgba(30,60,200,.55);
+.liquid-btn::after{
+  content:""; position:absolute; inset:0; border-radius:inherit;
+  background:linear-gradient(115deg, transparent 20%, rgba(255,255,255,.55) 34%, transparent 48%);
+  transform:translateX(-120%);
+  animation: liquidSweep 3.4s ease-in-out infinite;
 }
-.btn-primary:hover{ transform:translateY(-2px); box-shadow: inset 0 1px 0 rgba(255,255,255,.45), inset 0 -10px 18px -8px rgba(0,0,0,.3), 0 20px 34px -12px rgba(30,60,200,.6); }
-.btn-ghost{
-  color:var(--navy-900); background:rgba(255,255,255,.6);
-  border:1px solid var(--silver-300);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+@keyframes liquidSweep{ 0%,8%{transform:translateX(-120%);} 55%,100%{transform:translateX(120%);} }
+.liquid-btn:hover{transform:translateY(-2px); box-shadow:0 1px 0 rgba(255,255,255,.4) inset, 0 20px 34px -10px rgba(28,58,168,.6); filter:brightness(1.04);}
+.liquid-btn:hover::after{animation-duration:1.1s;}
+.liquid-btn:active{transform:translateY(0) scale(.98);}
+.liquid-btn.ghost{
+  background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(238,241,246,.85));
+  color:var(--royal-700); box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 10px 22px -12px rgba(20,35,90,.35);
+  border:1px solid rgba(180,192,220,.7);
 }
-.btn-ghost:hover{ background:#fff; border-color:var(--silver-400); transform:translateY(-1px); }
-.btn-sm{ padding:9px 16px; font-size:13.5px; border-radius:999px; }
-.btn-emergency{
-  color:#fff; font-weight:800;
-  background:linear-gradient(135deg, #e0455a 0%, var(--blue-700) 70%, var(--navy-900) 130%);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 10px 24px -10px rgba(224,69,90,.6);
+.liquid-btn.ghost::after{background:linear-gradient(115deg, transparent 20%, rgba(53,87,224,.16) 34%, transparent 48%);}
+.liquid-btn.emergency{
+  background:linear-gradient(150deg, #d1382e, #7d1f1f 85%);
+  box-shadow:0 1px 0 rgba(255,255,255,.3) inset, 0 14px 30px -10px rgba(150,30,25,.6);
 }
-.btn-emergency .pulse-ring{
-  position:absolute; inset:-6px; border-radius:inherit; border:2px solid rgba(255,255,255,.6);
-  animation:emergencyPulse 2.1s var(--ease-liquid) infinite;
+.liquid-btn.emergency .pulse-dot{
+  width:9px; height:9px; border-radius:50%; background:#fff; position:relative; flex:none;
 }
-@keyframes emergencyPulse{ 0%{ opacity:.9; transform:scale(.9);} 80%{opacity:0; transform:scale(1.18);} 100%{opacity:0;} }
+.liquid-btn.emergency .pulse-dot::after{
+  content:""; position:absolute; inset:-6px; border-radius:50%; border:2px solid rgba(255,255,255,.75);
+  animation:pulseRing 1.6s ease-out infinite;
+}
+@keyframes pulseRing{0%{transform:scale(.5); opacity:.9;} 100%{transform:scale(2.1); opacity:0;}}
+.liquid-btn:disabled{opacity:.55; cursor:not-allowed; transform:none !important;}
 
-.ripple{
-  position:absolute; border-radius:50%; pointer-events:none;
-  background:radial-gradient(circle, rgba(255,255,255,.75) 0%, rgba(255,255,255,.15) 45%, rgba(255,255,255,0) 70%);
-  transform:translate(-50%,-50%) scale(0);
-  animation:rippleAnim .7s var(--ease-liquid) forwards;
-  mix-blend-mode:overlay;
-}
-@keyframes rippleAnim{ to{ transform:translate(-50%,-50%) scale(1); opacity:0; } }
+/* ============================= REVEAL ANIMATIONS ============================= */
+.reveal{opacity:0; transform:translateY(22px); transition:opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1);}
+.reveal.in{opacity:1; transform:translateY(0);}
+.reveal-stagger > *{transition-delay:calc(var(--i,0) * 90ms);}
 
-/* ---------- Liquid glass card ---------- */
-.glass-card{
-  position:relative; overflow:hidden; isolation:isolate;
-  background:linear-gradient(155deg, rgba(255,255,255,.92), rgba(255,255,255,.68));
-  border:1px solid rgba(255,255,255,.9);
-  outline:1px solid var(--silver-200);
-  outline-offset:-1px;
-  border-radius:var(--radius-lg);
-  box-shadow:var(--shadow-card);
-  backdrop-filter:blur(18px);
-  transition:transform .5s var(--ease-spring), box-shadow .5s var(--ease-spring);
+/* ============================= TOP EMERGENCY BAR ============================= */
+.emergency-bar{
+  background:linear-gradient(90deg, var(--navy-950), var(--navy-900));
+  color:var(--silver-200);
+  font-family:var(--font-mono); font-size:12.5px;
 }
-.glass-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow-card-hover); }
-.glass-card::before{
-  content:''; position:absolute; inset:0; z-index:0; opacity:0; pointer-events:none;
-  background:radial-gradient(220px 220px at var(--mx,50%) var(--my,50%), rgba(95,216,224,.30), rgba(59,99,255,.14) 45%, transparent 70%);
-  transition:opacity .5s var(--ease-liquid);
-}
-.glass-card:hover::before{ opacity:1; }
-.glass-card > *{ position:relative; z-index:1; }
+.emergency-bar .wrap{display:flex; align-items:center; justify-content:space-between; gap:12px; padding-block:9px;}
+.locating-dot{width:7px; height:7px; border-radius:50%; background:var(--cyan-400); display:inline-block; margin-right:8px; box-shadow:0 0 0 0 rgba(95,232,221,.6); animation:locatePulse 1.8s ease-in-out infinite;}
+@keyframes locatePulse{0%{box-shadow:0 0 0 0 rgba(95,232,221,.55);} 70%{box-shadow:0 0 0 8px rgba(95,232,221,0);} 100%{box-shadow:0 0 0 0 rgba(95,232,221,0);}}
+.emergency-bar .liquid-btn{padding:8px 16px; font-size:12.5px; font-family:var(--font-mono); flex:none; white-space:nowrap;}
+.emergency-icon{flex:none; font-size:14px; line-height:1;}
+.emergency-text-short{display:none;}
+.location-indicator{display:inline-flex; align-items:center; gap:7px; min-width:0; overflow:hidden;}
+.loc-pin{flex:none; color:var(--cyan-400);}
+.loc-text-full{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.loc-text-short{display:none;}
 
-.glass-card-navy{
-  background:
-    radial-gradient(120% 140% at 100% 0%, rgba(95,216,224,.18), transparent 55%),
-    linear-gradient(160deg, var(--navy-800) 0%, var(--navy-900) 55%, var(--navy-950) 130%);
-  border:1px solid rgba(140,165,255,.25);
-  border-radius:var(--radius-lg);
-  box-shadow:var(--shadow-navy);
-  color:#fff;
-  position:relative; overflow:hidden; isolation:isolate;
+@media (max-width:640px){
+  .emergency-bar .wrap{gap:8px;}
+  .emergency-text-full{display:none;}
+  .emergency-text-short{display:inline;}
+  .emergency-bar .liquid-btn{padding:7px 12px; font-size:11.5px;}
+  .location-indicator{flex:1 1 auto; min-width:0;}
+  .loc-text-full{display:none;}
+  .loc-text-short{display:inline; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 }
-.glass-card-navy::before{
-  content:''; position:absolute; inset:0; z-index:0; opacity:0; pointer-events:none;
-  background:radial-gradient(260px 260px at var(--mx,50%) var(--my,50%), rgba(255,255,255,.18), transparent 65%);
-  transition:opacity .5s var(--ease-liquid);
+@media (max-width:360px){
+  .locating-dot{display:none;}
 }
-.glass-card-navy:hover::before{ opacity:1; }
-.glass-card-navy > *{ position:relative; z-index:1; }
 
-.hairline{ border:1px solid var(--silver-200); }
-
-/* ---------- Header ---------- */
-.site-header{
+/* ============================= NAV ============================= */
+header.nav{
   position:sticky; top:0; z-index:60;
-  background:rgba(255,255,255,.78);
-  backdrop-filter:blur(16px) saturate(140%);
-  border-bottom:1px solid var(--silver-200);
+  background:rgba(255,255,255,.72);
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(200,209,232,.6);
 }
-.logo-mark{ width:34px; height:34px; }
-.nav-link{
-  font-size:14.5px; font-weight:600; color:var(--ink-700);
-  padding:8px 4px; position:relative;
+.nav .wrap{display:flex; align-items:center; justify-content:space-between; padding-block:14px;}
+.logo{display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:600; font-size:21px; color:var(--navy-950);}
+.logo svg{flex:none;}
+.nav-links{display:flex; align-items:center; gap:28px; list-style:none; margin:0; padding:0;}
+.nav-links a{font-size:14.5px; font-weight:500; color:var(--ink-700); text-decoration:none; position:relative; padding-block:4px;}
+.nav-links a::after{content:""; position:absolute; left:0; right:100%; bottom:-2px; height:2px; background:var(--royal-600); transition:right .3s ease; border-radius:2px;}
+.nav-links a:hover{color:var(--navy-950);}
+.nav-links a:hover::after{right:0;}
+.nav-cta{display:flex; align-items:center; gap:10px;}
+.hamburger{display:none; background:none; border:none; cursor:pointer; padding:8px; color:var(--navy-950);}
+@media (max-width:980px){
+  .nav-links{display:none;}
+  .hamburger{display:inline-flex;}
 }
-.nav-link::after{
-  content:''; position:absolute; left:0; right:0; bottom:2px; height:2px; border-radius:2px;
-  background:var(--blue-500); transform:scaleX(0); transform-origin:left; transition:transform .3s var(--ease-spring);
-}
-.nav-link:hover::after{ transform:scaleX(1); }
-.nav-link:hover{ color:var(--navy-900); }
-
-/* ---------- Emergency bar ---------- */
-.emergency-bar{ background:var(--navy-950); color:#dfe6ff; }
-.status-dot{ width:7px; height:7px; border-radius:50%; background:var(--cyan-400); position:relative; }
-.status-dot::after{
-  content:''; position:absolute; inset:-5px; border-radius:50%; border:1px solid var(--cyan-400);
-  animation:statusPing 1.8s ease-out infinite;
-}
-@keyframes statusPing{ 0%{ opacity:.8; transform:scale(.6);} 100%{ opacity:0; transform:scale(1.9);} }
-
-/* ---------- Hero ---------- */
-.hero-heading{ font-size:clamp(2.1rem, 4.4vw, 3.55rem); line-height:1.06; font-weight:600; color:var(--navy-950); }
-.hero-heading .accent{ color:var(--blue-600); font-style:italic; }
-
-/* vitals */
-.vital-value{ font-family:'Fraunces',serif; font-size:1.9rem; font-weight:600; }
-.vital-label{ font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:#a9b6e8; }
-
-/* body diagram */
-.body-stage{ position:relative; }
-.body-figure{ filter:drop-shadow(0 20px 40px rgba(0,0,0,.35)); }
-@keyframes breathe{ 0%,100%{ transform:scaleY(1);} 50%{ transform:scaleY(1.018);} }
-.breathe{ transform-origin:center 60%; animation:breathe 4.5s ease-in-out infinite; }
-@keyframes heartbeat{ 0%,100%{ transform:scale(1); } 12%{ transform:scale(1.18);} 24%{ transform:scale(1);} 34%{ transform:scale(1.1);} 46%{ transform:scale(1);} }
-.heartbeat{ transform-box:fill-box; transform-origin:center; animation:heartbeat 1.7s ease-in-out infinite; }
-@keyframes neuralPulse{ 0%{ stroke-dashoffset:120; opacity:0;} 10%{ opacity:1;} 90%{ opacity:1;} 100%{ stroke-dashoffset:0; opacity:0;} }
-.neural-line{ stroke-dasharray:14 8; animation:neuralPulse 3.2s linear infinite; }
-@keyframes ripplewave{ 0%{ transform:scale(.4); opacity:.55;} 100%{ transform:scale(2.4); opacity:0;} }
-.foot-ripple{ animation:ripplewave 3s var(--ease-liquid) infinite; transform-origin:center; }
-
-/* ---------- Network 3D-ish ---------- */
-.network-stage{ position:relative; touch-action:none; }
-.net-node{ transition:transform .3s var(--ease-spring), filter .3s; cursor:pointer; }
-.net-node:hover{ filter:drop-shadow(0 0 10px currentColor); }
-@keyframes orbit{ from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
-@keyframes orbitRev{ from{ transform:rotate(360deg);} to{ transform:rotate(0deg);} }
-.orbit-cw{ animation:orbit 46s linear infinite; transform-origin:center; }
-.orbit-ccw{ animation:orbitRev 60s linear infinite; transform-origin:center; }
-.net-line{ stroke-dasharray:4 6; animation:dashMove 3s linear infinite; }
-@keyframes dashMove{ to{ stroke-dashoffset:-40; } }
-
-/* ---------- Stat cards ---------- */
-.stat-num{ font-family:'Fraunces',serif; font-size:2.1rem; font-weight:600; color:var(--navy-950); }
-
-/* ---------- Tabs ---------- */
-.tab-btn{
-  padding:10px 18px; border-radius:999px; font-weight:700; font-size:13.5px; letter-spacing:.02em;
-  color:var(--ink-500); background:transparent; border:1px solid transparent; white-space:nowrap;
-  transition:all .3s var(--ease-spring);
-}
-.tab-btn.active{ background:var(--navy-950); color:#fff; box-shadow:0 8px 18px -8px rgba(10,20,60,.5); }
-.tab-btn:not(.active):hover{ background:var(--silver-100); color:var(--navy-900); }
-
-/* ---------- Hospital / resource cards ---------- */
-.resource-card{ transition:transform .4s var(--ease-spring), box-shadow .4s var(--ease-spring); }
-.resource-card:hover{ transform:translateY(-2px); }
-.avail-pill{ font-size:12px; font-weight:700; padding:3px 10px; border-radius:999px; background:var(--silver-100); color:var(--ink-700); }
-.avail-pill.low{ background:#fdecec; color:#c0313a; }
-.verified-pill{ font-size:11px; font-weight:700; color:var(--blue-600); background:#eaf0ff; padding:2px 8px; border-radius:999px; }
-
-/* ---------- Steps ---------- */
-.step-num{ font-family:'Fraunces',serif; font-size:13px; font-weight:600; color:var(--blue-500); }
-
-/* ---------- Testimonials ---------- */
-.stars{ color:#f0a93a; letter-spacing:2px; }
-
-/* ---------- Progress bars ---------- */
-.bar-track{ height:9px; border-radius:999px; background:var(--silver-200); overflow:hidden; }
-.bar-fill{ height:100%; border-radius:999px; background:linear-gradient(90deg, var(--blue-500), var(--navy-900)); width:0; transition:width 1.1s var(--ease-spring); }
-
-/* ---------- Blood grid ---------- */
-.blood-chip{
-  border-radius:16px; padding:16px 14px; text-align:center; border:1px solid var(--silver-200);
-  background:#fff; transition:all .35s var(--ease-spring);
-}
-.blood-chip:hover{ transform:translateY(-3px); box-shadow:var(--shadow-card); }
-.blood-chip.low{ border-color:#f3c6c6; background:#fff6f6; }
-
-/* ---------- FAQ ---------- */
-.faq-item{ border-bottom:1px solid var(--silver-200); }
-.faq-q{ display:flex; align-items:center; justify-content:space-between; width:100%; text-align:left; padding:20px 0; background:none; border:none; font-weight:700; font-size:15.5px; color:var(--navy-950); }
-.faq-icon{ transition:transform .35s var(--ease-spring); flex:none; }
-.faq-item.open .faq-icon{ transform:rotate(45deg); }
-.faq-a{ max-height:0; overflow:hidden; transition:max-height .4s var(--ease-liquid), padding .4s; color:var(--ink-500); font-size:14.5px; padding-bottom:0; }
-.faq-item.open .faq-a{ max-height:220px; padding-bottom:20px; }
-
-/* ---------- Modal ---------- */
-.modal-backdrop{
-  position:fixed; inset:0; background:rgba(8,12,32,.55); backdrop-filter:blur(6px);
-  display:flex; align-items:flex-end; justify-content:center; z-index:100;
-  opacity:0; pointer-events:none; transition:opacity .35s var(--ease-liquid);
-}
-@media (min-width:720px){ .modal-backdrop{ align-items:center; } }
-.modal-backdrop.show{ opacity:1; pointer-events:auto; }
-.modal-panel{
-  width:100%; max-width:560px; max-height:92vh; overflow-y:auto;
-  background:#fff; border-radius:26px 26px 0 0; padding:28px; box-shadow:0 40px 90px -20px rgba(10,20,60,.4);
-  transform:translateY(30px); transition:transform .45s var(--ease-spring);
-}
-@media (min-width:720px){ .modal-panel{ border-radius:26px; transform:translateY(16px) scale(.97); } }
-.modal-backdrop.show .modal-panel{ transform:translateY(0) scale(1); }
-.field label{ font-size:12.5px; font-weight:700; color:var(--ink-700); margin-bottom:6px; display:block; }
-.field input, .field select, .field textarea{
-  width:100%; border:1px solid var(--silver-300); border-radius:12px; padding:11px 13px; font-size:14.5px;
-  font-family:inherit; background:#fbfcfe; transition:border-color .25s, box-shadow .25s;
-}
-.field input:focus, .field select:focus, .field textarea:focus{
-  outline:none; border-color:var(--blue-500); box-shadow:0 0 0 4px rgba(59,99,255,.14); background:#fff;
-}
-
-/* ---------- Mobile nav ---------- */
 .mobile-drawer{
-  position:fixed; inset:0 0 0 auto; width:min(320px,86vw); background:#fff; z-index:90;
-  box-shadow:-20px 0 50px rgba(10,20,60,.25); transform:translateX(100%); transition:transform .45s var(--ease-spring);
-  padding:22px; overflow-y:auto;
+  position:fixed; inset:0; z-index:80; display:none;
 }
-.mobile-drawer.open{ transform:translateX(0); }
-.mobile-overlay{
-  position:fixed; inset:0; background:rgba(8,12,32,.4); z-index:89; opacity:0; pointer-events:none; transition:opacity .35s;
+.mobile-drawer.open{display:block;}
+.mobile-drawer .scrim{position:absolute; inset:0; background:rgba(9,15,40,.45); backdrop-filter:blur(2px);}
+.mobile-drawer .panel{
+  position:absolute; top:0; right:0; height:100%; width:min(320px,84vw);
+  background:var(--white); box-shadow:-20px 0 50px -20px rgba(10,20,50,.4);
+  padding:22px; transform:translateX(100%); transition:transform .4s cubic-bezier(.2,.8,.2,1);
+  display:flex; flex-direction:column; gap:6px;
 }
-.mobile-overlay.show{ opacity:1; pointer-events:auto; }
+.mobile-drawer.open .panel{transform:translateX(0);}
+.mobile-drawer a{display:block; padding:13px 6px; font-size:16px; font-weight:600; color:var(--navy-950); text-decoration:none; border-bottom:1px solid var(--silver-200);}
+.mobile-drawer .close-drawer{align-self:flex-end; background:none; border:none; cursor:pointer; padding:8px; margin-bottom:6px;}
 
-/* ---------- Reveal on scroll ---------- */
-.reveal{ opacity:0; transform:translateY(22px); transition:opacity .8s var(--ease-liquid), transform .8s var(--ease-liquid); }
-.reveal.in{ opacity:1; transform:translateY(0); }
+/* ============================= HERO ============================= */
+.hero{padding-block:56px 40px;}
+.hero-grid{display:grid; grid-template-columns:1.05fr 1fr; gap:26px; align-items:stretch;}
+@media (max-width:1100px){.hero-grid{grid-template-columns:1fr;}}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:12px; letter-spacing:.14em;
+  color:var(--royal-700); text-transform:uppercase; margin-bottom:18px;
+}
+.eyebrow .dot{width:6px; height:6px; border-radius:50%; background:var(--green-500);}
+.live-eyebrow-dot{width:6px; height:6px; border-radius:50%; background:var(--royal-600); display:inline-block; margin-right:8px; box-shadow:0 0 0 0 rgba(38,71,201,.55); animation:liveBadgePulse 2.2s ease-in-out infinite;}
+.hero h1{font-size:clamp(34px,4.6vw,54px); line-height:1.06; font-weight:500; margin:0 0 18px; color:var(--navy-950); letter-spacing:-.01em;}
+.hero h1 em{font-style:italic; color:var(--royal-600); font-weight:500;}
+.hero p.lede{font-size:16.5px; color:var(--ink-500); max-width:46ch; margin:0 0 26px;}
+.hero-actions{display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+.location-note{font-family:var(--font-mono); font-size:12.5px; color:var(--ink-400); margin-top:12px;}
+.location-note.active{color:var(--green-500);}
+.location-note.denied{color:var(--red-600);}
 
-/* ---------- Scrollbars for horizontal carousels ---------- */
-.scroll-x{ display:flex; gap:18px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:6px; -webkit-overflow-scrolling:touch; }
-.scroll-x::-webkit-scrollbar{ height:0; }
-.scroll-x > *{ scroll-snap-align:start; }
+.hero-cards{display:grid; grid-template-columns:1.15fr .85fr; gap:18px;}
+@media (max-width:1100px){.hero-cards{grid-template-columns:1fr;}}
+@media (min-width:1101px){.hero-cards{grid-column:span 1;}}
 
-/* ---------- Focus states ---------- */
-a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible{
-  outline:2.5px solid var(--blue-500); outline-offset:3px; border-radius:6px;
+.card-label{display:flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--cyan-300); margin-bottom:14px;}
+.card-label .live-dot{width:6px; height:6px; border-radius:50%; background:var(--cyan-300); box-shadow:0 0 0 0 rgba(95,232,221,.6); animation:locatePulse 1.8s ease-in-out infinite;}
+.glass-card:not(.dark) .card-label{color:var(--royal-600);}
+.glass-card:not(.dark) .card-label .live-dot{background:var(--royal-600);}
+
+.vitals-card{padding:26px; display:flex; flex-direction:column; min-height:430px;}
+.vitals-card h3{font-size:22px; font-weight:500; line-height:1.25; margin:0 0 10px; color:#fff;}
+.vitals-card p{font-size:13.5px; color:var(--silver-300); max-width:36ch; margin:0 0 20px;}
+.vitals-row{display:flex; gap:22px; margin-bottom:8px; flex-wrap:wrap;}
+.vital{font-family:var(--font-mono);}
+.vital .v-num{font-size:22px; font-weight:600; color:#fff; display:flex; align-items:baseline; gap:4px;}
+.vital .v-num small{font-size:12px; color:var(--silver-300); font-weight:500;}
+.vital .v-label{font-size:10px; letter-spacing:.1em; color:var(--silver-400); text-transform:uppercase; margin-top:3px;}
+.body-stage{position:relative; margin-top:auto; flex:1; display:flex; align-items:flex-end; justify-content:center; min-height:210px;}
+.body-stage svg{width:auto; height:100%; max-height:230px;}
+.ripple-feet{position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:140px; height:26px;}
+.ripple-feet .ring{position:absolute; left:50%; top:50%; width:14px; height:6px; border-radius:50%; border:1px solid rgba(95,232,221,.55); transform:translate(-50%,-50%); animation:footRipple 2.6s ease-out infinite;}
+.ripple-feet .ring:nth-child(2){animation-delay:.65s;} .ripple-feet .ring:nth-child(3){animation-delay:1.3s;} .ripple-feet .ring:nth-child(4){animation-delay:1.95s;}
+@keyframes footRipple{0%{width:14px; height:6px; opacity:.9;} 100%{width:150px; height:34px; opacity:0;}}
+
+.network-card{padding:26px; display:flex; flex-direction:column; min-height:430px;}
+.network-card h3{font-size:20px; font-weight:500; margin:0 0 8px; color:var(--navy-950);}
+.network-card p{font-size:13.5px; color:var(--ink-500); max-width:32ch; margin:0 0 14px;}
+.net-stage{position:relative; flex:1; min-height:190px; border-radius:16px; overflow:hidden; cursor:grab; touch-action:none;}
+.net-stage:active{cursor:grabbing;}
+.net-stage svg{width:100%; height:100%;}
+.net-legend{display:flex; flex-wrap:wrap; gap:10px 16px; margin-top:12px; font-family:var(--font-mono); font-size:10.5px; color:var(--ink-500);}
+.net-legend span{display:inline-flex; align-items:center; gap:6px;}
+.net-legend i{width:8px; height:8px; border-radius:50%; display:inline-block;}
+.net-hint{position:absolute; right:10px; bottom:8px; font-family:var(--font-mono); font-size:10px; color:var(--ink-400); background:rgba(255,255,255,.6); padding:3px 8px; border-radius:20px; pointer-events:none;}
+.net-tooltip{position:absolute; pointer-events:none; background:var(--navy-950); color:#fff; font-family:var(--font-mono); font-size:11px; padding:6px 10px; border-radius:8px; opacity:0; transform:translate(-50%,-130%); transition:opacity .15s ease; white-space:nowrap; z-index:5;}
+.net-tooltip.show{opacity:1;}
+
+/* ============================= QUICK STATS ============================= */
+.stats-row{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:26px;}
+@media (max-width:700px){.stats-row{grid-template-columns:1fr;}}
+.stat-card{display:flex; align-items:center; gap:14px; padding:18px 20px;}
+.stat-icon{width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center; flex:none; background:linear-gradient(160deg, rgba(53,87,224,.14), rgba(95,232,221,.14)); color:var(--royal-700);}
+.stat-num{font-family:var(--font-mono); font-size:26px; font-weight:600; color:var(--navy-950); line-height:1;}
+.stat-label{font-size:12.5px; color:var(--ink-500); margin-top:4px;}
+
+/* ============================= SECTION HEADERS ============================= */
+.section{padding-block:64px;}
+.section-head{display:flex; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:30px; flex-wrap:wrap;}
+.section-head.centered{flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:10px;}
+.section-head.centered .sub{max-width:52ch; margin-inline:auto;}
+.section-head h2{font-size:clamp(26px,3vw,36px); font-weight:500; margin:0 0 8px; color:var(--navy-950);}
+.section-head .sub{color:var(--ink-500); font-size:15px; max-width:52ch;}
+.section .eyebrow.plain{color:var(--ink-400);}
+
+/* ============================= RESOURCE TABS / SEARCH ============================= */
+.resource-panel{padding:22px; padding-top:14px;}
+.tabbar{display:flex; gap:6px; overflow-x:auto; -ms-overflow-style:none; scrollbar-width:none; padding-bottom:4px;}
+.tabbar::-webkit-scrollbar{display:none;}
+.tab-btn{
+  font-family:var(--font-mono); font-size:12.5px; font-weight:500; letter-spacing:.02em; white-space:nowrap;
+  padding:10px 16px; border-radius:12px; border:1px solid transparent; background:none; cursor:pointer; color:var(--ink-500);
+  transition:.25s ease;
+}
+.tab-btn[aria-selected="true"]{background:linear-gradient(160deg,var(--royal-500),var(--royal-700)); color:#fff; box-shadow:0 8px 18px -8px rgba(28,58,168,.5);}
+.tab-btn:not([aria-selected="true"]):hover{background:var(--silver-200); color:var(--navy-950);}
+
+.panel-toolbar{display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin:16px 0 6px; padding-top:14px; border-top:1px solid var(--silver-200);}
+.toolbar-left{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+.updated-at{font-family:var(--font-mono); font-size:11.5px; color:var(--ink-400);}
+.search-input{
+  border:1px solid var(--silver-300); background:#fff; border-radius:11px; padding:8px 12px; font-size:13.5px; width:190px; color:var(--ink-900);
+}
+.search-input:focus{border-color:var(--royal-500);}
+.sort-select{border:1px solid var(--silver-300); background:#fff; border-radius:11px; padding:8px 10px; font-size:13px; color:var(--ink-700);}
+.chip-toggle{
+  display:inline-flex; align-items:center; gap:6px; border:1px solid var(--silver-300); background:#fff; border-radius:999px;
+  padding:7px 13px; font-size:12.5px; color:var(--ink-700); cursor:pointer; user-select:none;
+}
+.chip-toggle input{accent-color:var(--royal-600);}
+
+.resource-list{display:flex; flex-direction:column; gap:12px; margin-top:14px;}
+.res-card{
+  display:flex; align-items:center; gap:16px; padding:16px 18px; border-radius:18px;
+  background:linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.6));
+  border:1px solid var(--silver-200); transition:.35s cubic-bezier(.2,.8,.2,1);
+  position:relative; overflow:hidden;
+}
+.res-card:hover{transform:translateY(-2px); box-shadow:var(--shadow-card); border-color:rgba(180,196,235,.9);}
+.res-icon{width:52px; height:52px; border-radius:14px; background:linear-gradient(160deg,var(--silver-100),var(--silver-200)); display:flex; align-items:center; justify-content:center; flex:none; color:var(--royal-700);}
+.res-main{flex:1; min-width:0;}
+.res-title-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.res-name{font-weight:600; font-size:15.5px; color:var(--navy-950);}
+.badge-verified{display:inline-flex; align-items:center; gap:4px; font-size:10.5px; font-family:var(--font-mono); color:var(--royal-700); background:rgba(53,87,224,.1); padding:2px 8px; border-radius:999px;}
+.res-meta{display:flex; flex-wrap:wrap; gap:10px; font-size:12.5px; color:var(--ink-500); margin-top:5px; align-items:center;}
+.res-meta .stars{color:#e0a92c; letter-spacing:1px;}
+.res-meta .avail-dot{width:6px; height:6px; border-radius:50%; background:var(--green-500); display:inline-block; margin-right:5px;}
+.res-meta .avail-dot.low{background:var(--orange-500);}
+.res-side{text-align:right; flex:none;}
+.res-price{font-family:var(--font-mono); font-weight:600; font-size:16px; color:var(--navy-950);}
+.res-price small{font-size:11px; color:var(--ink-400); font-weight:500;}
+.res-side .liquid-btn{margin-top:8px; padding:9px 18px; font-size:13px;}
+@media (max-width:640px){
+  .res-card{
+    display:grid;
+    grid-template-columns:52px 1fr;
+    grid-template-areas:
+      "icon title"
+      "meta meta"
+      "side side";
+    column-gap:14px; row-gap:10px;
+    align-items:start;
+  }
+  .res-icon{grid-area:icon;}
+  .res-main{display:contents;}
+  .res-title-row{grid-area:title; align-self:center;}
+  .res-meta{grid-area:meta; margin-top:0; gap:12px 16px;}
+  .res-side{
+    grid-area:side; text-align:left;
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
+    padding-top:10px; border-top:1px solid var(--silver-200);
+  }
+  .res-side .liquid-btn{margin-top:0; flex:1; max-width:200px;}
+}
+@media (max-width:380px){
+  .res-side{flex-direction:column; align-items:stretch;}
+  .res-side .liquid-btn{max-width:none; width:100%;}
+}
+.empty-state{padding:40px 20px; text-align:center; color:var(--ink-500);}
+.empty-state h4{color:var(--navy-950); margin:10px 0 6px;}
+
+/* ============================= MODAL ============================= */
+.modal-overlay{position:fixed; inset:0; background:rgba(8,14,36,.55); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:100; padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal-box{
+  background:#fff; border-radius:24px; width:min(480px,100%); max-height:88vh; overflow-y:auto;
+  box-shadow:0 40px 90px -20px rgba(10,20,50,.5); border:1px solid var(--silver-200);
+  animation:modalIn .35s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes modalIn{from{opacity:0; transform:translateY(16px) scale(.97);} to{opacity:1; transform:translateY(0) scale(1);}}
+.modal-head{padding:22px 22px 0; display:flex; justify-content:space-between; align-items:flex-start;}
+.modal-head h3{margin:0; font-size:19px; font-weight:600; color:var(--navy-950);}
+.modal-close{background:var(--silver-100); border:none; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-700); flex:none;}
+.modal-body{padding:18px 22px 24px;}
+.summary-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px 16px; background:var(--silver-100); border-radius:14px; padding:14px 16px; margin-bottom:18px; font-size:13px;}
+.summary-grid div span{display:block; color:var(--ink-400); font-size:11px; text-transform:uppercase; letter-spacing:.05em; font-family:var(--font-mono); margin-bottom:2px;}
+.field{margin-bottom:14px;}
+.field label{display:block; font-size:12.5px; font-weight:600; color:var(--ink-700); margin-bottom:6px;}
+.field input, .field select, .field textarea{
+  width:100%; border:1px solid var(--silver-300); border-radius:11px; padding:10px 12px; font-size:14px; font-family:inherit; color:var(--ink-900); background:#fff;
+}
+.field input:focus, .field select:focus, .field textarea:focus{border-color:var(--royal-500);}
+.field-row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.modal-body .liquid-btn{width:100%; margin-top:6px;}
+.confirm-view{display:none; text-align:center;}
+.confirm-view.show{display:block;}
+.form-view.hide{display:none;}
+.confirm-check{width:58px; height:58px; border-radius:50%; background:linear-gradient(160deg,#25c281,#188a5a); display:flex; align-items:center; justify-content:center; margin:6px auto 14px; color:#fff; box-shadow:0 14px 26px -10px rgba(24,138,90,.5);}
+.confirm-id{font-family:var(--font-mono); font-size:22px; font-weight:600; color:var(--royal-700); letter-spacing:.03em; margin:4px 0 18px;}
+.confirm-details{text-align:left; background:var(--silver-100); border-radius:14px; padding:16px 18px; font-size:13.5px; display:flex; flex-direction:column; gap:9px; margin-bottom:16px;}
+.confirm-details .row{display:flex; justify-content:space-between; gap:10px;}
+.confirm-details .row span:first-child{color:var(--ink-500);}
+.confirm-details .row span:last-child{font-weight:600; color:var(--navy-950); text-align:right;}
+
+/* ============================= HOW IT WORKS ============================= */
+.steps-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+@media (max-width:900px){.steps-grid{grid-template-columns:1fr;}}
+.step-card{padding:26px;}
+.step-num{font-family:var(--font-mono); font-size:12px; color:var(--royal-600); background:rgba(53,87,224,.1); display:inline-block; padding:4px 10px; border-radius:8px; margin-bottom:16px;}
+.step-icon{width:46px; height:46px; border-radius:13px; background:linear-gradient(160deg,var(--royal-500),var(--royal-700)); color:#fff; display:flex; align-items:center; justify-content:center; margin-bottom:16px;}
+.step-card h4{font-size:18px; font-weight:600; margin:0 0 8px; color:var(--navy-950);}
+.step-card p{font-size:13.8px; color:var(--ink-500); margin:0;}
+
+/* ============================= TESTIMONIALS ============================= */
+.testi-track{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+@media (max-width:900px){
+  .testi-track{display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:16px; padding-bottom:8px; -ms-overflow-style:none; scrollbar-width:none;}
+  .testi-track::-webkit-scrollbar{display:none;}
+  .testi-track .glass-card{min-width:84%; scroll-snap-align:center;}
+}
+.testi-card{padding:24px;}
+.testi-stars{color:#e0a92c; letter-spacing:2px; margin-bottom:14px; font-size:15px;}
+.testi-quote{font-family:var(--font-display); font-style:italic; font-size:16.5px; line-height:1.5; color:var(--ink-900); margin:0 0 20px;}
+.testi-person{display:flex; align-items:center; gap:12px;}
+.testi-avatar{width:38px; height:38px; border-radius:50%; background:linear-gradient(160deg,var(--royal-500),var(--cyan-400)); flex:none; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:14px;}
+.testi-name{font-weight:600; font-size:13.5px; color:var(--navy-950);}
+.testi-role{font-size:12px; color:var(--ink-400);}
+.testi-dots{display:none; justify-content:center; gap:8px; margin-top:16px;}
+@media (max-width:900px){.testi-dots{display:flex;}}
+.testi-dots button{width:7px; height:7px; border-radius:50%; background:var(--silver-300); border:none; padding:0; cursor:pointer;}
+.testi-dots button[aria-current="true"]{background:var(--royal-600); width:20px; border-radius:6px;}
+
+/* ============================= ANALYTICS ============================= */
+.analytics-grid{display:grid; grid-template-columns:1.1fr .9fr; gap:18px;}
+@media (max-width:960px){.analytics-grid{grid-template-columns:1fr;}}
+.analytics-card{padding:24px; position:relative;}
+.analytics-card h4{margin:0 0 4px; font-size:17px; font-weight:600; color:var(--navy-950);}
+.analytics-card .sub{font-size:12.5px; color:var(--ink-500); margin:0;}
+.analytics-card-head{display:flex; align-items:flex-start; justify-content:space-between; gap:14px;}
+.live-badge{
+  display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--royal-700); background:rgba(53,87,224,.09); border:1px solid rgba(53,87,224,.18); padding:5px 10px; border-radius:999px; flex:none; margin-top:2px;
+}
+.live-badge-dot{width:6px; height:6px; border-radius:50%; background:var(--royal-600); box-shadow:0 0 0 0 rgba(38,71,201,.55); animation:liveBadgePulse 2.2s ease-in-out infinite;}
+@keyframes liveBadgePulse{0%{box-shadow:0 0 0 0 rgba(38,71,201,.5);} 70%{box-shadow:0 0 0 7px rgba(38,71,201,0);} 100%{box-shadow:0 0 0 0 rgba(38,71,201,0);}}
+.updated-line{font-family:var(--font-mono); font-size:11px; color:var(--ink-400); margin:6px 0 18px;}
+
+.occ-row{
+  display:grid; grid-template-columns:1fr 3fr auto; align-items:center; gap:12px; margin-bottom:6px; padding:8px 10px; margin-inline:-10px;
+  font-size:12.8px; border-radius:12px; transition:background .35s ease, transform .35s ease;
+}
+.occ-row:hover{background:linear-gradient(90deg, rgba(53,87,224,.06), rgba(95,232,221,.06)); transform:translateX(2px);}
+.occ-row.just-updated{background:rgba(53,87,224,.08);}
+.occ-row .name{color:var(--ink-700); font-weight:500;}
+@media (max-width:520px){
+  .occ-row{grid-template-columns:1fr auto; row-gap:8px;}
+  .occ-row .name{grid-column:1/-1; grid-row:1;}
+  .occ-row .occ-bar-track{grid-column:1/2; grid-row:2;}
+  .occ-row .occ-pct{grid-column:2/3; grid-row:2;}
+}
+.occ-bar-track{height:9px; background:var(--silver-200); border-radius:999px; overflow:hidden;}
+.occ-bar-fill{
+  position:relative; height:100%; border-radius:999px; width:0%; overflow:hidden;
+  background:linear-gradient(90deg,var(--royal-500),var(--navy-900));
+}
+.occ-row:hover .occ-bar-fill{filter:brightness(1.08);}
+.occ-bar-shine{
+  position:absolute; top:0; bottom:0; left:-60%; width:55%;
+  background:linear-gradient(100deg, transparent, rgba(255,255,255,.42), rgba(230,240,255,.12), transparent);
+  animation: occShine 2.6s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes occShine{ 0%{left:-60%;} 100%{left:130%;} }
+.occ-pct{font-family:var(--font-mono); font-weight:600; color:var(--navy-950); font-size:12.5px; min-width:34px; text-align:right; transition:transform .3s ease, color .3s ease;}
+.occ-row:hover .occ-pct{transform:scale(1.08); color:var(--royal-700);}
+.chart-wrap{height:220px; position:relative;}
+.chart-point-glow{
+  position:absolute; left:0; top:0; width:22px; height:22px; border-radius:50%; pointer-events:none;
+  background:radial-gradient(circle, rgba(53,87,224,.35), rgba(95,232,221,.18) 55%, transparent 75%);
+  animation: chartGlowPulse 2.4s ease-in-out infinite;
+}
+@keyframes chartGlowPulse{ 0%,100%{opacity:.55; scale:1;} 50%{opacity:1; scale:1.35;} }
+.chart-live-tag{
+  position:absolute; left:0; top:0; font-family:var(--font-mono); font-size:9.5px; font-weight:700; letter-spacing:.08em;
+  color:#fff; background:linear-gradient(160deg,var(--royal-500),var(--royal-700)); padding:2px 7px; border-radius:6px; pointer-events:none;
+  box-shadow:0 4px 10px -3px rgba(28,58,168,.5);
+}
+.chart-live-tag.pulse-once{animation: liveTagPulse .7s ease-out;}
+@keyframes liveTagPulse{ 0%{filter:brightness(1);} 40%{filter:brightness(1.35); box-shadow:0 4px 14px -2px rgba(28,58,168,.75);} 100%{filter:brightness(1);} }
+
+/* ============================= LIVE ACTIVITY FEED ============================= */
+.activity-card{padding:10px 8px;}
+.activity-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column;}
+.activity-item{
+  display:flex; align-items:center; gap:14px; padding:14px 18px; border-radius:14px;
+  transition:background .3s ease;
+}
+.activity-item:not(:last-child){border-bottom:1px solid var(--silver-200);}
+.activity-item:hover{background:linear-gradient(90deg, rgba(53,87,224,.05), transparent);}
+.activity-item.is-new{animation:activitySlideIn .6s cubic-bezier(.2,.8,.2,1);}
+@keyframes activitySlideIn{
+  0%{opacity:0; transform:translateY(-10px); background:rgba(53,87,224,.09);}
+  60%{opacity:1; transform:translateY(0);}
+  100%{background:transparent;}
+}
+.activity-icon{width:38px; height:38px; border-radius:11px; flex:none; display:flex; align-items:center; justify-content:center;}
+.activity-icon.icu{background:rgba(34,160,107,.12); color:var(--green-500);}
+.activity-icon.ambulance{background:rgba(224,138,44,.14); color:var(--orange-500);}
+.activity-icon.blood{background:rgba(224,85,63,.13); color:var(--coral-500);}
+.activity-main{flex:1; min-width:0;}
+.activity-text{font-size:13.8px; color:var(--ink-900); line-height:1.4;}
+.activity-text b{font-weight:600; color:var(--navy-950);}
+.activity-area{font-size:12px; color:var(--ink-400); margin-top:2px;}
+.activity-time{font-family:var(--font-mono); font-size:11.5px; color:var(--ink-400); flex:none; white-space:nowrap;}
+@media (max-width:560px){
+  .activity-item{padding:12px 14px; gap:10px;}
+  .activity-text{font-size:13px;}
+  .activity-time{font-size:10.5px;}
 }
 
-/* ---------- Section spacing ---------- */
-.section{ padding:88px 0; }
-@media (max-width:768px){ .section{ padding:56px 0; } }
-.section-head{ max-width:640px; }
+/* ============================= AMBULANCE SECTION ============================= */
+.amb-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px;}
+@media (max-width:1000px){.amb-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:560px){.amb-grid{grid-template-columns:1fr;}}
+.amb-card{padding:20px; display:flex; flex-direction:column; gap:10px;}
+.amb-type-icon{width:44px; height:44px; border-radius:12px; background:linear-gradient(160deg,var(--silver-100),var(--silver-200)); display:flex; align-items:center; justify-content:center; color:var(--royal-700); margin-bottom:2px;}
+.amb-card h4{margin:0; font-size:15.5px; color:var(--navy-950); font-weight:600;}
+.amb-line{display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink-500);}
+.amb-line b{color:var(--ink-900); font-weight:600;}
+.amb-status{display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-family:var(--font-mono); padding:4px 10px; border-radius:999px; width:fit-content;}
+.amb-status.available{background:rgba(34,160,107,.12); color:var(--green-500);}
+.amb-status.enroute{background:rgba(224,138,44,.14); color:var(--orange-500);}
+.eta-bar{height:5px; background:var(--silver-200); border-radius:999px; overflow:hidden; margin-top:2px;}
+.eta-fill{height:100%; background:linear-gradient(90deg,var(--cyan-400),var(--royal-600)); border-radius:999px; animation:etaMove 3.4s ease-in-out infinite;}
+@keyframes etaMove{0%{width:8%;} 50%{width:78%;} 100%{width:8%;}}
 
-/* toast */
-.toast{
-  position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px); z-index:200;
-  background:var(--navy-950); color:#fff; padding:14px 22px; border-radius:14px; font-weight:600; font-size:14px;
-  box-shadow:0 20px 40px -12px rgba(0,0,0,.4); opacity:0; pointer-events:none; transition:all .4s var(--ease-spring);
+/* ============================= BLOOD BANK ============================= */
+.blood-groups-grid{display:grid; grid-template-columns:repeat(8,1fr); gap:12px; margin-bottom:26px;}
+@media (max-width:900px){.blood-groups-grid{grid-template-columns:repeat(4,1fr);}}
+@media (max-width:520px){.blood-groups-grid{grid-template-columns:repeat(2,1fr);}}
+.blood-chip{padding:16px 10px; text-align:center;}
+.blood-chip .grp{font-family:var(--font-display); font-size:22px; font-weight:600; color:var(--royal-700);}
+.blood-chip .units{font-family:var(--font-mono); font-size:11px; color:var(--ink-500); margin-top:4px;}
+.blood-chip.low{border-color:rgba(224,138,44,.5);}
+.blood-chip.low .grp{color:var(--orange-500);}
+.blood-chip.low .units::before{content:"● low stock "; color:var(--orange-500);}
+.bank-list{display:flex; flex-direction:column; gap:12px;}
+
+/* ============================= FAQ ============================= */
+.faq-list{display:flex; flex-direction:column; gap:10px; max-width:820px;}
+.faq-item{border-radius:16px; overflow:hidden;}
+.faq-q{
+  width:100%; text-align:left; background:none; border:none; cursor:pointer; padding:18px 20px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px; font-size:15px; font-weight:600; color:var(--navy-950);
 }
-.toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+.faq-q .chev{transition:transform .35s ease; color:var(--ink-400); flex:none;}
+.faq-item[data-open="true"] .faq-q .chev{transform:rotate(180deg); color:var(--royal-600);}
+.faq-a{max-height:0; overflow:hidden; transition:max-height .4s ease;}
+.faq-a p{margin:0; padding:0 20px 18px; font-size:14px; color:var(--ink-500); line-height:1.6;}
 
-.no-scroll{ overflow:hidden; }
+/* ============================= FAQ LAYOUT + EMERGENCY PANEL ============================= */
+.faq-layout{display:grid; grid-template-columns:1.5fr 1fr; gap:32px; align-items:start;}
+@media (max-width:960px){ .faq-layout{grid-template-columns:1fr;} }
+.faq-col{min-width:0;}
+.ec-col{min-width:0;}
 
+.ec-panel{
+  padding:28px; position:sticky; top:96px;
+  background:
+    radial-gradient(420px 260px at 88% -6%, rgba(53,87,224,.10), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.68));
+}
+@media (max-width:960px){ .ec-panel{position:static;} }
+
+.ec-live{
+  display:inline-flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--royal-700); background:rgba(53,87,224,.08); border:1px solid rgba(53,87,224,.16); padding:6px 12px; border-radius:999px; margin-bottom:18px;
+}
+.ec-live-dot{width:6px; height:6px; border-radius:50%; background:var(--green-500); box-shadow:0 0 0 0 rgba(34,160,107,.55); animation:liveBadgePulse 2.2s ease-in-out infinite;}
+
+.ec-heading{font-size:clamp(22px,2.4vw,28px); font-weight:500; line-height:1.18; color:var(--navy-950); margin:0 0 10px;}
+.ec-sub{font-size:14px; color:var(--ink-500); max-width:34ch; margin:0 0 22px;}
+
+.ec-visual{margin:0 -6px 22px; opacity:.96;}
+.ec-visual svg{width:100%; height:auto;}
+.ec-pin{transform-box:fill-box; transform-origin:center; animation:ecPinFloat 4.5s ease-in-out infinite;}
+@keyframes ecPinFloat{0%,100%{transform:translateY(0);} 50%{transform:translateY(-4px);}}
+.ec-wave{fill:none; stroke:var(--royal-500); stroke-width:1.4; opacity:0; transform-box:fill-box; transform-origin:center; animation:ecWave 2.7s ease-out infinite;}
+@keyframes ecWave{0%{opacity:.55; transform:scale(1);} 100%{opacity:0; transform:scale(3.2);}}
+.ec-line{stroke:var(--royal-500); stroke-width:1; opacity:.28; stroke-dasharray:3 4; animation:ecLineFlow 3.2s linear infinite;}
+@keyframes ecLineFlow{to{stroke-dashoffset:-28;}}
+.ec-node{transform-box:fill-box; transform-origin:center; animation:ecNodeFloat 3.6s ease-in-out infinite;}
+@keyframes ecNodeFloat{0%,100%{transform:translateY(0);} 50%{transform:translateY(-3px);}}
+.ec-node-label{font-family:var(--font-mono); font-size:6.5px; letter-spacing:.05em; fill:var(--ink-500); font-weight:600;}
+
+.ec-stats-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:22px;}
+.ec-stat{
+  display:flex; align-items:center; gap:10px; padding:12px 13px; border-radius:14px;
+  background:linear-gradient(180deg, rgba(255,255,255,.9), rgba(238,241,246,.7)); border:1px solid var(--silver-200);
+}
+.ec-stat-icon{width:32px; height:32px; border-radius:10px; flex:none; display:flex; align-items:center; justify-content:center; background:linear-gradient(160deg, rgba(53,87,224,.14), rgba(95,232,221,.14)); color:var(--royal-700);}
+.ec-stat-num{font-family:var(--font-mono); font-weight:700; font-size:16.5px; color:var(--navy-950); line-height:1.1;}
+.ec-stat-label{font-size:10.5px; color:var(--ink-500); margin-top:2px; line-height:1.25;}
+
+.ec-cta{width:100%; padding:15px 20px; font-size:15px;}
+.ec-cta span{transition:transform .3s ease;}
+.ec-cta:hover span{transform:translateX(3px);}
+#ecLocationNote{min-height:16px; text-align:center; margin-top:10px;}
+
+.ec-trust{
+  display:flex; align-items:center; gap:8px; justify-content:center; margin-top:18px; padding-top:16px; border-top:1px solid var(--silver-200);
+  font-size:11.5px; color:var(--ink-500);
+}
+.ec-trust svg{color:var(--royal-600); flex:none;}
+
+/* ============================= HOSPITAL PARTNER ============================= */
+.partner-section{
+  border-radius:32px; padding:52px 44px; position:relative; overflow:hidden;
+  background:radial-gradient(900px 420px at 85% -10%, rgba(95,232,221,.16), transparent 60%), linear-gradient(155deg, var(--navy-900), var(--navy-950) 75%);
+  color:#fff;
+}
+@media (max-width:640px){.partner-section{padding:36px 22px;}}
+.partner-grid{display:grid; grid-template-columns:1.1fr .9fr; gap:36px; align-items:center;}
+@media (max-width:900px){.partner-grid{grid-template-columns:1fr;}}
+.partner-section h2{font-size:clamp(24px,3.4vw,34px); font-weight:500; line-height:1.2; margin:0 0 16px;}
+.partner-section p{color:var(--silver-300); font-size:15px; max-width:48ch; margin:0 0 24px;}
+.feature-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px 20px;}
+.feature-item{display:flex; align-items:center; gap:10px; font-size:13.8px; color:var(--silver-200);}
+.feature-item svg{color:var(--cyan-400); flex:none;}
+
+/* ============================= SUPPORT ============================= */
+.support-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+@media (max-width:900px){.support-grid{grid-template-columns:1fr;}}
+.support-card{padding:24px;}
+.support-icon{width:44px; height:44px; border-radius:13px; background:linear-gradient(160deg,var(--royal-500),var(--royal-700)); color:#fff; display:flex; align-items:center; justify-content:center; margin-bottom:16px;}
+.support-card h4{font-size:16.5px; font-weight:600; margin:0 0 8px; color:var(--navy-950);}
+.support-card p{font-size:13.5px; color:var(--ink-500); margin:0 0 14px;}
+.support-link{display:inline-flex; align-items:center; font-family:var(--font-mono); font-size:13.5px; font-weight:600; color:var(--royal-700); border-bottom:1.5px solid rgba(38,71,201,.3); padding-bottom:2px;}
+.support-link:hover{border-color:var(--royal-700);}
+@media (max-width:700px){ .trust-marquee{display:none !important;} }
+
+/* ============================= FOOTER ============================= */
+footer{background:var(--navy-950); color:var(--silver-300); padding-block:56px 26px; margin-top:24px;}
+.footer-grid{display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:32px;}
+@media (max-width:800px){.footer-grid{grid-template-columns:1fr 1fr;}}
+@media (max-width:520px){.footer-grid{grid-template-columns:1fr;}}
+.footer-grid h5{font-family:var(--font-mono); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--silver-400); margin:0 0 14px;}
+.footer-grid ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
+.footer-grid a{color:var(--silver-300); text-decoration:none; font-size:14px;}
+.footer-grid a:hover{color:#fff;}
+.footer-logo{display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-size:20px; font-weight:600; color:#fff; margin-bottom:12px;}
+.footer-grid p{font-size:13.5px; color:var(--silver-400); max-width:32ch; line-height:1.6;}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08); margin-top:44px; padding-top:22px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:12.5px; color:var(--silver-400);}
+
+/* skip link */
+.skip-link{position:absolute; left:-999px; top:0; background:#fff; color:var(--navy-950); padding:12px 18px; border-radius:0 0 10px 0; z-index:200;}
+.skip-link:focus{left:0;}
+.sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to content</a>
 
-<!-- ============================= HEADER ============================= -->
-<header class="site-header">
-  <div class="emergency-bar text-[12.5px] sm:text-[13px]">
-    <div class="wrap flex items-center justify-between py-2 gap-3">
-      <div class="flex items-center gap-2 min-w-0">
-        <span class="status-dot"></span>
-        <span class="truncate">Locating from your device…</span>
-      </div>
-      <button class="btn btn-emergency btn-sm emergency-call flex-none">
-        <span class="pulse-ring"></span>
-        🚑&nbsp; <span class="hidden xs:inline">Emergency — </span>Tap to Call
-      </button>
-    </div>
+<!-- ============================= EMERGENCY TOP BAR ============================= -->
+<div class="emergency-bar">
+  <div class="wrap">
+    <span id="locatingText" class="location-indicator">
+      <svg class="loc-pin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+      <span class="locating-dot" aria-hidden="true"></span>
+      <span class="loc-text-full" id="locTextFull">Locating from your device…</span>
+      <span class="loc-text-short" id="locTextShort">Locating…</span>
+    </span>
+    <button class="liquid-btn emergency" id="emergencyCallBtn" type="button" aria-label="Emergency — tap to call nearest ambulance">
+      <span class="pulse-dot" aria-hidden="true"></span>
+      <span class="emergency-icon" aria-hidden="true">🚑</span>
+      <span class="emergency-text-full" aria-hidden="true">Emergency — Tap to call nearest ambulance</span>
+      <span class="emergency-text-short" aria-hidden="true">Emergency call</span>
+    </button>
   </div>
+</div>
 
-  <div class="wrap flex items-center justify-between py-3.5">
-    <a href="#top" class="flex items-center gap-2.5">
-      <svg class="logo-mark" viewBox="0 0 40 40" fill="none">
-        <circle cx="20" cy="20" r="19" fill="#eef2ff" stroke="#2049e0" stroke-width="1.4"/>
-        <path d="M7 20h5l2.5-7 5 15 3-11 2 3h8.5" stroke="#2049e0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      </svg>
-      <span class="font-display text-[20px] font-semibold text-[var(--navy-950)]">Sthir</span>
+<!-- ============================= NAV ============================= -->
+<header class="nav">
+  <div class="wrap">
+    <a href="#main" class="logo" aria-label="Sthir home">
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true"><circle cx="15" cy="15" r="14" stroke="#2647c9" stroke-width="2"/><path d="M4 15h5l2-6 3 12 2.5-9 2 3h7.5" stroke="#2647c9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Sthir
     </a>
-
-    <nav class="hidden lg:flex items-center gap-7">
-      <a href="#resources" class="nav-link">ICU Beds</a>
-      <a href="#ambulance" class="nav-link">Ambulance</a>
-      <a href="#blood" class="nav-link">Blood Bank</a>
-      <a href="#how" class="nav-link">How it works</a>
-      <a href="#stories" class="nav-link">Stories</a>
-      <a href="#network" class="nav-link">Network stats</a>
-      <a href="#faq" class="nav-link">FAQ</a>
+    <nav aria-label="Primary">
+      <ul class="nav-links">
+        <li><a href="#icu-beds">ICU Beds</a></li>
+        <li><a href="#ambulance">Ambulance</a></li>
+        <li><a href="#blood-bank">Blood Bank</a></li>
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="#stories">Stories</a></li>
+        <li><a href="#network-stats">Network stats</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
     </nav>
-
-    <div class="flex items-center gap-3">
-      <a href="#partner" class="btn btn-primary btn-sm hidden sm:inline-flex">For hospitals</a>
-      <button id="hamburgerBtn" aria-label="Open menu" class="lg:hidden w-10 h-10 rounded-full flex items-center justify-center border border-[var(--silver-300)] bg-white/70">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0c1428" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    <div class="nav-cta">
+      <a href="#for-hospitals" class="liquid-btn" id="forHospitalsBtn">For hospitals</a>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileDrawer">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
     </div>
   </div>
 </header>
 
-<!-- Mobile drawer -->
-<div id="mobileOverlay" class="mobile-overlay"></div>
-<aside id="mobileDrawer" class="mobile-drawer">
-  <div class="flex items-center justify-between mb-6">
-    <span class="font-display text-[18px] font-semibold">Menu</span>
-    <button id="drawerClose" aria-label="Close menu" class="w-9 h-9 rounded-full flex items-center justify-center border border-[var(--silver-300)]">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0c1428" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+<div class="mobile-drawer" id="mobileDrawer">
+  <div class="scrim" data-close-drawer></div>
+  <div class="panel" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+    <button class="close-drawer" data-close-drawer aria-label="Close menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
+    <a href="#icu-beds" data-close-drawer>ICU Beds</a>
+    <a href="#ambulance" data-close-drawer>Ambulance</a>
+    <a href="#blood-bank" data-close-drawer>Blood Bank</a>
+    <a href="#how-it-works" data-close-drawer>How it works</a>
+    <a href="#stories" data-close-drawer>Stories</a>
+    <a href="#network-stats" data-close-drawer>Network stats</a>
+    <a href="#faq" data-close-drawer>FAQ</a>
+    <a href="#for-hospitals" data-close-drawer>For hospitals</a>
   </div>
-  <nav class="flex flex-col gap-1">
-    <a href="#resources" class="py-3 border-b border-[var(--silver-200)] font-semibold">ICU Beds</a>
-    <a href="#ambulance" class="py-3 border-b border-[var(--silver-200)] font-semibold">Ambulance</a>
-    <a href="#blood" class="py-3 border-b border-[var(--silver-200)] font-semibold">Blood Bank</a>
-    <a href="#how" class="py-3 border-b border-[var(--silver-200)] font-semibold">How it works</a>
-    <a href="#stories" class="py-3 border-b border-[var(--silver-200)] font-semibold">Stories</a>
-    <a href="#network" class="py-3 border-b border-[var(--silver-200)] font-semibold">Network stats</a>
-    <a href="#faq" class="py-3 border-b border-[var(--silver-200)] font-semibold">FAQ</a>
-    <a href="#partner" class="btn btn-primary mt-5 justify-center">For hospitals</a>
-  </nav>
-</aside>
+</div>
 
-<main id="top">
-
-  <!-- ============================= HERO ============================= -->
-  <section class="section pt-10 sm:pt-14 !pb-10">
-    <div class="wrap">
-      <div class="grid lg:grid-cols-2 gap-6 items-start">
-
-        <!-- Left: copy -->
-        <div class="reveal">
-          <span class="eyebrow"><span class="dot"></span>CHATTOGRAM &nbsp;•&nbsp; LIVE</span>
-          <h1 class="hero-heading mt-4">Nearest ICU bed,<br>ambulance,<br>or blood — located and booked<br><span class="accent">in under a minute.</span></h1>
-          <p class="mt-5 text-[16px] leading-relaxed text-[var(--ink-500)] max-w-[480px]">
-            Sthir connects patients' families directly to partner hospitals and blood banks, so you spend your time getting there — not calling around.
-          </p>
-          <div class="mt-7 flex flex-col items-start gap-2.5">
-            <button id="useLocationBtn" class="btn btn-primary">
-              📍&nbsp; <span class="btn-label">Use my current location</span>
-            </button>
-            <span id="locStatus" class="text-[12.5px] text-[var(--ink-400)]">location not shared — showing default distances for Chattogram</span>
-          </div>
-        </div>
-
-        <!-- Right: two stacked cards on mobile, side-by-side handled by grid below hero on lg -->
-        <div class="grid sm:grid-cols-2 gap-5 reveal">
-
-          <!-- Live monitoring card -->
-          <div class="glass-card-navy p-6 sm:col-span-2 lg:col-span-1">
-            <span class="eyebrow" style="color:#9be9ec"><span class="dot" style="background:#5fd8e0"></span>LIVE — FULL-BODY MONITORING</span>
-            <h3 class="font-display text-[21px] font-semibold mt-3 leading-snug">Every vital sign, tracked down to the nerve.</h3>
-            <p class="text-[13.5px] leading-relaxed mt-2" style="color:#b7c1e6">Partner ICUs monitor more than a bed number — heart, breath, and neural signal, streamed live from admission.</p>
-
-            <div class="flex gap-6 mt-5">
-              <div><div class="vital-value">69<span class="text-[13px] font-sans font-medium" style="color:#a9b6e8"> bpm</span></div><div class="vital-label">Heart rate</div></div>
-              <div><div class="vital-value">99<span class="text-[13px] font-sans font-medium" style="color:#a9b6e8">%</span></div><div class="vital-label">SpO₂</div></div>
-              <div><div class="vital-value" style="font-size:1.5rem">Steady</div><div class="vital-label">Neural activity</div></div>
-            </div>
-
-            <div class="body-stage mt-4 flex justify-center">
-              <svg class="body-figure" width="200" height="260" viewBox="0 0 200 260" fill="none">
-                <ellipse class="foot-ripple" cx="80" cy="250" rx="16" ry="5" stroke="#5fd8e0" stroke-width="1.5" opacity=".5"/>
-                <ellipse class="foot-ripple" cx="120" cy="250" rx="16" ry="5" stroke="#5fd8e0" stroke-width="1.5" opacity=".5" style="animation-delay:1.2s"/>
-                <g class="breathe" opacity=".9" stroke="#7fa8ff" stroke-width="1.2" fill="none">
-                  <circle cx="100" cy="34" r="16"/>
-                  <path d="M84 34c-4 4-4 10 0 14M116 34c4 4 4 10 0 14" stroke="#5fd8e0" stroke-width=".8" opacity=".6"/>
-                  <path d="M100 50v40M100 60h-24l-8 14M100 60h24l8 14M76 90l-6 46M124 90l6 46M94 90v70M106 90v70M94 160l-8 46M106 160l8 46" stroke-linecap="round"/>
-                </g>
-                <path class="neural-line" d="M100 50q-14 8 -10 24t 8 22" stroke="#9be9ec" stroke-width="1" fill="none" opacity=".8"/>
-                <path class="neural-line" d="M100 50q14 10 10 26t-6 20" stroke="#9be9ec" stroke-width="1" fill="none" opacity=".8" style="animation-delay:1s"/>
-                <path d="M92 78c3-6 5-6 8 0s5 6 8 0" stroke="#ff8b8b" stroke-width="1.6" fill="none" class="heartbeat"/>
-                <g opacity=".55" stroke="#5fd8e0" stroke-width=".7" fill="none">
-                  <path d="M88 96c-2 8-2 14 2 18M112 96c2 8 2 14-2 18"/>
-                  <ellipse cx="100" cy="120" rx="9" ry="12"/>
-                </g>
-              </svg>
-            </div>
-          </div>
-
-          <!-- Network card -->
-          <div class="glass-card p-6 sm:col-span-2 lg:col-span-1">
-            <span class="eyebrow"><span class="dot"></span>LIVE — 3D NETWORK</span>
-            <h3 class="font-display text-[20px] font-semibold mt-3 leading-snug text-[var(--navy-950)]">Your care network, mapped in real time.</h3>
-            <p class="text-[13.5px] leading-relaxed mt-2 text-[var(--ink-500)]">Every connected ICU, ambulance, and blood bank orbiting the Sthir dispatch hub. Move your cursor to look around.</p>
-
-            <div id="networkStage" class="network-stage mt-3 -mx-2" style="touch-action:none; cursor:grab;">
-              <svg id="networkSvg" viewBox="0 0 520 420" class="w-full h-auto" style="transition:transform .2s linear"></svg>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[12px] text-[var(--ink-500)] mt-2">
-              <span class="flex items-center gap-1.5"><i class="inline-block w-2.5 h-2.5 rounded-full" style="background:#3fbf7f"></i>ICU beds</span>
-              <span class="flex items-center gap-1.5"><i class="inline-block w-2.5 h-2.5 rounded-full" style="background:#f0954a"></i>Ambulance</span>
-              <span class="flex items-center gap-1.5"><i class="inline-block w-2.5 h-2.5 rounded-full" style="background:#ef5b5b"></i>Blood bank</span>
-              <span class="flex items-center gap-1.5"><i class="inline-block w-2.5 h-2.5 rounded-full border border-[var(--silver-400)]" style="background:#fff"></i>Dispatch hub</span>
-              <span class="ml-auto text-[var(--ink-400)]">drag to explore</span>
-            </div>
-          </div>
-
-        </div>
+<main id="main">
+<!-- ============================= HERO ============================= -->
+<section class="hero wrap">
+  <div class="hero-grid">
+    <div class="hero-copy reveal in">
+      <span class="eyebrow"><span class="dot"></span>Chattogram • Live</span>
+      <h1>Nearest ICU bed, ambulance, or blood — located and booked <em>in under a minute.</em></h1>
+      <p class="lede">Sthir connects patients' families directly to partner hospitals and blood banks, so you spend your time getting there — not calling around.</p>
+      <div class="hero-actions">
+        <button class="liquid-btn" id="locateBtn" type="button">📍&nbsp;Use my current location</button>
+        <a href="#icu-beds" class="liquid-btn ghost">Browse ICU beds</a>
       </div>
+      <p class="location-note" id="locationNote">Location not shared — showing default distances for Chattogram</p>
 
-      <!-- Quick stats -->
-      <div class="grid grid-cols-3 gap-3 sm:gap-5 mt-8 reveal">
-        <div class="glass-card p-4 sm:p-5 flex items-center gap-3">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2049e0" stroke-width="1.8" class="flex-none"><path d="M12 21c-4.5-3-8-6.5-8-10.5A5.5 5.5 0 0 1 12 6.2 5.5 5.5 0 0 1 20 10.5C20 14.5 16.5 18 12 21Z"/></svg>
-          <div><div class="stat-num" data-count data-target="15">0</div><div class="text-[12px] sm:text-[13px] text-[var(--ink-500)] leading-tight">ICU beds free right now</div></div>
+      <div class="stats-row reveal-stagger" id="statsRow">
+        <div class="glass-card stat-card" style="--i:0">
+          <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h4l3 8 4-16 3 8h4"/></svg></div>
+          <div><div class="stat-num" data-count="15">0</div><div class="stat-label">ICU beds free right now</div></div>
         </div>
-        <div class="glass-card p-4 sm:p-5 flex items-center gap-3">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e0653a" stroke-width="1.8" class="flex-none"><path d="M3 17h1a2 2 0 1 0 4 0h8a2 2 0 1 0 4 0h1v-5l-3-4h-4V6H6a2 2 0 0 0-2 2v9Z"/></svg>
-          <div><div class="stat-num" data-count data-target="7" data-suffix="m">0</div><div class="text-[12px] sm:text-[13px] text-[var(--ink-500)] leading-tight">Avg. ambulance ETA</div></div>
+        <div class="glass-card stat-card" style="--i:1">
+          <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h3l2-5h9l3 5h1M8 12V8a2 2 0 0 1 2-2h3l3 4"/><circle cx="7.5" cy="17.5" r="1.6"/><circle cx="17.5" cy="17.5" r="1.6"/></svg></div>
+          <div><div class="stat-num" data-count="7" data-suffix="m">0</div><div class="stat-label">Avg. ambulance ETA</div></div>
         </div>
-        <div class="glass-card p-4 sm:p-5 flex items-center gap-3">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="#ef5b5b" class="flex-none"><path d="M12 2s7 8.2 7 13a7 7 0 1 1-14 0c0-4.8 7-13 7-13Z"/></svg>
-          <div><div class="stat-num" data-count data-target="147">0</div><div class="text-[12px] sm:text-[13px] text-[var(--ink-500)] leading-tight">Blood units in network</div></div>
+        <div class="glass-card stat-card" style="--i:2">
+          <div class="stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.5 6 11a6 6 0 1 1-12 0c0-4.5 6-11 6-11z"/></svg></div>
+          <div><div class="stat-num" data-count="147">0</div><div class="stat-label">Blood units in network</div></div>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- ====================== HOW STHIR WORKS ====================== -->
-  <section id="how" class="section">
-    <div class="wrap">
-      <div class="flex flex-wrap items-end justify-between gap-4 reveal">
-        <div class="section-head">
-          <span class="eyebrow"><span class="dot"></span>PROCESS</span>
-          <h2 class="font-display text-[28px] sm:text-[34px] font-semibold text-[var(--navy-950)] mt-2">How Sthir works</h2>
+    <div class="hero-cards reveal in">
+      <!-- LIVE FULL-BODY MONITORING -->
+      <div class="glass-card dark vitals-card" id="vitalsCard">
+        <div class="card-label"><span class="live-dot"></span>Live — Full-body monitoring</div>
+        <h3>Every vital sign, tracked down to the nerve.</h3>
+        <p>Partner ICUs monitor more than a bed number — heart, breath, and neural signal, streamed live from admission.</p>
+        <div class="vitals-row">
+          <div class="vital"><div class="v-num" id="hrNum">69 <small>bpm</small></div><div class="v-label">Heart rate</div></div>
+          <div class="vital"><div class="v-num">99<small>%</small></div><div class="v-label">SpO₂</div></div>
+          <div class="vital"><div class="v-num">Steady</div><div class="v-label">Neural activity</div></div>
         </div>
-        <p class="text-[14.5px] text-[var(--ink-500)] max-w-[320px]">Three steps between a family and the care they need.</p>
+        <div class="body-stage">
+          <svg viewBox="0 0 160 260" aria-label="Stylized anatomical illustration of a human body with organs highlighted">
+            <defs>
+              <linearGradient id="bodyStroke" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#bfe0ff"/><stop offset="100%" stop-color="#5a7fe0"/>
+              </linearGradient>
+              <radialGradient id="heartGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#ff8f7a" stop-opacity=".95"/><stop offset="100%" stop-color="#ff8f7a" stop-opacity="0"/>
+              </radialGradient>
+              <radialGradient id="brainGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#8ff2e8" stop-opacity=".9"/><stop offset="100%" stop-color="#8ff2e8" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <!-- silhouette -->
+            <path d="M80 8c9 0 15 7 15 16 0 6-2 10-5 13 12 4 19 14 20 27l3 33-9 2-2 30 8 55-6 60h-14l-4-58-6-40-6 40-4 58H56l-6-60 8-55-2-30-9-2 3-33c1-13 8-23 20-27-3-3-5-7-5-13 0-9 6-16 15-16z"
+              fill="rgba(180,200,240,.08)" stroke="url(#bodyStroke)" stroke-width="1.4"/>
+            <!-- brain -->
+            <ellipse cx="80" cy="24" rx="10" ry="8" fill="url(#brainGlow)"/>
+            <path d="M73 20c1-4 5-6 8-5 2-4 8-4 9 1 4 0 5 5 2 7 2 3-1 7-5 6-1 3-6 3-7-1-4 1-7-3-5-6-3-1-3-4-2-6z" fill="none" stroke="#8ff2e8" stroke-width=".9"/>
+            <!-- neural lines -->
+            <g stroke="#8ff2e8" stroke-width=".7" opacity=".7" class="neural-lines">
+              <path d="M80 32v18M80 50l-10 8M80 50l10 8"/>
+            </g>
+            <!-- heart -->
+            <g id="heartGroup">
+              <circle cx="76" cy="70" r="13" fill="url(#heartGlow)"/>
+              <path d="M76 78c-8-6-13-10-13-16 0-4 3-7 7-7 3 0 5 2 6 4 1-2 3-4 6-4 4 0 7 3 7 7 0 6-5 10-13 16z" fill="#ff8f7a" opacity=".9"/>
+            </g>
+            <!-- lungs -->
+            <path d="M62 60c-5 2-8 8-8 16 0 7 2 12 5 12 4 0 6-6 6-14 0-6-1-11-3-14z" fill="#bfe0ff" opacity=".55"/>
+            <path d="M98 60c5 2 8 8 8 16 0 7-2 12-5 12-4 0-6-6-6-14 0-6 1-11 3-14z" fill="#bfe0ff" opacity=".55"/>
+            <!-- liver/stomach/kidneys -->
+            <ellipse cx="68" cy="96" rx="10" ry="7" fill="#f2c98a" opacity=".55"/>
+            <ellipse cx="92" cy="100" rx="7" ry="9" fill="#c9a6e0" opacity=".5"/>
+            <ellipse cx="70" cy="112" rx="5" ry="8" fill="#e08a8a" opacity=".5"/>
+            <ellipse cx="90" cy="112" rx="5" ry="8" fill="#e08a8a" opacity=".5"/>
+            <!-- vessels -->
+            <path d="M80 82c0 20-14 26-14 46M80 82c0 20 14 26 14 46" fill="none" stroke="#ff9d8a" stroke-width="1" opacity=".55"/>
+            <!-- skeleton hint -->
+            <path d="M80 40v150M62 150h36M64 176h32M66 200h28" stroke="#dbe6ff" stroke-width=".6" opacity=".4"/>
+          </svg>
+          <div class="ripple-feet" aria-hidden="true"><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="ring"></span></div>
+        </div>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-5 mt-8">
-        <div class="glass-card p-6 reveal">
-          <span class="step-num">01</span>
-          <h3 class="font-bold text-[16.5px] text-[var(--navy-950)] mt-2">Share your location</h3>
-          <p class="text-[14px] text-[var(--ink-500)] leading-relaxed mt-2">One tap gives you live distance and ETA to every partner hospital, ambulance, and blood bank nearby — no address typing.</p>
+      <!-- LIVE 3D NETWORK -->
+      <div class="glass-card network-card">
+        <div class="card-label"><span class="live-dot"></span>Live — 3D network</div>
+        <h3>Your care network, mapped in real time.</h3>
+        <p>Every connected ICU, ambulance, and blood bank orbiting the Sthir dispatch hub. Move your cursor to look around.</p>
+        <div class="net-stage" id="netStage">
+          <svg id="netSvg" viewBox="0 0 320 260" aria-label="Interactive diagram of the Sthir dispatch network"></svg>
+          <div class="net-tooltip" id="netTooltip"></div>
+          <span class="net-hint">drag to explore</span>
         </div>
-        <div class="glass-card p-6 reveal" style="transition-delay:.08s">
-          <span class="step-num">02</span>
-          <h3 class="font-bold text-[16.5px] text-[var(--navy-950)] mt-2">Compare in real time</h3>
-          <p class="text-[14px] text-[var(--ink-500)] leading-relaxed mt-2">See per-day ICU rates, free beds, ambulance type, and blood units side by side — sorted by what's actually closest and available.</p>
-        </div>
-        <div class="glass-card p-6 reveal" style="transition-delay:.16s">
-          <span class="step-num">03</span>
-          <h3 class="font-bold text-[16.5px] text-[var(--navy-950)] mt-2">Book or dispatch instantly</h3>
-          <p class="text-[14px] text-[var(--ink-500)] leading-relaxed mt-2">Reserve an ICU bed, call an ambulance, or request blood — get a confirmation ID immediately, with no back-and-forth calls.</p>
+        <div class="net-legend">
+          <span><i style="background:#22a06b"></i>ICU beds</span>
+          <span><i style="background:#e08a2c"></i>Ambulance</span>
+          <span><i style="background:#e0553f"></i>Blood bank</span>
+          <span><i style="background:#c8cdd8;border:1px solid #8290b8"></i>Dispatch hub</span>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ====================== RESOURCE SEARCH (ICU / AMB / BLOOD) ====================== -->
-  <section id="resources" class="section !pt-0">
-    <div class="wrap">
-      <div class="glass-card p-4 sm:p-6 reveal">
+<!-- ============================= RESOURCE SEARCH (ICU / AMBULANCE / BLOOD) ============================= -->
+<section class="section wrap" id="icu-beds">
+  <div class="glass-card resource-panel reveal">
+    <div class="tabbar" role="tablist" aria-label="Emergency resources">
+      <button class="tab-btn" role="tab" id="tab-icu" aria-selected="true" aria-controls="panel-icu" data-tab="icu">ICU Beds (6)</button>
+      <button class="tab-btn" role="tab" id="tab-ambulance" aria-selected="false" aria-controls="panel-ambulance" data-tab="ambulance" tabindex="-1">Ambulance (4)</button>
+      <button class="tab-btn" role="tab" id="tab-blood" aria-selected="false" aria-controls="panel-blood" data-tab="blood" tabindex="-1">Blood Bank (4)</button>
+    </div>
 
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div class="flex items-center gap-2 overflow-x-auto scroll-x !pb-0">
-            <button class="tab-btn active" data-tab="icu">ICU Beds (6)</button>
-            <button class="tab-btn" data-tab="ambulance" id="ambulance">Ambulance (4)</button>
-            <button class="tab-btn" data-tab="blood" id="blood">Blood Bank (4)</button>
-          </div>
-          <div class="flex items-center gap-2">
-            <input id="resourceSearch" type="text" placeholder="Search hospitals…" class="hidden sm:block text-[13.5px] px-3.5 py-2 rounded-full border border-[var(--silver-300)] bg-white/70 w-[180px] focus:outline-none focus:ring-2" style="--tw-ring-color:rgba(59,99,255,.25)">
-            <span class="text-[12.5px] text-[var(--ink-400)] whitespace-nowrap">updated 03:38 AM</span>
-          </div>
-        </div>
+    <div class="panel-toolbar">
+      <div class="toolbar-left">
+        <span style="font-size:12.5px;color:var(--ink-500);">Sorted by <b id="sortLabel" style="color:var(--navy-950)">distance</b></span>
+        <select class="sort-select" id="sortSelect" aria-label="Sort results">
+          <option value="distance">Distance</option>
+          <option value="price">Price</option>
+          <option value="rating">Rating</option>
+        </select>
+        <input class="search-input" id="searchInput" type="search" placeholder="Search hospitals…" aria-label="Search results">
+        <label class="chip-toggle" id="verifiedToggleWrap"><input type="checkbox" id="verifiedOnly"> Verified only</label>
+      </div>
+      <span class="updated-at" id="updatedAt">updated 03:38 AM</span>
+    </div>
 
-        <div class="flex items-center justify-between mt-4 flex-wrap gap-3">
-          <div id="sortControls" class="flex items-center gap-2 text-[13px]">
-            <span class="text-[var(--ink-400)] mr-1">Sort by</span>
-            <button class="tab-btn sort-btn active" data-sort="distance">Distance</button>
-            <button class="tab-btn sort-btn" data-sort="price">Price</button>
-            <button class="tab-btn sort-btn" data-sort="rating">Rating</button>
-          </div>
-          <span class="text-[13px] text-[var(--ink-500)]"><span id="resultCount">6</span> results</span>
-        </div>
+    <div id="panel-icu" role="tabpanel" aria-labelledby="tab-icu" class="resource-list"></div>
+    <div id="panel-ambulance" role="tabpanel" aria-labelledby="tab-ambulance" class="resource-list" hidden></div>
+    <div id="panel-blood" role="tabpanel" aria-labelledby="tab-blood" class="resource-list" hidden></div>
+  </div>
+</section>
 
-        <div id="resourceList" class="grid gap-4 mt-5"></div>
+<!-- ============================= HOW IT WORKS ============================= -->
+<section class="wrap" style="padding-block:8px 0;" aria-label="Network trust indicators">
+  <div class="glass-card reveal" style="padding:22px 26px; display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap;">
+    <div style="display:flex; align-items:center; gap:10px; font-family:var(--font-mono); font-size:12px; color:var(--ink-500); letter-spacing:.04em;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--royal-600)"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+      Government-registered · DGHS-listed partner network
+    </div>
+    <div class="trust-marquee" style="display:flex; gap:28px; flex-wrap:wrap; font-family:var(--font-display); font-style:italic; font-size:15px; color:var(--ink-700); opacity:.85;">
+      <span>Chattogram Medical College</span>
+      <span>Imperial Hospital</span>
+      <span>Max Hospital</span>
+      <span>Sandhani Blood Bank</span>
+      <span>Red Crescent</span>
+    </div>
+    <div style="font-family:var(--font-mono); font-size:12px; color:var(--ink-500);"><b style="color:var(--navy-950)">18</b> partner facilities live</div>
+  </div>
+</section>
+
+<section class="section wrap" id="how-it-works">
+  <div class="section-head reveal">
+    <div>
+      <span class="eyebrow plain">Process</span>
+      <h2>How Sthir works</h2>
+    </div>
+    <p class="sub">Three steps between a family and the care they need.</p>
+  </div>
+  <div class="steps-grid reveal-stagger">
+    <div class="glass-card step-card reveal" style="--i:0">
+      <span class="step-num">01</span>
+      <div class="step-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+      <h4>Share your location</h4>
+      <p>One tap gives you live distance and ETA to every partner hospital, ambulance, and blood bank nearby — no address typing.</p>
+    </div>
+    <div class="glass-card step-card reveal" style="--i:1">
+      <span class="step-num">02</span>
+      <div class="step-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19l6-7 4 4 6-9"/></svg></div>
+      <h4>Compare in real time</h4>
+      <p>See per-day ICU rates, free beds, ambulance type, and blood units side by side — sorted by what's actually closest and available.</p>
+    </div>
+    <div class="glass-card step-card reveal" style="--i:2">
+      <span class="step-num">03</span>
+      <div class="step-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+      <h4>Book or dispatch instantly</h4>
+      <p>Reserve an ICU bed, call an ambulance, or request blood — get a confirmation ID immediately, with no back-and-forth calls.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= STORIES ============================= -->
+<section class="section wrap" id="stories">
+  <div class="section-head reveal">
+    <div><span class="eyebrow plain">Stories</span><h2>Families who found care faster</h2></div>
+    <p class="sub">Real moments from the Sthir network across Chattogram.</p>
+  </div>
+  <div class="testi-track" id="testiTrack">
+    <div class="glass-card testi-card reveal">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"Sthir found us an ICU bed at Chattogram Medical College in under four minutes. We didn't have to call a single hospital ourselves."</p>
+      <div class="testi-person"><div class="testi-avatar">RA</div><div><div class="testi-name">Rafiq Ahmed</div><div class="testi-role">Son of patient, Panchlaish</div></div></div>
+    </div>
+    <div class="glass-card testi-card reveal" style="--i:1">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"The ambulance arrived faster than we expected — the driver already had our location pinned before we even called. That kind of speed matters."</p>
+      <div class="testi-person"><div class="testi-avatar">NS</div><div><div class="testi-name">Nasrin Sultana</div><div class="testi-role">Family member, GEC Circle</div></div></div>
+    </div>
+    <div class="glass-card testi-card reveal" style="--i:2">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-quote">"We needed O- blood at 2am. Sthir had it reserved for us within minutes of requesting through the app. This service is a lifeline."</p>
+      <div class="testi-person"><div class="testi-avatar">KH</div><div><div class="testi-name">Kamal Hossain</div><div class="testi-role">Patient's brother, Chawkbazar</div></div></div>
+    </div>
+  </div>
+  <div class="testi-dots" id="testiDots"></div>
+</section>
+
+<!-- ============================= NETWORK STATS ============================= -->
+<section class="section wrap" id="network-stats">
+  <div class="section-head centered reveal">
+    <div>
+      <span class="eyebrow plain live-eyebrow"><span class="live-eyebrow-dot"></span>Analytics</span>
+      <h2>Network performance, at a glance.</h2>
+    </div>
+    <p class="sub">Live occupancy and response performance across every partner hospital.</p>
+  </div>
+  <div class="analytics-grid">
+    <div class="glass-card analytics-card reveal" id="occCard">
+      <div class="analytics-card-head">
+        <div><h4>ICU bed occupancy today</h4><p class="sub">Filled vs. total beds, by hospital</p></div>
+        <span class="live-badge"><span class="live-badge-dot"></span>Live</span>
+      </div>
+      <div class="updated-line" id="occUpdated">Updated just now</div>
+      <div id="occList"></div>
+    </div>
+    <div class="glass-card analytics-card reveal" id="etaCard" style="--i:1">
+      <div class="analytics-card-head">
+        <div><h4>Avg. ambulance response time</h4><p class="sub">Minutes from request to arrival, last 7 days</p></div>
+        <span class="live-badge"><span class="live-badge-dot"></span>Live</span>
+      </div>
+      <div class="updated-line" id="etaUpdated">Updated just now</div>
+      <div class="chart-wrap"><canvas id="etaChart"></canvas>
+        <div class="chart-point-glow" id="chartPointGlow" aria-hidden="true"></div>
+        <div class="chart-live-tag" id="chartLiveTag">LIVE</div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ====================== NETWORK STATS ====================== -->
-  <section id="network" class="section">
-    <div class="wrap">
+<!-- ============================= LIVE ACTIVITY ============================= -->
+<section class="section wrap" id="activity">
+  <div class="section-head reveal">
+    <div>
+      <span class="eyebrow plain live-eyebrow"><span class="live-eyebrow-dot"></span>Live activity</span>
+      <h2>Happening right now across the network.</h2>
+    </div>
+    <p class="sub">A live feed of bookings, dispatches, and reservations across every partner in Chattogram.</p>
+  </div>
+  <div class="glass-card activity-card reveal">
+    <ul class="activity-list" id="activityList" aria-live="polite"></ul>
+  </div>
+</section>
+
+<!-- ============================= AMBULANCE ============================= -->
+<section class="section wrap" id="ambulance">
+  <div class="section-head reveal">
+    <div><span class="eyebrow plain">Dispatch</span><h2>Ambulance, on the way in minutes</h2></div>
+    <p class="sub">Four vehicle types, matched to the level of care your patient needs.</p>
+  </div>
+  <div class="amb-grid" id="ambGrid"></div>
+</section>
+
+<!-- ============================= BLOOD BANK ============================= -->
+<section class="section wrap" id="blood-bank">
+  <div class="section-head reveal">
+    <div><span class="eyebrow plain">Blood bank</span><h2>Blood availability across the network</h2></div>
+    <p class="sub">Live unit counts by group, refreshed from every partner bank.</p>
+  </div>
+  <div class="blood-groups-grid" id="bloodGroupsGrid"></div>
+  <div class="bank-list" id="bankList"></div>
+</section>
+
+<!-- ============================= FAQ ============================= -->
+<section class="section wrap" id="faq">
+  <div class="faq-layout">
+    <div class="faq-col">
       <div class="section-head reveal">
-        <span class="eyebrow"><span class="dot"></span>ANALYTICS</span>
-        <h2 class="font-display text-[28px] sm:text-[34px] font-semibold text-[var(--navy-950)] mt-2">Network performance, at a glance.</h2>
+        <div><span class="eyebrow plain">FAQ</span><h2>Questions, answered</h2></div>
       </div>
+      <div class="faq-list" id="faqList"></div>
+    </div>
 
-      <div class="grid lg:grid-cols-2 gap-5 mt-8">
-        <div class="glass-card p-6 reveal">
-          <h3 class="font-bold text-[16px] text-[var(--navy-950)]">ICU bed occupancy today</h3>
-          <p class="text-[13px] text-[var(--ink-500)] mt-1">Filled vs. total beds, by hospital</p>
-          <div id="occupancyList" class="flex flex-col gap-4 mt-6"></div>
+    <div class="ec-col">
+      <div class="glass-card ec-panel reveal" id="ecPanel">
+        <div class="ec-live"><span class="ec-live-dot"></span>Live network status</div>
+
+        <h3 class="ec-heading">Emergency care,<br>one tap away.</h3>
+        <p class="ec-sub">Nearest ICU bed, ambulance and blood — ready when you need it most.</p>
+
+        <div class="ec-visual" aria-hidden="true">
+          <svg viewBox="0 0 300 210">
+            <defs>
+              <linearGradient id="ecPinGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#3557e0"/><stop offset="100%" stop-color="#1c3aa8"/>
+              </linearGradient>
+            </defs>
+            <g class="ec-wave-group">
+              <circle class="ec-wave" cx="150" cy="108" r="14"/>
+              <circle class="ec-wave" cx="150" cy="108" r="14" style="animation-delay:.9s"/>
+              <circle class="ec-wave" cx="150" cy="108" r="14" style="animation-delay:1.8s"/>
+            </g>
+            <line class="ec-line" x1="150" y1="108" x2="66" y2="52"/>
+            <line class="ec-line" x1="150" y1="108" x2="234" y2="52"/>
+            <line class="ec-line" x1="150" y1="108" x2="66" y2="168"/>
+            <line class="ec-line" x1="150" y1="108" x2="234" y2="168"/>
+
+            <g class="ec-node" style="animation-delay:0s">
+              <circle cx="66" cy="52" r="15" fill="#22a06b"/>
+              <path d="M59 52h14M66 45v14" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+              <text x="66" y="30" text-anchor="middle" class="ec-node-label">ICU BED</text>
+            </g>
+            <g class="ec-node" style="animation-delay:.5s">
+              <circle cx="234" cy="52" r="15" fill="#e08a2c"/>
+              <path d="M226 55h16l-2-7h-4l-2-4h-6z" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
+              <text x="234" y="30" text-anchor="middle" class="ec-node-label">AMBULANCE</text>
+            </g>
+            <g class="ec-node" style="animation-delay:1s">
+              <circle cx="66" cy="168" r="15" fill="#e0553f"/>
+              <path d="M66 161c-4 4-6 7-6 10a6 6 0 0 0 12 0c0-3-2-6-6-10z" fill="#fff"/>
+              <text x="66" y="196" text-anchor="middle" class="ec-node-label">BLOOD</text>
+            </g>
+            <g class="ec-node" style="animation-delay:1.5s">
+              <circle cx="234" cy="168" r="15" fill="#3557e0"/>
+              <path d="M228 174v-11l6-4 6 4v11h-4v-6h-4v6z" fill="#fff"/>
+              <text x="234" y="196" text-anchor="middle" class="ec-node-label">HOSPITAL</text>
+            </g>
+
+            <g class="ec-pin">
+              <path d="M150 84c11 0 20 9 20 20 0 14-20 34-20 34s-20-20-20-34c0-11 9-20 20-20z" fill="url(#ecPinGrad)"/>
+              <path d="M143 104h14M150 97v14" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+            </g>
+          </svg>
         </div>
-        <div class="glass-card p-6 reveal" style="transition-delay:.1s">
-          <h3 class="font-bold text-[16px] text-[var(--navy-950)]">Avg. ambulance response time</h3>
-          <p class="text-[13px] text-[var(--ink-500)] mt-1">Minutes from request to arrival, last 7 days</p>
-          <div id="responseChart" class="mt-4"></div>
+
+        <div class="ec-stats-grid" id="ecStatsGrid"></div>
+
+        <button class="liquid-btn ec-cta" id="ecCtaBtn" type="button">Find nearest care now <span aria-hidden="true">→</span></button>
+        <p class="location-note" id="ecLocationNote"></p>
+
+        <div class="ec-trust">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+          Trusted by thousands of families across Chattogram
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ====================== BLOOD BANK OVERVIEW ====================== -->
-  <section class="section !pt-0">
-    <div class="wrap">
-      <div class="glass-card-navy p-6 sm:p-8 reveal">
-        <div class="flex items-start justify-between flex-wrap gap-4">
-          <div>
-            <span class="eyebrow" style="color:#ffb3b3"><span class="dot" style="background:#ef5b5b"></span>BLOOD BANK NETWORK</span>
-            <h3 class="font-display text-[22px] sm:text-[26px] font-semibold mt-3">Eight blood groups, tracked live across four partner banks.</h3>
-            <p class="text-[13.5px] mt-2 max-w-[520px]" style="color:#b7c1e6">Low-stock groups are flagged automatically so critical requests get routed to whichever bank actually has supply.</p>
-          </div>
-        </div>
-        <div class="grid grid-cols-4 sm:grid-cols-8 gap-2.5 mt-6" id="bloodOverview">
-          <!-- filled by aggregate below -->
-        </div>
+<!-- ============================= FOR HOSPITALS ============================= -->
+<section class="section wrap" id="for-hospitals">
+  <div class="partner-section reveal">
+    <div class="partner-grid">
+      <div>
+        <span class="eyebrow" style="color:var(--cyan-300)"><span class="dot" style="background:var(--cyan-300)"></span>For hospitals</span>
+        <h2>Connect your beds, ambulances, and blood inventory to families who need them.</h2>
+        <p>Join the Sthir network to receive verified requests directly, manage capacity in real time, and cut the phone-tag out of emergency admissions.</p>
+        <a href="#" class="liquid-btn" id="partnerCta">Partner with Sthir</a>
+      </div>
+      <div class="feature-grid">
+        <div class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Live ICU inventory</div>
+        <div class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Ambulance management</div>
+        <div class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Blood inventory</div>
+        <div class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Patient requests</div>
+        <div class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Booking management</div>
+        <div class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Analytics</div>
+        <div class="feature-item"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>Hospital verification</div>
       </div>
     </div>
-  </section>
-
-  <!-- ====================== TESTIMONIALS ====================== -->
-  <section id="stories" class="section">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow"><span class="dot"></span>STORIES</span>
-        <h2 class="font-display text-[28px] sm:text-[34px] font-semibold text-[var(--navy-950)] mt-2">Families who found care in minutes.</h2>
-      </div>
-      <div id="testimonialTrack" class="scroll-x mt-8 reveal"></div>
-    </div>
-  </section>
-
-  <!-- ====================== FAQ ====================== -->
-  <section id="faq" class="section !pt-0">
-    <div class="wrap max-w-[820px]">
-      <div class="section-head reveal">
-        <span class="eyebrow"><span class="dot"></span>FAQ</span>
-        <h2 class="font-display text-[28px] sm:text-[34px] font-semibold text-[var(--navy-950)] mt-2">Common questions</h2>
-      </div>
-      <div id="faqList" class="mt-6 reveal"></div>
-    </div>
-  </section>
-
-  <!-- ====================== HOSPITAL PARTNER CTA ====================== -->
-  <section id="partner" class="section">
-    <div class="wrap">
-      <div class="glass-card-navy p-8 sm:p-12 reveal grid lg:grid-cols-[1.3fr,1fr] gap-8 items-center">
-        <div>
-          <span class="eyebrow" style="color:#9be9ec"><span class="dot" style="background:#5fd8e0"></span>FOR HOSPITALS</span>
-          <h2 class="font-display text-[26px] sm:text-[32px] font-semibold mt-3 leading-snug">Connect your beds, ambulances, and blood inventory to families who need them.</h2>
-          <a href="#" class="btn btn-primary mt-6">Partner with Sthir</a>
-        </div>
-        <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-[14px]" style="color:#dfe6ff">
-          <li class="flex items-center gap-2">✓ Live ICU inventory</li>
-          <li class="flex items-center gap-2">✓ Ambulance management</li>
-          <li class="flex items-center gap-2">✓ Blood inventory</li>
-          <li class="flex items-center gap-2">✓ Patient requests</li>
-          <li class="flex items-center gap-2">✓ Booking management</li>
-          <li class="flex items-center gap-2">✓ Analytics</li>
-          <li class="flex items-center gap-2">✓ Hospital verification</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
+  </div>
+</section>
 </main>
 
 <!-- ============================= FOOTER ============================= -->
-<footer class="border-t border-[var(--silver-200)] pt-14 pb-8">
-  <div class="wrap grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
-    <div>
-      <div class="flex items-center gap-2.5">
-        <svg class="logo-mark" width="30" height="30" viewBox="0 0 40 40" fill="none">
-          <circle cx="20" cy="20" r="19" fill="#eef2ff" stroke="#2049e0" stroke-width="1.4"/>
-          <path d="M7 20h5l2.5-7 5 15 3-11 2 3h8.5" stroke="#2049e0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        </svg>
-        <span class="font-display text-[18px] font-semibold text-[var(--navy-950)]">Sthir</span>
-      </div>
-      <p class="text-[13.5px] text-[var(--ink-500)] mt-3 leading-relaxed max-w-[240px]">Emergency healthcare infrastructure for faster access to care.</p>
+<section class="section wrap" id="support">
+  <div class="section-head reveal">
+    <div><span class="eyebrow plain">Support</span><h2>Help is one tap away, day or night</h2></div>
+    <p class="sub">If the app can't reach you, a person always can.</p>
+  </div>
+  <div class="support-grid reveal-stagger">
+    <div class="glass-card support-card reveal" style="--i:0">
+      <div class="support-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.8 2.1z"/></svg></div>
+      <h4>24/7 dispatch hotline</h4>
+      <p>Speak to a Sthir coordinator immediately — no menus, no hold music.</p>
+      <a href="tel:+8801700000000" class="support-link">+880 1700-000000</a>
     </div>
-    <div>
-      <h4 class="font-bold text-[13.5px] text-[var(--navy-950)] mb-3">Navigation</h4>
-      <ul class="flex flex-col gap-2.5 text-[13.5px] text-[var(--ink-500)]">
-        <li><a href="#resources" class="hover:text-[var(--navy-900)]">ICU Beds</a></li>
-        <li><a href="#ambulance" class="hover:text-[var(--navy-900)]">Ambulance</a></li>
-        <li><a href="#blood" class="hover:text-[var(--navy-900)]">Blood Bank</a></li>
-        <li><a href="#how" class="hover:text-[var(--navy-900)]">How it works</a></li>
-        <li><a href="#stories" class="hover:text-[var(--navy-900)]">Stories</a></li>
-        <li><a href="#faq" class="hover:text-[var(--navy-900)]">FAQ</a></li>
-      </ul>
+    <div class="glass-card support-card reveal" style="--i:1">
+      <div class="support-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 8.6 8.6 0 0 1-3.9-1L3 20l1.2-5.1a8.4 8.4 0 0 1-1-4A8.4 8.4 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5z"/></svg></div>
+      <h4>WhatsApp updates</h4>
+      <p>Get live status on a booking or dispatch without keeping the app open.</p>
+      <a href="https://wa.me/8801700000000" class="support-link" target="_blank" rel="noopener">Message on WhatsApp</a>
     </div>
-    <div>
-      <h4 class="font-bold text-[13.5px] text-[var(--navy-950)] mb-3">For hospitals</h4>
-      <ul class="flex flex-col gap-2.5 text-[13.5px] text-[var(--ink-500)]">
-        <li><a href="#partner" class="hover:text-[var(--navy-900)]">Partner with us</a></li>
-        <li><a href="#" class="hover:text-[var(--navy-900)]">Hospital login</a></li>
-        <li><a href="#network" class="hover:text-[var(--navy-900)]">Network information</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4 class="font-bold text-[13.5px] text-[var(--navy-950)] mb-3">Emergency</h4>
-      <button class="btn btn-emergency btn-sm emergency-call">🚑&nbsp; Call nearest ambulance</button>
+    <div class="glass-card support-card reveal" style="--i:2">
+      <div class="support-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div>
+      <h4>Email the care team</h4>
+      <p>For billing questions, records requests, or general follow-up.</p>
+      <a href="mailto:care@sthir.health" class="support-link">care@sthir.health</a>
     </div>
   </div>
-  <div class="wrap mt-10 pt-6 border-t border-[var(--silver-200)] text-[12.5px] text-[var(--ink-400)]">
-    © <span id="year"></span> Sthir. All rights reserved.
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">
+          <svg width="26" height="26" viewBox="0 0 30 30" fill="none" aria-hidden="true"><circle cx="15" cy="15" r="14" stroke="#5fe8dd" stroke-width="2"/><path d="M4 15h5l2-6 3 12 2.5-9 2 3h7.5" stroke="#5fe8dd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Sthir
+        </div>
+        <p>Emergency healthcare infrastructure for faster access to care.</p>
+      </div>
+      <div>
+        <h5>Navigation</h5>
+        <ul>
+          <li><a href="#icu-beds">ICU Beds</a></li>
+          <li><a href="#ambulance">Ambulance</a></li>
+          <li><a href="#blood-bank">Blood Bank</a></li>
+          <li><a href="#how-it-works">How it works</a></li>
+          <li><a href="#stories">Stories</a></li>
+          <li><a href="#activity">Live activity</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#support">Support</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>For hospitals</h5>
+        <ul>
+          <li><a href="#for-hospitals">Partner with us</a></li>
+          <li><a href="#for-hospitals">Hospital login</a></li>
+          <li><a href="#network-stats">Network information</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Emergency</h5>
+        <ul><li><a href="#" id="footerEmergency">Call nearest ambulance</a></li></ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Sthir. All rights reserved.</span>
+      <span>Chattogram, Bangladesh</span>
+    </div>
   </div>
 </footer>
 
 <!-- ============================= BOOKING MODAL ============================= -->
-<div id="bookingModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="bookingTitle">
-  <div class="modal-panel">
-
-    <div id="bookingStepForm">
-      <div class="flex items-center justify-between mb-1">
-        <h3 id="bookingTitle" class="font-display text-[21px] font-semibold text-[var(--navy-950)]">Book ICU bed</h3>
-        <button id="bookingClose" aria-label="Close" class="w-9 h-9 rounded-full flex items-center justify-center border border-[var(--silver-300)]">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0c1428" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-        </button>
-      </div>
-
-      <div class="grid grid-cols-2 gap-3 mt-4 mb-6 text-[13.5px]">
-        <div class="bg-[var(--silver-100)] rounded-xl p-3"><div class="text-[var(--ink-400)] text-[11.5px]">Hospital</div><div id="bmHospital" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
-        <div class="bg-[var(--silver-100)] rounded-xl p-3"><div class="text-[var(--ink-400)] text-[11.5px]">Distance</div><div id="bmDistance" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
-        <div class="bg-[var(--silver-100)] rounded-xl p-3"><div class="text-[var(--ink-400)] text-[11.5px]">Available beds</div><div id="bmBeds" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
-        <div class="bg-[var(--silver-100)] rounded-xl p-3"><div class="text-[var(--ink-400)] text-[11.5px]">Price / day</div><div id="bmPrice" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
-        <div class="bg-[var(--silver-100)] rounded-xl p-3 col-span-2"><div class="text-[var(--ink-400)] text-[11.5px]">Estimated arrival</div><div id="bmEta" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
-      </div>
-
-      <form id="bookingForm" class="flex flex-col gap-4">
-        <h4 class="font-bold text-[14px] text-[var(--navy-950)] -mb-1">Patient information</h4>
-        <div class="grid sm:grid-cols-2 gap-4">
-          <div class="field"><label for="fName">Patient name</label><input id="fName" required placeholder="Full name"></div>
-          <div class="field"><label for="fPhone">Phone</label><input id="fPhone" required type="tel" placeholder="01XXX-XXXXXX"></div>
-        </div>
-        <div class="grid sm:grid-cols-2 gap-4">
-          <div class="field"><label for="fEmergencyContact">Emergency contact</label><input id="fEmergencyContact" required placeholder="Name & phone"></div>
-          <div class="field">
-            <label for="fBedType">Required bed type</label>
-            <select id="fBedType">
-              <option>General ICU</option>
-              <option>Cardiac ICU</option>
-              <option>Neonatal ICU</option>
-              <option>Trauma ICU</option>
-            </select>
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <h3 id="modalTitle">Book ICU bed</h3>
+      <button class="modal-close" id="modalClose" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-view" id="formView">
+        <div class="summary-grid" id="summaryGrid"></div>
+        <form id="bookingForm">
+          <div class="field"><label for="patientName">Patient name</label><input id="patientName" required placeholder="Full name"></div>
+          <div class="field-row">
+            <div class="field"><label for="patientPhone">Phone</label><input id="patientPhone" type="tel" required placeholder="01XXXXXXXXX"></div>
+            <div class="field"><label for="emergencyContact">Emergency contact</label><input id="emergencyContact" type="tel" required placeholder="01XXXXXXXXX"></div>
           </div>
-        </div>
-        <div class="field"><label for="fNotes">Notes (optional)</label><textarea id="fNotes" rows="3" placeholder="Condition summary, allergies, or anything the hospital should know"></textarea></div>
-        <button type="submit" class="btn btn-primary w-full justify-center mt-1">Confirm ICU Booking</button>
-      </form>
-    </div>
-
-    <div id="bookingStepConfirm" style="display:none">
-      <div class="flex items-center justify-between mb-4">
-        <span class="w-11 h-11 rounded-full flex items-center justify-center" style="background:#e8f8ee">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#20a55a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-        </span>
-        <button id="bookingClose2" aria-label="Close" class="w-9 h-9 rounded-full flex items-center justify-center border border-[var(--silver-300)]">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0c1428" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-        </button>
+          <div class="field">
+            <label for="bedType">Required bed type</label>
+            <select id="bedType"><option>General ICU</option><option>Cardiac ICU</option><option>Neuro ICU</option><option>Neonatal ICU</option></select>
+          </div>
+          <div class="field"><label for="notes">Notes (optional)</label><textarea id="notes" rows="2" placeholder="Anything the hospital should know"></textarea></div>
+          <button type="submit" class="liquid-btn" id="confirmBtnLabel">Confirm ICU Booking</button>
+        </form>
       </div>
-      <h3 class="font-display text-[22px] font-semibold text-[var(--navy-950)]">Booking confirmed</h3>
-      <p class="text-[13.5px] text-[var(--ink-500)] mt-1">Confirmation ID</p>
-      <p id="confId" class="font-display text-[24px] font-semibold text-[var(--blue-600)] mb-5"></p>
-
-      <div class="grid grid-cols-2 gap-3 text-[13.5px]">
-        <div class="bg-[var(--silver-100)] rounded-xl p-3"><div class="text-[var(--ink-400)] text-[11.5px]">Hospital</div><div id="confHospital" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
-        <div class="bg-[var(--silver-100)] rounded-xl p-3"><div class="text-[var(--ink-400)] text-[11.5px]">Bed number</div><div id="confBed" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
-        <div class="bg-[var(--silver-100)] rounded-xl p-3"><div class="text-[var(--ink-400)] text-[11.5px]">Booking time</div><div id="confTime" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
-        <div class="bg-[var(--silver-100)] rounded-xl p-3"><div class="text-[var(--ink-400)] text-[11.5px]">Emergency contact</div><div id="confContact" class="font-bold text-[var(--navy-950)] mt-0.5"></div></div>
+      <div class="confirm-view" id="confirmView">
+        <div class="confirm-check"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <h3 style="margin:0 0 4px;">Booking confirmed</h3>
+        <p style="color:var(--ink-500); font-size:13.5px; margin:0 0 6px;">Confirmation ID</p>
+        <div class="confirm-id" id="confirmIdText">STH-000000</div>
+        <div class="confirm-details" id="confirmDetails"></div>
+        <button class="liquid-btn" id="directionsBtn" type="button" style="margin-bottom:10px;">Get directions</button>
+        <button class="liquid-btn ghost" id="doneBtn" type="button">Done</button>
       </div>
-
-      <button id="directionsBtn" class="btn btn-primary w-full justify-center mt-6">Get directions</button>
     </div>
-
   </div>
 </div>
 
-<div id="toast" class="toast"></div>
-
 <script>
-/* ==========================================================================
-   Sthir — app.js
-   Mock data + all interactive behaviour (no build step, no frameworks)
-   ========================================================================== */
-
 (function(){
-  "use strict";
+"use strict";
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------------------------------------------------------------------
-     1. MOCK DATA
-     --------------------------------------------------------------------- */
+/* ============================= MOCK DATA ============================= */
+const hospitals = [
+  {id:'chv', name:'Chevron Clinical & General Hospital', area:'Chawkbazar', rating:4.2, verified:false, distance:2.6, eta:6, free:3, total:10, price:6000},
+  {id:'cmc', name:'Chattogram Medical College Hospital', area:'Panchlaish', rating:4.6, verified:true, distance:2.9, eta:6, free:5, total:20, price:3500},
+  {id:'imp', name:'Imperial Hospital', area:'Zakir Hossain Rd', rating:4.5, verified:true, distance:3.0, eta:6, free:4, total:14, price:7200},
+  {id:'pvh', name:'Park View Hospital', area:'Panchlaish', rating:4.0, verified:true, distance:3.6, eta:8, free:2, total:8, price:4800},
+  {id:'max', name:'Max Hospital Chattogram', area:'GEC Circle', rating:4.3, verified:true, distance:4.1, eta:9, free:3, total:12, price:5600},
+  {id:'met', name:'Metropolitan Hospital', area:'Agrabad', rating:4.1, verified:false, distance:5.2, eta:11, free:1, total:9, price:5200},
+];
+const ambulancesList = [
+  {id:'basic', name:'Basic Ambulance', type:'Basic transport', location:'Chawkbazar depot', eta:5, driver:'Available', dest:'Nearest partner hospital', avail:true},
+  {id:'icu', name:'ICU Ambulance', type:'Ventilator + monitor', location:'Panchlaish depot', eta:7, driver:'Available', dest:'Chattogram Medical College', avail:true},
+  {id:'als', name:'Advanced Life Support', type:'Full critical care crew', location:'GEC Circle depot', eta:9, driver:'En route', dest:'Imperial Hospital', avail:false},
+  {id:'neo', name:'Neonatal Ambulance', type:'Incubator equipped', location:'Agrabad depot', eta:11, driver:'Available', dest:'Max Hospital Chattogram', avail:true},
+];
+const bloodBanks = [
+  {id:'bb1', name:'Chattogram Central Blood Bank', area:'Panchlaish', distance:2.4, updated:'6 min ago', units:38},
+  {id:'bb2', name:'Red Crescent Blood Centre', area:'GEC Circle', distance:3.1, updated:'12 min ago', units:29},
+  {id:'bb3', name:'Sandhani Blood Bank', area:'Chawkbazar', distance:2.9, updated:'4 min ago', units:44},
+  {id:'bb4', name:'Metropolitan Blood Services', area:'Agrabad', distance:5.0, updated:'20 min ago', units:36},
+];
+const bloodGroups = [
+  {g:'A+', units:32}, {g:'A-', units:9, low:true}, {g:'B+', units:27}, {g:'B-', units:6, low:true},
+  {g:'AB+', units:14}, {g:'AB-', units:4, low:true}, {g:'O+', units:35}, {g:'O-', units:11},
+];
+const occupancy = [
+  {id:'cmc', name:'Chattogram Medical College Hospital', pct:80},
+  {id:'max', name:'Max Hospital Chattogram', pct:75},
+  {id:'imp', name:'Imperial Hospital', pct:71},
+  {id:'met', name:'Metropolitan Hospital', pct:83},
+  {id:'chv', name:'Chevron Clinical & General Hospital', pct:60},
+  {id:'pvh', name:'Park View Hospital', pct:50},
+];
+const etaByDay = {labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], data:[11.8,10.9,13.2,10.5,11.7,12.0,10.2]};
+const fullDayNames = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const faqs = [
+  {q:'How does Sthir find nearby ICU beds?', a:'Sthir keeps a live feed of free-bed counts from every partner hospital and ranks them by real drive-time distance from your device, so you always see what is actually available nearby, not a static directory.'},
+  {q:'Is my location shared?', a:'Your location is only used on your device to calculate distance and ETA. It is not shared with a hospital until you submit a booking or dispatch request.'},
+  {q:'How quickly can I book an ICU bed?', a:'Most families complete a booking in under a minute — pick a hospital, fill in patient details, and get a confirmation ID instantly.'},
+  {q:'Can I request an ambulance?', a:'Yes. The Ambulance section shows live vehicle types, ETA, and availability, and dispatch can be requested with one tap.'},
+  {q:'Can I reserve blood?', a:"Yes. The Blood Bank section shows live unit counts by group across partner banks, and you can reserve units directly from a bank's listing."},
+  {q:'How are hospital prices determined?', a:'Per-day ICU rates are set by each partner hospital and displayed exactly as reported, so you can compare real costs before you commit.'},
+  {q:'Is Sthir available 24/7?', a:'Yes. Dispatch, booking, and live inventory are monitored around the clock, including overnight and holidays.'},
+  {q:'How does hospital verification work?', a:'Verified hospitals have confirmed their bed counts, pricing, and licensing directly with the Sthir partnerships team, shown with a verified badge on their listing.'},
+];
 
-  const hospitals = [
-    { id:'h1', name:'Chevron Clinical & General Hospital', area:'Chawkbazar', rating:4.2, verified:false, distanceKm:2.6, etaMin:6, freeBeds:3, totalBeds:10, price:6000 },
-    { id:'h2', name:'Chattogram Medical College Hospital', area:'Panchlaish', rating:4.6, verified:true, distanceKm:2.9, etaMin:6, freeBeds:5, totalBeds:20, price:3500 },
-    { id:'h3', name:'Imperial Hospital', area:'Zakir Hossain Rd', rating:4.5, verified:true, distanceKm:3.0, etaMin:6, freeBeds:4, totalBeds:14, price:7200 },
-    { id:'h4', name:'Park View Hospital', area:'Panchlaish', rating:4.0, verified:true, distanceKm:3.6, etaMin:8, freeBeds:2, totalBeds:8, price:4800 },
-    { id:'h5', name:'Max Hospital Chattogram', area:'GEC Circle', rating:4.3, verified:true, distanceKm:4.1, etaMin:9, freeBeds:6, totalBeds:24, price:5200 },
-    { id:'h6', name:'Metropolitan Hospital', area:'Agrabad', rating:4.1, verified:false, distanceKm:5.0, etaMin:11, freeBeds:1, totalBeds:6, price:4200 },
-  ];
+/* ============================= UTIL ============================= */
+const $ = (s,ctx=document)=>ctx.querySelector(s);
+const $$ = (s,ctx=document)=>Array.from(ctx.querySelectorAll(s));
+function icon(name){
+  const icons = {
+    icu:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="10" width="18" height="9" rx="2"/><path d="M7 10V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v3"/><path d="M3 15h18"/></svg>',
+    ambulance:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h1a2 2 0 1 0 4 0h8a2 2 0 1 0 4 0h1v-5l-3-4h-4V6H6a2 2 0 0 0-2 2v9z"/><path d="M14 8h3l3 4h-6z"/><path d="M9 10v4M7 12h4"/></svg>',
+    blood:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.5 6 11a6 6 0 1 1-12 0c0-4.5 6-11 6-11z"/></svg>',
+    hospital:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/><path d="M12 8v4M10 10h4"/></svg>',
+  };
+  return icons[name]||'';
+}
 
-  const ambulances = [
-    { id:'a1', type:'Basic Ambulance', location:'Chawkbazar Stand', etaMin:6, driver:'Available', destinationHint:'Any partner hospital', available:true },
-    { id:'a2', type:'ICU Ambulance', location:'GEC Circle Base', etaMin:8, driver:'Available', destinationHint:'ICU-equipped hospitals', available:true },
-    { id:'a3', type:'Advanced Life Support', location:'Agrabad Base', etaMin:11, driver:'On another call', destinationHint:'Trauma & cardiac centers', available:false },
-    { id:'a4', type:'Neonatal Ambulance', location:'Panchlaish Base', etaMin:9, driver:'Available', destinationHint:'NICU-equipped hospitals', available:true },
-  ];
+/* ============================= LIVE "UPDATED Xs AGO" TICKERS ============================= */
+const updatedTickers = {};
+function makeUpdatedTicker(elId){
+  const el = document.getElementById(elId);
+  let seconds = 0;
+  function paint(){ el.textContent = seconds===0 ? 'Updated just now' : 'Updated '+seconds+' sec ago'; }
+  paint();
+  setInterval(()=>{ seconds += 5; paint(); }, 5000);
+  return { reset(){ seconds = 0; paint(); } };
+}
+function resetUpdatedTimer(which){ if(updatedTickers[which]) updatedTickers[which].reset(); }
 
-  const bloodBanks = [
-    { id:'b1', name:'Chattogram Central Blood Bank', area:'Panchlaish', distanceKm:2.4, updated:'12 min ago',
-      stock:{ 'A+':38,'A-':6,'B+':44,'B-':4,'AB+':11,'AB-':2,'O+':52,'O-':3 } },
-    { id:'b2', name:'Red Crescent Blood Center', area:'Agrabad', distanceKm:3.8, updated:'25 min ago',
-      stock:{ 'A+':21,'A-':3,'B+':19,'B-':2,'AB+':7,'AB-':1,'O+':30,'O-':5 } },
-    { id:'b3', name:'CMCH Blood Bank', area:'Panchlaish', distanceKm:2.9, updated:'8 min ago',
-      stock:{ 'A+':44,'A-':9,'B+':37,'B-':6,'AB+':13,'AB-':3,'O+':60,'O-':8 } },
-    { id:'b4', name:'Quantum Blood Services', area:'Chawkbazar', distanceKm:2.7, updated:'40 min ago',
-      stock:{ 'A+':15,'A-':2,'B+':12,'B-':1,'AB+':4,'AB-':0,'O+':22,'O-':2 } },
-  ];
+/* ============================= REVEAL ON SCROLL ============================= */
+const revealTargets = $$('.reveal');
+if(reduceMotion){ revealTargets.forEach(el=>el.classList.add('in')); }
+else{
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  },{threshold:.12});
+  revealTargets.forEach(el=>io.observe(el));
+}
 
-  const testimonials = [
-    { quote:"Sthir found us an ICU bed at Chattogram Medical College in under four minutes. We didn't have to call a single hospital ourselves.", name:'Rafiq Ahmed', context:'Son of patient, Panchlaish' },
-    { quote:"The ambulance arrived faster than we expected — the driver already had our location pinned before we even called. That kind of speed matters.", name:'Nasrin Sultana', context:'Family member, GEC Circle' },
-    { quote:"We needed O- blood at 2am. Sthir had it reserved for us within minutes of requesting through the app. This service is a lifeline.", name:'Kamal Hossain', context:"Patient's brother, Chawkbazar" },
-  ];
-
-  const faqs = [
-    { q:'How does Sthir find nearby ICU beds?', a:'Sthir reads live inventory feeds from every partner hospital and ranks them by distance from your device, current availability, and ICU tier — so the list you see is already sorted by what you can actually reach fastest.' },
-    { q:'Is my location shared?', a:'Only if you tap "Use my current location." It is used to calculate distance and ETA in your browser session and is never stored or shared with hospitals until you submit a booking.' },
-    { q:'How quickly can I book an ICU bed?', a:'Most families complete a booking in under a minute — search, compare, and confirm inside the same screen, with a confirmation ID generated instantly.' },
-    { q:'Can I request an ambulance?', a:'Yes. Choose from basic, ICU, advanced life support, or neonatal ambulances in the Ambulance tab, and dispatch the nearest available unit with one tap.' },
-    { q:'Can I reserve blood?', a:'Yes. The Blood Bank section shows live unit counts by blood group across partner banks near you, with a one-tap reserve action.' },
-    { q:'How are hospital prices determined?', a:'Per-day ICU rates are set directly by each partner hospital and refreshed regularly. Sthir does not add booking fees on top of the listed rate.' },
-    { q:'Is Sthir available 24/7?', a:'Yes — dispatch, booking, and blood reservation are available around the clock, including overnight and holidays.' },
-    { q:'How does hospital verification work?', a:'Verified hospitals have confirmed live bed inventory, licensing, and response-time accuracy with the Sthir network team on a recurring basis.' },
-  ];
-
-  const occupancy = [
-    { name:'Chattogram Medical College Hospital', pct:80 },
-    { name:'Max Hospital Chattogram', pct:75 },
-    { name:'Imperial Hospital', pct:71 },
-    { name:'Metropolitan Hospital', pct:83 },
-    { name:'Chevron Clinical & General Hospital', pct:60 },
-    { name:'Park View Hospital', pct:50 },
-  ];
-
-  const responseTimes = [
-    { day:'Mon', min:8.2 }, { day:'Tue', min:7.1 }, { day:'Wed', min:9.4 },
-    { day:'Thu', min:6.8 }, { day:'Fri', min:7.6 }, { day:'Sat', min:7.9 }, { day:'Sun', min:6.4 },
-  ];
-
-  const networkNodes = [
-    { type:'icu', label:'CMCH ICU' }, { type:'ambulance', label:'Basic Amb.' },
-    { type:'blood', label:'Central Blood' }, { type:'icu', label:'Imperial ICU' },
-    { type:'ambulance', label:'ALS Unit' }, { type:'blood', label:'Red Crescent' },
-    { type:'icu', label:'Max ICU' }, { type:'ambulance', label:'Neonatal Amb.' },
-    { type:'blood', label:'Quantum Blood' }, { type:'icu', label:'Park View ICU' },
-  ];
-
-  const NODE_COLOR = { icu:'#3fbf7f', ambulance:'#f0954a', blood:'#ef5b5b', hub:'#ffffff' };
-
-  /* ---------------------------------------------------------------------
-     2. UTILITIES
-     --------------------------------------------------------------------- */
-
-  const $  = (sel, ctx=document) => ctx.querySelector(sel);
-  const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
-
-  function fmtTaka(n){ return '৳' + n.toLocaleString('en-US'); }
-
-  function attachRipple(el){
-    el.addEventListener('click', (e) => {
-      const rect = el.getBoundingClientRect();
-      const r = document.createElement('span');
-      r.className = 'ripple';
-      const size = Math.max(rect.width, rect.height) * 1.8;
-      r.style.width = r.style.height = size + 'px';
-      r.style.left = (e.clientX - rect.left) + 'px';
-      r.style.top = (e.clientY - rect.top) + 'px';
-      el.appendChild(r);
-      setTimeout(() => r.remove(), 720);
-    });
-  }
-  $$('.btn, .tab-btn, .blood-chip, .amb-dispatch').forEach(attachRipple);
-
-  // Cursor-tracked liquid highlight on glass cards
-  $$('.glass-card, .glass-card-navy').forEach(card => {
-    card.addEventListener('pointermove', (e) => {
-      const rect = card.getBoundingClientRect();
-      card.style.setProperty('--mx', (e.clientX - rect.left) + 'px');
-      card.style.setProperty('--my', (e.clientY - rect.top) + 'px');
-    });
+/* ============================= LIQUID GLASS: cursor tracking + click ripple ============================= */
+$$('.glass-card, .liquid-btn').forEach(el=>{
+  el.addEventListener('pointermove', (e)=>{
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', ((e.clientX-r.left)/r.width*100)+'%');
+    el.style.setProperty('--my', ((e.clientY-r.top)/r.height*100)+'%');
   });
-
-  function toast(msg){
-    const t = $('#toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(toast._t);
-    toast._t = setTimeout(() => t.classList.remove('show'), 2600);
-  }
-
-  /* ---------------------------------------------------------------------
-     3. SCROLL REVEAL
-     --------------------------------------------------------------------- */
-
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); revealObserver.unobserve(en.target); } });
-  }, { threshold:.14 });
-  $$('.reveal').forEach(el => revealObserver.observe(el));
-
-  /* ---------------------------------------------------------------------
-     4. MOBILE NAV
-     --------------------------------------------------------------------- */
-
-  const drawer = $('#mobileDrawer'), overlay = $('#mobileOverlay');
-  function openDrawer(){ drawer.classList.add('open'); overlay.classList.add('show'); document.body.classList.add('no-scroll'); }
-  function closeDrawer(){ drawer.classList.remove('open'); overlay.classList.remove('show'); document.body.classList.remove('no-scroll'); }
-  $('#hamburgerBtn').addEventListener('click', openDrawer);
-  $('#drawerClose').addEventListener('click', closeDrawer);
-  overlay.addEventListener('click', closeDrawer);
-  $$('#mobileDrawer a').forEach(a => a.addEventListener('click', closeDrawer));
-
-  /* ---------------------------------------------------------------------
-     5. EMERGENCY CALL BUTTON
-     --------------------------------------------------------------------- */
-
-  $$('.emergency-call').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const nearest = [...ambulances].filter(a=>a.available).sort((a,b)=>a.etaMin-b.etaMin)[0];
-      window.location.href = 'tel:999';
-      toast(`Calling nearest ambulance — ${nearest.type}, ~${nearest.etaMin} min away`);
-    });
+});
+$$('.glass-card, .liquid-btn').forEach(el=>{
+  el.addEventListener('pointerdown', (e)=>{
+    if(reduceMotion) return;
+    const r = el.getBoundingClientRect();
+    const ink = document.createElement('span');
+    ink.className='ripple-ink';
+    const size = Math.max(r.width, r.height)*1.3;
+    ink.style.width = ink.style.height = size+'px';
+    ink.style.left = (e.clientX-r.left)+'px';
+    ink.style.top = (e.clientY-r.top)+'px';
+    el.appendChild(ink);
+    setTimeout(()=>ink.remove(), 950);
   });
+});
 
-  /* ---------------------------------------------------------------------
-     6. GEOLOCATION — "Use my current location"
-     --------------------------------------------------------------------- */
+/* ============================= MOBILE DRAWER ============================= */
+const drawer = $('#mobileDrawer');
+$('#hamburgerBtn').addEventListener('click', ()=>{ drawer.classList.add('open'); $('#hamburgerBtn').setAttribute('aria-expanded','true'); });
+$$('[data-close-drawer]').forEach(el=>el.addEventListener('click', ()=>{ drawer.classList.remove('open'); $('#hamburgerBtn').setAttribute('aria-expanded','false'); }));
+$$('.mobile-drawer a').forEach(a=>a.addEventListener('click', ()=>drawer.classList.remove('open')));
 
-  const locStatusEl = $('#locStatus');
-  const locBtn = $('#useLocationBtn');
-
-  locBtn.addEventListener('click', () => {
-    if (!('geolocation' in navigator)) {
-      locStatusEl.textContent = 'geolocation isn\u2019t supported on this device — showing default distances for Chattogram';
-      return;
+/* ============================= COUNTERS ============================= */
+function animateCounters(){
+  $$('.stat-num').forEach(el=>{
+    const target = parseInt(el.dataset.count,10);
+    const suffix = el.dataset.suffix || '';
+    if(reduceMotion){ el.textContent = target+suffix; return; }
+    let cur = 0; const dur=1400, start=performance.now();
+    function step(t){
+      const p = Math.min(1,(t-start)/dur);
+      cur = Math.floor(target * (1 - Math.pow(1-p,3)));
+      el.textContent = cur+suffix;
+      if(p<1) requestAnimationFrame(step);
     }
-    locBtn.querySelector('.btn-label').textContent = 'Locating…';
-    locBtn.disabled = true;
-
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        locStatusEl.textContent = `location shared \u2014 (${latitude.toFixed(3)}, ${longitude.toFixed(3)}) \u2014 distances updated`;
-        locBtn.querySelector('.btn-label').textContent = 'Location active';
-        locBtn.disabled = false;
-        // Simulate refreshed distances/ETAs
-        hospitals.forEach(h => {
-          h.distanceKm = Math.max(0.4, +(h.distanceKm + (Math.random()*1.4-0.7)).toFixed(1));
-          h.etaMin = Math.max(2, Math.round(h.distanceKm * 2.1));
-        });
-        ambulances.forEach(a => { a.etaMin = Math.max(2, Math.round(a.etaMin + (Math.random()*4-2))); });
-        renderResourceList();
-        renderAmbulances();
-        toast('Nearby distances and ETAs refreshed from your location');
-      },
-      (err) => {
-        locStatusEl.textContent = 'location not shared \u2014 showing default distances for Chattogram';
-        locBtn.querySelector('.btn-label').textContent = 'Use my current location';
-        locBtn.disabled = false;
-      },
-      { enableHighAccuracy:true, timeout:8000 }
-    );
+    requestAnimationFrame(step);
   });
+}
+const statsIo = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ animateCounters(); statsIo.disconnect(); } });
+},{threshold:.4});
+statsIo.observe($('#statsRow'));
 
-  /* ---------------------------------------------------------------------
-     7. QUICK STATS — count-up animation
-     --------------------------------------------------------------------- */
+/* ============================= HEART RATE FLICKER ============================= */
+if(!reduceMotion){
+  setInterval(()=>{
+    const bpm = 66 + Math.floor(Math.random()*7);
+    $('#hrNum').innerHTML = bpm+' <small>bpm</small>';
+    const heart = $('#heartGroup');
+    heart.style.transition='transform .15s ease';
+    heart.style.transformOrigin='76px 70px';
+    heart.style.transform='scale(1.12)';
+    setTimeout(()=>heart.style.transform='scale(1)',150);
+  }, 1500);
+}
 
-  function countUp(el, target, suffix=''){
-    const dur = 1400, start = performance.now();
-    function tick(now){
-      const p = Math.min(1, (now-start)/dur);
-      const eased = 1 - Math.pow(1-p, 3);
-      el.textContent = Math.round(eased*target) + suffix;
-      if (p < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-  }
-  const statObserver = new IntersectionObserver((entries) => {
-    entries.forEach(en => {
-      if (en.isIntersecting) {
-        const el = en.target;
-        countUp(el, +el.dataset.target, el.dataset.suffix || '');
-        statObserver.unobserve(el);
-      }
+/* ============================= 3D-STYLE NETWORK DIAGRAM ============================= */
+(function(){
+  const svg = document.getElementById('netSvg');
+  const stage = document.getElementById('netStage');
+  const tooltip = document.getElementById('netTooltip');
+  const cx=160, cy=130;
+  const nodeDefs = [
+    {label:'Chattogram Medical College', type:'icu', r:1.0},
+    {label:'Imperial Hospital', type:'icu', r:.82},
+    {label:'Park View Hospital', type:'icu', r:.7},
+    {label:'ICU Ambulance Unit 4', type:'amb', r:.9},
+    {label:'Basic Ambulance Unit 1', type:'amb', r:.66},
+    {label:'Advanced Life Support', type:'amb', r:1.05},
+    {label:'Central Blood Bank', type:'blood', r:.85},
+    {label:'Sandhani Blood Bank', type:'blood', r:.7},
+    {label:'Red Crescent Centre', type:'blood', r:.6},
+  ];
+  const colors = {icu:'#22a06b', amb:'#e08a2c', blood:'#e0553f'};
+  const N = nodeDefs.length;
+  let angleOffset = 0;
+
+  function render(){
+    const R = 96;
+    let svgMk = `<defs>
+      <radialGradient id="hubGrad" cx="35%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#c7d2ea"/></radialGradient>
+    </defs>`;
+    const pts = nodeDefs.map((n,i)=>{
+      const a = angleOffset + (i/N)*Math.PI*2;
+      const ex = Math.cos(a*0.7)*0.35+0.65;
+      const x = cx + Math.cos(a)*R;
+      const y = cy + Math.sin(a)*R*0.62;
+      const scale = 0.55 + 0.55*ex;
+      return {...n, x, y, scale, i};
     });
-  }, { threshold:.6 });
-  $$('[data-count]').forEach(el => statObserver.observe(el));
-
-  /* ---------------------------------------------------------------------
-     8. RESOURCE TABS — ICU / Ambulance / Blood
-     --------------------------------------------------------------------- */
-
-  let activeTab = 'icu';
-  let sortMode = 'distance';
-  let searchQuery = '';
-
-  function renderStars(rating){
-    const full = Math.round(rating);
-    return `<span class="stars" aria-hidden="true">${'★'.repeat(full)}${'☆'.repeat(5-full)}</span>`;
-  }
-
-  function hospitalCard(h){
-    const availClass = h.freeBeds <= 2 ? 'low' : '';
-    return `
-    <div class="resource-card glass-card p-4 sm:p-5 flex items-center gap-4" data-id="${h.id}">
-      <div class="w-14 h-14 rounded-2xl flex-none flex items-center justify-center" style="background:linear-gradient(155deg,#eef2ff,#e3e8f8)">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2049e0" stroke-width="1.8"><path d="M12 21c-4.5-3-8-6.5-8-10.5A5.5 5.5 0 0 1 12 6.2 5.5 5.5 0 0 1 20 10.5C20 14.5 16.5 18 12 21Z"/></svg>
-      </div>
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2 flex-wrap">
-          <h4 class="font-bold text-[15px] text-[var(--navy-950)] truncate">${h.name}</h4>
-          ${h.verified ? '<span class="verified-pill">✓ Verified</span>' : ''}
-        </div>
-        <div class="text-[13px] text-[var(--ink-500)] mt-0.5">${h.area} &nbsp;·&nbsp; ${renderStars(h.rating)} ${h.rating}</div>
-        <div class="flex items-center gap-3 mt-2 text-[13px] text-[var(--ink-500)] flex-wrap">
-          <span>${h.distanceKm} km away</span><span>~${h.etaMin} min</span>
-          <span class="avail-pill ${availClass}">${h.freeBeds} of ${h.totalBeds} free</span>
-        </div>
-      </div>
-      <div class="text-right flex-none">
-        <div class="font-bold text-[15px] text-[var(--navy-950)]">${fmtTaka(h.price)}<span class="text-[12px] font-medium text-[var(--ink-400)]"> /day</span></div>
-        <button class="btn btn-primary btn-sm mt-2 book-btn" data-id="${h.id}">Book bed</button>
-      </div>
-    </div>`;
-  }
-
-  function ambulanceCard(a){
-    return `
-    <div class="resource-card glass-card p-4 sm:p-5 flex items-center gap-4">
-      <div class="w-14 h-14 rounded-2xl flex-none flex items-center justify-center" style="background:linear-gradient(155deg,#fff1ea,#ffe4d3)">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#e0653a" stroke-width="1.8"><path d="M3 17h1a2 2 0 1 0 4 0h8a2 2 0 1 0 4 0h1v-5l-3-4h-4V6H6a2 2 0 0 0-2 2v9Z"/><path d="M13 8v5M10.5 10.5h5"/></svg>
-      </div>
-      <div class="flex-1 min-w-0">
-        <h4 class="font-bold text-[15px] text-[var(--navy-950)]">${a.type}</h4>
-        <div class="text-[13px] text-[var(--ink-500)] mt-0.5">${a.location} → ${a.destinationHint}</div>
-        <div class="flex items-center gap-3 mt-2 text-[13px] flex-wrap">
-          <span class="avail-pill ${a.available ? '' : 'low'}">${a.driver}</span>
-          <span class="text-[var(--ink-500)]">ETA ~${a.etaMin} min</span>
-        </div>
-      </div>
-      <button class="btn ${a.available ? 'btn-primary' : 'btn-ghost'} btn-sm amb-dispatch flex-none" ${a.available ? '' : 'disabled style="opacity:.5;cursor:not-allowed"'} data-id="${a.id}">
-        ${a.available ? 'Dispatch' : 'Busy'}
-      </button>
-    </div>`;
-  }
-
-  function bloodCard(b){
-    const totalUnits = Object.values(b.stock).reduce((s,n)=>s+n,0);
-    return `
-    <div class="resource-card glass-card p-4 sm:p-5">
-      <div class="flex items-center gap-4">
-        <div class="w-14 h-14 rounded-2xl flex-none flex items-center justify-center" style="background:linear-gradient(155deg,#ffecec,#ffdcdc)">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="#ef5b5b"><path d="M12 2s7 8.2 7 13a7 7 0 1 1-14 0c0-4.8 7-13 7-13Z"/></svg>
-        </div>
-        <div class="flex-1 min-w-0">
-          <h4 class="font-bold text-[15px] text-[var(--navy-950)]">${b.name}</h4>
-          <div class="text-[13px] text-[var(--ink-500)] mt-0.5">${b.area} · ${b.distanceKm} km away · updated ${b.updated}</div>
-        </div>
-        <div class="text-right flex-none">
-          <div class="font-bold text-[15px] text-[var(--navy-950)]">${totalUnits}</div>
-          <div class="text-[11px] text-[var(--ink-400)] uppercase tracking-wide">units total</div>
-        </div>
-      </div>
-      <div class="grid grid-cols-4 gap-2 mt-4">
-        ${Object.entries(b.stock).map(([g,u])=>`
-          <button class="blood-chip ${u<=2?'low':''} reserve-blood" data-bank="${b.id}" data-group="${g}">
-            <div class="font-bold text-[14px] text-[var(--navy-950)]">${g}</div>
-            <div class="text-[11px] text-[var(--ink-500)] mt-0.5">${u} units</div>
-          </button>`).join('')}
-      </div>
-    </div>`;
-  }
-
-  function sortedHospitals(){
-    let list = hospitals.filter(h => h.name.toLowerCase().includes(searchQuery));
-    if (sortMode === 'distance') list = [...list].sort((a,b)=>a.distanceKm-b.distanceKm);
-    if (sortMode === 'price') list = [...list].sort((a,b)=>a.price-b.price);
-    if (sortMode === 'rating') list = [...list].sort((a,b)=>b.rating-a.rating);
-    return list;
-  }
-
-  function renderResourceList(){
-    const el = $('#resourceList');
-    if (activeTab === 'icu') {
-      const list = sortedHospitals();
-      el.innerHTML = list.length ? list.map(hospitalCard).join('') : emptyState('No hospitals match your search.');
-      $$('.book-btn', el).forEach(btn => btn.addEventListener('click', () => openBooking(btn.dataset.id)));
-    } else if (activeTab === 'ambulance') {
-      renderAmbulances();
-    } else {
-      const el2 = $('#resourceList');
-      el2.innerHTML = bloodBanks.map(bloodCard).join('');
-      $$('.reserve-blood', el2).forEach(btn => attachRipple(btn));
-      $$('.reserve-blood', el2).forEach(btn => btn.addEventListener('click', () => {
-        toast(`${btn.dataset.group} reserved at ${bloodBanks.find(b=>b.id===btn.dataset.bank).name}`);
-      }));
-    }
-    $('#resultCount').textContent = activeTab === 'icu' ? sortedHospitals().length : (activeTab === 'ambulance' ? ambulances.length : bloodBanks.length);
-  }
-
-  function renderAmbulances(){
-    const el = $('#resourceList');
-    el.innerHTML = ambulances.map(ambulanceCard).join('');
-    $$('.amb-dispatch', el).forEach(btn => {
-      attachRipple(btn);
-      if (!btn.disabled) btn.addEventListener('click', () => {
-        const a = ambulances.find(x=>x.id===btn.dataset.id);
-        toast(`${a.type} dispatched — arriving in ~${a.etaMin} min`);
+    pts.sort((a,b)=>a.scale-b.scale);
+    pts.forEach(p=>{
+      svgMk += `<line x1="${cx}" y1="${cy}" x2="${p.x}" y2="${p.y}" stroke="${colors[p.type]}" stroke-opacity="${0.15+0.25*p.scale}" stroke-width="${1*p.scale}"/>`;
+    });
+    svgMk += `<circle cx="${cx}" cy="${cy}" r="17" fill="url(#hubGrad)" stroke="#8290b8" stroke-width="1"/>
+      <circle cx="${cx}" cy="${cy}" r="17" fill="none" stroke="#3557e0" stroke-width="1" opacity=".5"><animate attributeName="r" values="15;24;15" dur="2.6s" repeatCount="indefinite"/><animate attributeName="opacity" values=".5;0;.5" dur="2.6s" repeatCount="indefinite"/></circle>
+      <text x="${cx}" y="${cy+3}" text-anchor="middle" font-family="JetBrains Mono" font-size="6.5" fill="#1c3aa8" font-weight="600">STHIR</text>`;
+    pts.forEach(p=>{
+      const rad = 5.5*p.scale + p.r*2;
+      svgMk += `<g class="net-node" data-label="${p.label}" style="cursor:pointer">
+        <circle cx="${p.x}" cy="${p.y}" r="${rad+4}" fill="transparent"/>
+        <circle cx="${p.x}" cy="${p.y}" r="${rad}" fill="${colors[p.type]}" opacity="${0.75+0.25*p.scale}" stroke="#fff" stroke-width="1.1"/>
+      </g>`;
+    });
+    svg.innerHTML = svgMk;
+    svg.querySelectorAll('.net-node').forEach(g=>{
+      g.addEventListener('pointerenter', (e)=>{
+        const r = stage.getBoundingClientRect();
+        const circ = g.querySelector('circle:nth-child(2)');
+        const bx = circ.getBoundingClientRect();
+        tooltip.textContent = g.dataset.label;
+        tooltip.style.left = (bx.left - r.left + bx.width/2)+'px';
+        tooltip.style.top = (bx.top - r.top)+'px';
+        tooltip.classList.add('show');
       });
+      g.addEventListener('pointerleave', ()=>tooltip.classList.remove('show'));
     });
   }
+  render();
 
-  function emptyState(msg){
-    return `<div class="glass-card p-10 text-center text-[var(--ink-500)]">${msg}</div>`;
+  let autoRotate = !reduceMotion;
+  let raf;
+  function loop(){
+    if(autoRotate){ angleOffset += 0.0028; render(); }
+    raf = requestAnimationFrame(loop);
   }
+  loop();
 
-  $$('.tab-btn[data-tab]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      activeTab = btn.dataset.tab;
-      $$('.tab-btn[data-tab]').forEach(b => b.classList.toggle('active', b === btn));
-      $('#sortControls').style.display = activeTab === 'icu' ? 'flex' : 'none';
-      renderResourceList();
-    });
+  let dragging=false, lastX=0;
+  stage.addEventListener('pointerdown', (e)=>{ dragging=true; lastX=e.clientX; autoRotate=false; stage.setPointerCapture(e.pointerId); });
+  stage.addEventListener('pointermove', (e)=>{
+    if(!dragging) return;
+    const dx = e.clientX-lastX; lastX=e.clientX;
+    angleOffset += dx*0.008; render();
   });
-
-  $$('.sort-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      sortMode = btn.dataset.sort;
-      $$('.sort-btn').forEach(b => b.classList.toggle('active', b === btn));
-      renderResourceList();
-    });
-  });
-
-  $('#resourceSearch').addEventListener('input', (e) => {
-    searchQuery = e.target.value.toLowerCase();
-    renderResourceList();
-  });
-
-  /* ---------------------------------------------------------------------
-     9. BOOKING FLOW
-     --------------------------------------------------------------------- */
-
-  const bookingBackdrop = $('#bookingModal');
-  let currentHospital = null;
-
-  function openBooking(id){
-    currentHospital = hospitals.find(h => h.id === id);
-    if (!currentHospital) return;
-    $('#bookingStepForm').style.display = 'block';
-    $('#bookingStepConfirm').style.display = 'none';
-    $('#bmHospital').textContent = currentHospital.name;
-    $('#bmDistance').textContent = currentHospital.distanceKm + ' km away';
-    $('#bmBeds').textContent = `${currentHospital.freeBeds} of ${currentHospital.totalBeds} free`;
-    $('#bmPrice').textContent = fmtTaka(currentHospital.price) + ' / day';
-    $('#bmEta').textContent = '~' + currentHospital.etaMin + ' min';
-    $('#bookingForm').reset();
-    bookingBackdrop.classList.add('show');
-    document.body.classList.add('no-scroll');
-  }
-
-  function closeBooking(){
-    bookingBackdrop.classList.remove('show');
-    document.body.classList.remove('no-scroll');
-  }
-
-  $('#bookingClose').addEventListener('click', closeBooking);
-  $('#bookingClose2').addEventListener('click', closeBooking);
-  bookingBackdrop.addEventListener('click', (e) => { if (e.target === bookingBackdrop) closeBooking(); });
-
-  $('#bookingForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    if (!currentHospital) return;
-    const id = 'STH-' + Math.random().toString(36).slice(2,8).toUpperCase();
-    const bedNum = 'ICU-' + (Math.floor(Math.random()*20)+1);
-    const now = new Date();
-    $('#confId').textContent = id;
-    $('#confHospital').textContent = currentHospital.name;
-    $('#confBed').textContent = bedNum;
-    $('#confTime').textContent = now.toLocaleString('en-US', { hour:'2-digit', minute:'2-digit', day:'2-digit', month:'short' });
-    $('#confContact').textContent = $('#fEmergencyContact').value || '—';
-    currentHospital.freeBeds = Math.max(0, currentHospital.freeBeds - 1);
-    $('#bookingStepForm').style.display = 'none';
-    $('#bookingStepConfirm').style.display = 'block';
-    renderResourceList();
-  });
-
-  $('#directionsBtn').addEventListener('click', () => {
-    if (currentHospital) window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentHospital.name + ' Chattogram')}`, '_blank');
-  });
-
-  /* ---------------------------------------------------------------------
-     10. HOW IT WORKS / TESTIMONIALS / FAQ / OCCUPANCY / RESPONSE CHART
-     --------------------------------------------------------------------- */
-
-  function renderTestimonials(){
-    $('#testimonialTrack').innerHTML = testimonials.map(t => `
-      <div class="glass-card p-6 w-[280px] sm:w-[320px] flex-none">
-        <div class="stars">${'★'.repeat(5)}</div>
-        <p class="mt-3 text-[14.5px] leading-relaxed text-[var(--ink-700)]">“${t.quote}”</p>
-        <div class="mt-4 text-[13.5px]">
-          <div class="font-bold text-[var(--navy-950)]">${t.name}</div>
-          <div class="text-[var(--ink-400)]">${t.context}</div>
-        </div>
-      </div>`).join('');
-  }
-
-  function renderFAQ(){
-    $('#faqList').innerHTML = faqs.map((f,i) => `
-      <div class="faq-item" data-i="${i}">
-        <button class="faq-q" aria-expanded="false">
-          <span>${f.q}</span>
-          <span class="faq-icon" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-          </span>
-        </button>
-        <div class="faq-a">${f.a}</div>
-      </div>`).join('');
-    $$('.faq-q').forEach(btn => btn.addEventListener('click', () => {
-      const item = btn.closest('.faq-item');
-      const willOpen = !item.classList.contains('open');
-      item.classList.toggle('open');
-      btn.setAttribute('aria-expanded', String(willOpen));
-    }));
-  }
-
-  function renderOccupancy(){
-    const el = $('#occupancyList');
-    el.innerHTML = occupancy.map(o => `
-      <div>
-        <div class="flex justify-between text-[13.5px] mb-1.5">
-          <span class="font-semibold text-[var(--ink-700)]">${o.name}</span>
-          <span class="font-bold text-[var(--navy-950)]">${o.pct}%</span>
-        </div>
-        <div class="bar-track"><div class="bar-fill" data-pct="${o.pct}"></div></div>
-      </div>`).join('');
-  }
-
-  const occObserver = new IntersectionObserver((entries) => {
-    entries.forEach(en => {
-      if (en.isIntersecting) {
-        $$('.bar-fill', en.target).forEach(b => b.style.width = b.dataset.pct + '%');
-        occObserver.unobserve(en.target);
-      }
-    });
-  }, { threshold:.3 });
-
-  function renderResponseChart(){
-    const w = 560, h = 200, pad = 28;
-    const max = Math.max(...responseTimes.map(d=>d.min)) * 1.2;
-    const stepX = (w - pad*2) / (responseTimes.length - 1);
-    const pts = responseTimes.map((d,i) => {
-      const x = pad + i*stepX;
-      const y = h - pad - (d.min/max)*(h-pad*1.6);
-      return [x,y];
-    });
-    const linePath = pts.map((p,i) => (i===0?'M':'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
-    const areaPath = linePath + ` L${pts[pts.length-1][0]},${h-pad} L${pts[0][0]},${h-pad} Z`;
-    const dots = pts.map((p,i) => `<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="#fff" stroke="#2049e0" stroke-width="2.5"><title>${responseTimes[i].day}: ${responseTimes[i].min} min</title></circle>`).join('');
-    const labels = responseTimes.map((d,i) => `<text x="${pts[i][0]}" y="${h-6}" font-size="11" fill="#7c85a0" text-anchor="middle">${d.day}</text>`).join('');
-
-    $('#responseChart').innerHTML = `
-      <svg viewBox="0 0 ${w} ${h}" class="w-full h-auto" role="img" aria-label="Average ambulance response time, last 7 days">
-        <defs>
-          <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#3b63ff" stop-opacity=".28"/>
-            <stop offset="100%" stop-color="#3b63ff" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-        <path d="${areaPath}" fill="url(#areaGrad)" class="chart-area" />
-        <path d="${linePath}" fill="none" stroke="#2049e0" stroke-width="2.5" class="chart-line" />
-        ${dots}
-        ${labels}
-      </svg>`;
-
-    const line = $('.chart-line'), area = $('.chart-area');
-    const len = line.getTotalLength();
-    line.style.strokeDasharray = len; line.style.strokeDashoffset = len;
-    area.style.opacity = 0;
-    const chartObserver = new IntersectionObserver((entries) => {
-      entries.forEach(en => {
-        if (en.isIntersecting) {
-          line.style.transition = 'stroke-dashoffset 1.4s var(--ease-liquid)';
-          line.style.strokeDashoffset = 0;
-          area.style.transition = 'opacity 1.2s ease .3s';
-          area.style.opacity = 1;
-          chartObserver.disconnect();
-        }
-      });
-    }, { threshold:.4 });
-    chartObserver.observe($('#responseChart'));
-  }
-
-  function renderBloodOverview(){
-    const groups = ['A+','A-','B+','B-','AB+','AB-','O+','O-'];
-    const totals = {};
-    groups.forEach(g => totals[g] = bloodBanks.reduce((s,b) => s + (b.stock[g]||0), 0));
-    $('#bloodOverview').innerHTML = groups.map(g => `
-      <div class="rounded-2xl p-3.5 text-center" style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16)">
-        <div class="font-display text-[18px] font-semibold ${totals[g] <= 8 ? 'text-red-300' : 'text-white'}">${g}</div>
-        <div class="text-[11.5px] mt-1" style="color:#b7c1e6">${totals[g]} units</div>
-        ${totals[g] <= 8 ? '<div class="text-[10px] mt-1 font-bold" style="color:#ff9b9b">LOW STOCK</div>' : ''}
-      </div>`).join('');
-  }
-
-  /* ---------------------------------------------------------------------
-     11. NETWORK VISUALIZATION (SVG orbit, drag-to-rotate, hover legend)
-     --------------------------------------------------------------------- */
-
-  function renderNetwork(){
-    const svg = $('#networkSvg');
-    const cx = 260, cy = 210, r1 = 95, r2 = 155;
-    let html = `
-      <defs>
-        <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
-          <stop offset="100%" stop-color="#8fb3ff" stop-opacity="0"/>
-        </radialGradient>
-      </defs>
-      <circle cx="${cx}" cy="${cy}" r="${r2+34}" fill="url(#hubGlow)" opacity=".25"/>`;
-
-    const lines = [];
-    const nodesHtml = [];
-    networkNodes.forEach((n,i) => {
-      const ring = i % 2 === 0 ? r1 : r2;
-      const angle = (i / networkNodes.length) * Math.PI * 2;
-      const x = cx + ring * Math.cos(angle);
-      const y = cy + ring * Math.sin(angle);
-      lines.push(`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="${NODE_COLOR[n.type]}" stroke-opacity=".35" stroke-width="1.4" class="net-line"/>`);
-      nodesHtml.push(`
-        <g class="net-node" tabindex="0" role="img" aria-label="${n.label}">
-          <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="9" fill="${NODE_COLOR[n.type]}" stroke="#fff" stroke-width="2"></circle>
-          <title>${n.label}</title>
-        </g>`);
-    });
-
-    html += `<g id="netOrbitA" class="orbit-cw">${lines.filter((_,i)=>i%2===0).join('')}</g>`;
-    html += `<g id="netOrbitB" class="orbit-ccw">${lines.filter((_,i)=>i%2!==0).join('')}</g>`;
-    html += `<g id="netNodesA" class="orbit-cw">${nodesHtml.filter((_,i)=>i%2===0).join('')}</g>`;
-    html += `<g id="netNodesB" class="orbit-ccw">${nodesHtml.filter((_,i)=>i%2!==0).join('')}</g>`;
-    html += `<circle cx="${cx}" cy="${cy}" r="22" fill="#0e1c5c" stroke="#8fb3ff" stroke-width="1.5"/>`;
-    html += `<circle cx="${cx}" cy="${cy}" r="22" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="2 4"><animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="14s" repeatCount="indefinite"/></circle>`;
-    html += `<text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="9" fill="#fff" font-weight="700" letter-spacing="0.5">STHIR</text>`;
-
-    svg.innerHTML = html;
-
-    // Drag to rotate the whole stage
-    const stage = $('#networkStage');
-    let dragging = false, lastX = 0, rot = 0;
-    stage.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; stage.setPointerCapture(e.pointerId); });
-    stage.addEventListener('pointermove', (e) => {
-      if (!dragging) return;
-      rot += (e.clientX - lastX) * 0.4;
-      lastX = e.clientX;
-      svg.style.transform = `rotate(${rot}deg)`;
-      svg.querySelectorAll('text').forEach(t => t.style.transform = `rotate(${-rot}deg)`);
-    });
-    ['pointerup','pointerleave'].forEach(ev => stage.addEventListener(ev, () => dragging = false));
-  }
-
-  /* ---------------------------------------------------------------------
-     12. INIT
-     --------------------------------------------------------------------- */
-
-  document.addEventListener('DOMContentLoaded', () => {
-    renderResourceList();
-    renderTestimonials();
-    renderFAQ();
-    renderOccupancy();
-    renderResponseChart();
-    renderNetwork();
-    renderBloodOverview();
-    occObserver.observe($('#occupancyList'));
-    $$('.reveal').forEach(el => revealObserver.observe(el));
-    $('#year').textContent = new Date().getFullYear();
-  });
-
+  window.addEventListener('pointerup', ()=>{ dragging=false; });
+  stage.addEventListener('pointerleave', ()=>{ if(!dragging) autoRotate = !reduceMotion; });
+  stage.addEventListener('dblclick', ()=>{ autoRotate = !reduceMotion; });
 })();
 
+/* ============================= GEOLOCATION ============================= */
+const locateBtn = $('#locateBtn');
+const locationNote = $('#locationNote');
+let geoApplied = false;
+
+function setTopBarLocation(fullText, shortText){
+  const full = $('#locTextFull'), short = $('#locTextShort');
+  if(full) full.textContent = fullText;
+  if(short) short.textContent = shortText || fullText;
+}
+
+function applyGeoUpdate(){
+  hospitals.forEach(h=>{ const f = 0.55 + Math.random()*0.7; h.distance = Math.max(0.6, +(h.distance*f).toFixed(1)); h.eta = Math.max(3, Math.round(h.distance*2.1)); });
+  ambulancesList.forEach(a=>{ const f = 0.55 + Math.random()*0.7; a.eta = Math.max(3, Math.round(a.eta*f)); });
+  bloodBanks.forEach(b=>{ const f = 0.55 + Math.random()*0.7; b.distance = Math.max(0.6, +(b.distance*f).toFixed(1)); });
+  renderResourceList(); renderAmbulances(); renderBloodBanks();
+  $('#updatedAt').textContent = 'updated ' + new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}
+
+/**
+ * Shared location flow used by the hero "Use my current location" button
+ * and the emergency panel's "Find nearest care now" CTA. Callbacks let each
+ * caller customize its own busy/label/message state without duplicating
+ * the geolocation + data-refresh logic.
+ */
+function requestLocation({ onStart, onSuccess, onDenied, onUnavailable } = {}){
+  if(geoApplied){ onSuccess && onSuccess(); return; }
+  onStart && onStart();
+  if(!navigator.geolocation){
+    onUnavailable ? onUnavailable() : (onDenied && onDenied('unavailable'));
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    ()=>{
+      geoApplied = true;
+      applyGeoUpdate();
+      locationNote.textContent = 'Location shared — distances and ETAs updated live';
+      locationNote.classList.add('active'); locationNote.classList.remove('denied');
+      locateBtn.textContent = '📍 Location active'; locateBtn.disabled = true;
+      setTopBarLocation('Location active — showing nearby network', 'Location active');
+      onSuccess && onSuccess();
+    },
+    ()=>{
+      locationNote.textContent = 'Location permission denied — showing default distances for Chattogram';
+      locationNote.classList.add('denied');
+      locateBtn.disabled=false; locateBtn.textContent='📍 Use my current location';
+      onDenied && onDenied('denied');
+    },
+    {timeout:8000}
+  );
+}
+
+locateBtn.addEventListener('click', ()=>{
+  requestLocation({
+    onStart:()=>{ locateBtn.disabled = true; locateBtn.textContent = 'Locating…'; },
+    onUnavailable:()=>{
+      locationNote.textContent = 'Geolocation unavailable on this device — showing default distances for Chattogram';
+      locationNote.classList.add('denied');
+      locateBtn.disabled=false; locateBtn.textContent='📍 Use my current location';
+    }
+  });
+});
+
+/* ============================= EMERGENCY CALL ============================= */
+function triggerEmergencyCall(){
+  const nearest = [...hospitals].sort((a,b)=>a.distance-b.distance)[0];
+  if(confirm(`Call nearest ambulance now?\\n\\nNearest partner hospital: ${nearest.name} (${nearest.distance} km away)\\nThis will dial Sthir dispatch.`)){
+    window.location.href = 'tel:+8801700000000';
+  }
+}
+$('#emergencyCallBtn').addEventListener('click', triggerEmergencyCall);
+$('#footerEmergency').addEventListener('click', (e)=>{ e.preventDefault(); triggerEmergencyCall(); });
+
+/* ============================= RESOURCE TABS / SEARCH / SORT / FILTER ============================= */
+let activeTab='icu';
+const tabButtons = $$('.tab-btn');
+tabButtons.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    tabButtons.forEach(b=>{ b.setAttribute('aria-selected','false'); b.tabIndex=-1; });
+    btn.setAttribute('aria-selected','true'); btn.tabIndex=0;
+    activeTab = btn.dataset.tab;
+    ['icu','ambulance','blood'].forEach(t=>{ $('#panel-'+t).hidden = (t!==activeTab); });
+    updateToolbarForTab();
+    renderResourceList();
+  });
+  btn.addEventListener('keydown', (e)=>{
+    const idx = tabButtons.indexOf(btn);
+    if(e.key==='ArrowRight'){ tabButtons[(idx+1)%tabButtons.length].focus(); tabButtons[(idx+1)%tabButtons.length].click(); }
+    if(e.key==='ArrowLeft'){ tabButtons[(idx-1+tabButtons.length)%tabButtons.length].focus(); tabButtons[(idx-1+tabButtons.length)%tabButtons.length].click(); }
+  });
+});
+
+const sortSelect = $('#sortSelect'), searchInput = $('#searchInput'), verifiedOnly = $('#verifiedOnly'), sortLabel = $('#sortLabel');
+const verifiedToggleWrap = $('#verifiedToggleWrap');
+
+const tabConfig = {
+  icu: { placeholder:'Search hospitals…', sorts:[['distance','Distance'],['price','Price'],['rating','Rating']], showVerified:true },
+  ambulance: { placeholder:'Search ambulances…', sorts:[['distance','Distance'],['eta','ETA']], showVerified:false },
+  blood: { placeholder:'Search blood banks…', sorts:[['distance','Distance'],['units','Units in stock']], showVerified:false },
+};
+function updateToolbarForTab(){
+  const cfg = tabConfig[activeTab];
+  searchInput.placeholder = cfg.placeholder;
+  searchInput.setAttribute('aria-label', cfg.placeholder.replace('…',''));
+  verifiedToggleWrap.style.display = cfg.showVerified ? '' : 'none';
+  if(!cfg.showVerified) verifiedOnly.checked = false;
+  const currentVal = sortSelect.value;
+  sortSelect.innerHTML = cfg.sorts.map(([v,l])=>`<option value="${v}">${l}</option>`).join('');
+  const stillValid = cfg.sorts.some(([v])=>v===currentVal);
+  sortSelect.value = stillValid ? currentVal : cfg.sorts[0][0];
+  sortLabel.textContent = sortSelect.options[sortSelect.selectedIndex].textContent.toLowerCase();
+}
+updateToolbarForTab();
+
+[sortSelect, searchInput, verifiedOnly].forEach(el=>el.addEventListener('input', ()=>{ sortLabel.textContent = sortSelect.options[sortSelect.selectedIndex].textContent.toLowerCase(); renderResourceList(); }));
+
+function starString(rating){ const full = Math.round(rating); return '★★★★★'.slice(0,full) + '☆☆☆☆☆'.slice(0, 5-full); }
+
+function renderResourceList(){
+  if(activeTab==='icu') renderICU();
+  if(activeTab==='ambulance') renderAmbulanceTab();
+  if(activeTab==='blood') renderBloodTab();
+}
+
+function applyCommon(list, nameKey='name'){
+  let out = list.slice();
+  const q = searchInput.value.trim().toLowerCase();
+  if(q) out = out.filter(x=>x[nameKey].toLowerCase().includes(q));
+  if(verifiedOnly.checked) out = out.filter(x=>x.verified);
+  const sortBy = sortSelect.value;
+  out.sort((a,b)=>{
+    if(sortBy==='distance') return a.distance-b.distance;
+    if(sortBy==='price') return (a.price??0)-(b.price??0);
+    if(sortBy==='rating') return (b.rating??0)-(a.rating??0);
+    if(sortBy==='eta') return (a.eta??0)-(b.eta??0);
+    if(sortBy==='units') return (b.units??0)-(a.units??0);
+    return 0;
+  });
+  return out;
+}
+
+function renderICU(){
+  const panel = $('#panel-icu');
+  const list = applyCommon(hospitals);
+  if(!list.length){ panel.innerHTML = emptyState('No hospitals match your search','Try clearing filters or search a different name.'); return; }
+  panel.innerHTML = list.map(h=>`
+    <div class="res-card">
+      <div class="res-icon">${icon('icu')}</div>
+      <div class="res-main">
+        <div class="res-title-row">
+          <span class="res-name">${h.name}</span>
+          ${h.verified?'<span class="badge-verified">✓ Verified</span>':''}
+        </div>
+        <div class="res-meta">
+          <span>${h.area}</span>
+          <span class="stars">${starString(h.rating)}</span> <span>${h.rating}</span>
+          <span>${h.distance} km away</span>
+          <span>~${h.eta} min</span>
+          <span><span class="avail-dot ${h.free<=2?'low':''}"></span>${h.free} of ${h.total} free</span>
+        </div>
+      </div>
+      <div class="res-side">
+        <div class="res-price">৳${h.price.toLocaleString()} <small>/ day</small></div>
+        <button class="liquid-btn book-btn" data-id="${h.id}" data-kind="icu" type="button">Book bed</button>
+      </div>
+    </div>`).join('');
+  attachBookHandlers(panel);
+}
+
+function renderAmbulanceTab(){
+  const panel = $('#panel-ambulance');
+  const list = applyCommon(ambulancesList);
+  if(!list.length){ panel.innerHTML = emptyState('No ambulances match your search',''); return; }
+  panel.innerHTML = list.map(a=>`
+    <div class="res-card">
+      <div class="res-icon">${icon('ambulance')}</div>
+      <div class="res-main">
+        <div class="res-title-row"><span class="res-name">${a.name}</span></div>
+        <div class="res-meta">
+          <span>${a.type}</span><span>${a.location}</span><span>~${a.eta} min ETA</span>
+          <span><span class="avail-dot ${a.avail?'':'low'}"></span>${a.driver}</span>
+        </div>
+      </div>
+      <div class="res-side">
+        <button class="liquid-btn book-btn" data-id="${a.id}" data-kind="ambulance" type="button" ${a.avail?'':'disabled'}>Dispatch</button>
+      </div>
+    </div>`).join('');
+  attachBookHandlers(panel);
+}
+
+function renderBloodTab(){
+  const panel = $('#panel-blood');
+  const list = applyCommon(bloodBanks);
+  if(!list.length){ panel.innerHTML = emptyState('No blood banks match your search',''); return; }
+  panel.innerHTML = list.map(b=>`
+    <div class="res-card">
+      <div class="res-icon">${icon('blood')}</div>
+      <div class="res-main">
+        <div class="res-title-row"><span class="res-name">${b.name}</span></div>
+        <div class="res-meta">
+          <span>${b.area}</span><span>${b.distance} km away</span><span>updated ${b.updated}</span><span>${b.units} units in stock</span>
+        </div>
+      </div>
+      <div class="res-side">
+        <button class="liquid-btn book-btn" data-id="${b.id}" data-kind="blood" type="button">Reserve</button>
+      </div>
+    </div>`).join('');
+  attachBookHandlers(panel);
+}
+
+function emptyState(title,sub){
+  return `<div class="empty-state">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="margin:0 auto;color:var(--ink-400)"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    <h4>${title}</h4><p style="font-size:13px;">${sub}</p>
+  </div>`;
+}
+
+/* ============================= BOOKING MODAL ============================= */
+const overlay = $('#modalOverlay'), formView=$('#formView'), confirmView=$('#confirmView');
+let currentBooking = null;
+function attachBookHandlers(container){
+  container.querySelectorAll('.book-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>openBooking(btn.dataset.kind, btn.dataset.id));
+  });
+}
+function openBooking(kind, id){
+  let subject, summary, title, cta;
+  if(kind==='icu'){
+    subject = hospitals.find(h=>h.id===id);
+    title = 'Book ICU bed';
+    cta = 'Confirm ICU Booking';
+    summary = {Hospital:subject.name, Distance:subject.distance+' km', 'Available beds':subject.free+' of '+subject.total, 'Price/day':'৳'+subject.price.toLocaleString(), 'Est. arrival':'~'+subject.eta+' min'};
+  } else if(kind==='ambulance'){
+    subject = ambulancesList.find(a=>a.id===id);
+    title = 'Dispatch ambulance';
+    cta = 'Confirm Dispatch';
+    summary = {Vehicle:subject.name, From:subject.location, Destination:subject.dest, 'Est. arrival':'~'+subject.eta+' min'};
+  } else {
+    subject = bloodBanks.find(b=>b.id===id);
+    title = 'Reserve blood';
+    cta = 'Confirm Reservation';
+    summary = {Bank:subject.name, Distance:subject.distance+' km', 'Units in stock':subject.units, Updated:subject.updated};
+  }
+  currentBooking = {kind, subject};
+  $('#modalTitle').textContent = title;
+  $('#confirmBtnLabel').textContent = cta;
+  $('#summaryGrid').innerHTML = Object.entries(summary).map(([k,v])=>`<div><span>${k}</span>${v}</div>`).join('');
+  formView.classList.remove('hide'); confirmView.classList.remove('show');
+  $('#bookingForm').reset();
+  overlay.classList.add('open');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>$('#patientName').focus(), 80);
+}
+function closeModal(){
+  overlay.classList.remove('open');
+  document.body.style.overflow='';
+}
+$('#modalClose').addEventListener('click', closeModal);
+overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeModal(); });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && overlay.classList.contains('open')) closeModal(); });
+
+$('#bookingForm').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const id = 'STH-' + Math.floor(100000 + Math.random()*899999);
+  const now = new Date();
+  const timeStr = now.toLocaleString('en-US', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+  const bedNum = 'B-' + (Math.floor(Math.random()*24)+1);
+  const {kind, subject} = currentBooking;
+  const hospitalName = kind==='icu' ? subject.name : (kind==='ambulance' ? subject.dest : subject.name);
+  $('#confirmIdText').textContent = id;
+  $('#confirmDetails').innerHTML = `
+    <div class="row"><span>Hospital</span><span>${hospitalName}</span></div>
+    ${kind==='icu' ? `<div class="row"><span>Bed number</span><span>${bedNum}</span></div>`:''}
+    <div class="row"><span>Booking time</span><span>${timeStr}</span></div>
+    <div class="row"><span>Emergency contact</span><span>${$('#emergencyContact').value || '—'}</span></div>`;
+  formView.classList.add('hide'); confirmView.classList.add('show');
+  $('#directionsBtn').onclick = ()=>{
+    window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(hospitalName+' Chattogram'), '_blank', 'noopener');
+  };
+});
+$('#doneBtn').addEventListener('click', closeModal);
+
+/* ============================= HOW-IT-WORKS AMBULANCE / BLOOD RENDER ============================= */
+function renderAmbulances(){
+  $('#ambGrid').innerHTML = ambulancesList.map(a=>`
+    <div class="glass-card amb-card">
+      <div class="amb-type-icon">${icon('ambulance')}</div>
+      <h4>${a.name}</h4>
+      <div class="amb-line"><span>Type</span><b>${a.type}</b></div>
+      <div class="amb-line"><span>From</span><b>${a.location}</b></div>
+      <div class="amb-line"><span>Destination</span><b>${a.dest}</b></div>
+      <div class="eta-bar"><span class="eta-fill" style="animation-delay:${Math.random()*2}s"></span></div>
+      <div class="amb-line"><span>ETA</span><b>~${a.eta} min</b></div>
+      <span class="amb-status ${a.avail?'available':'enroute'}">${a.avail?'● Available':'● En route'}</span>
+      <button class="liquid-btn book-btn" data-id="${a.id}" data-kind="ambulance" type="button" style="margin-top:6px;" ${a.avail?'':'disabled'}>Dispatch ambulance</button>
+    </div>`).join('');
+  attachBookHandlers($('#ambGrid'));
+}
+
+function renderBloodGroups(){
+  $('#bloodGroupsGrid').innerHTML = bloodGroups.map(b=>`
+    <div class="glass-card blood-chip ${b.low?'low':''}">
+      <div class="grp">${b.g}</div>
+      <div class="units">${b.units} units</div>
+    </div>`).join('');
+}
+function renderBloodBanks(){
+  $('#bankList').innerHTML = bloodBanks.map(b=>`
+    <div class="res-card">
+      <div class="res-icon">${icon('blood')}</div>
+      <div class="res-main">
+        <div class="res-title-row"><span class="res-name">${b.name}</span></div>
+        <div class="res-meta"><span>${b.area}</span><span>${b.distance} km away</span><span>last updated ${b.updated}</span><span>${b.units} units available</span></div>
+      </div>
+      <div class="res-side"><button class="liquid-btn book-btn" data-id="${b.id}" data-kind="blood" type="button">Reserve</button></div>
+    </div>`).join('');
+  attachBookHandlers($('#bankList'));
+}
+
+/* ============================= LIVE ACTIVITY FEED ============================= */
+let activityEvents = [];
+function randomFrom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function makeActivityEvent(){
+  const type = randomFrom(['icu','ambulance','blood']);
+  let text, area;
+  if(type==='icu'){
+    const h = randomFrom(hospitals);
+    text = 'ICU bed booked at <b>'+h.name+'</b>';
+    area = h.area;
+  } else if(type==='ambulance'){
+    const a = randomFrom(ambulancesList);
+    text = '<b>'+a.name+'</b> dispatched toward '+a.dest;
+    area = a.location;
+  } else {
+    const b = randomFrom(bloodBanks);
+    const g = randomFrom(bloodGroups).g;
+    text = g+' blood reserved at <b>'+b.name+'</b>';
+    area = b.area;
+  }
+  return {id:'act-'+Math.random().toString(36).slice(2,9), type, text, area, time:new Date()};
+}
+
+function relativeTime(date){
+  const diffSec = Math.max(0, Math.round((Date.now()-date.getTime())/1000));
+  if(diffSec < 45) return 'Just now';
+  const min = Math.round(diffSec/60);
+  if(min < 60) return min+' min ago';
+  return Math.round(min/60)+' hr ago';
+}
+
+function renderActivity(newId){
+  const list = $('#activityList');
+  if(!list) return;
+  list.innerHTML = activityEvents.map(e=>`
+    <li class="activity-item${e.id===newId?' is-new':''}" data-id="${e.id}">
+      <div class="activity-icon ${e.type}">${icon(e.type)}</div>
+      <div class="activity-main">
+        <div class="activity-text">${e.text}</div>
+        <div class="activity-area">${e.area}</div>
+      </div>
+      <div class="activity-time" data-ts="${e.time.getTime()}">${relativeTime(e.time)}</div>
+    </li>`).join('');
+}
+
+function initActivityFeed(){
+  if(!$('#activityList')) return;
+  const now = Date.now();
+  activityEvents = [2,5,9,14,21,28].map(m=>{
+    const ev = makeActivityEvent();
+    ev.time = new Date(now - m*60000);
+    return ev;
+  });
+  renderActivity();
+  setInterval(()=>{
+    $$('.activity-time').forEach(t=>{ t.textContent = relativeTime(new Date(parseInt(t.dataset.ts,10))); });
+  }, 15000);
+  if(reduceMotion) return;
+  (function scheduleNext(){
+    setTimeout(()=>{
+      const ev = makeActivityEvent();
+      activityEvents.unshift(ev);
+      activityEvents = activityEvents.slice(0,6);
+      renderActivity(ev.id);
+      scheduleNext();
+    }, 8000 + Math.random()*6000);
+  })();
+}
+
+
+function renderOccupancy(){
+  const el = $('#occList');
+  el.innerHTML = occupancy.map(o=>`
+    <div class="occ-row" data-id="${o.id}">
+      <span class="name">${o.name}</span>
+      <span class="occ-bar-track"><span class="occ-bar-fill" data-pct="${o.pct}" data-cur="0"><span class="occ-bar-shine"></span></span></span>
+      <span class="occ-pct" data-val="0">0%</span>
+    </div>`).join('');
+}
+
+function animateOccValue(fillEl, pctEl, from, to, duration){
+  if(reduceMotion){ fillEl.style.width = to+'%'; pctEl.textContent = to+'%'; fillEl.dataset.cur = to; return; }
+  const start = performance.now();
+  function step(t){
+    const p = Math.min(1, (t-start)/duration);
+    const eased = 1 - Math.pow(1-p, 3);
+    const val = from + (to-from)*eased;
+    fillEl.style.width = val+'%';
+    pctEl.textContent = Math.round(val)+'%';
+    if(p<1) requestAnimationFrame(step);
+    else { fillEl.dataset.cur = to; pctEl.textContent = to+'%'; }
+  }
+  requestAnimationFrame(step);
+}
+
+function occEnterAnimation(container){
+  occupancy.forEach(o=>{
+    const row = container.querySelector('.occ-row[data-id="'+o.id+'"]');
+    if(!row) return;
+    const fill = $('.occ-bar-fill', row), pct = $('.occ-pct', row);
+    animateOccValue(fill, pct, 0, o.pct, reduceMotion?1:1500);
+  });
+}
+let occAnimated = false;
+function runOccEnterOnce(container){
+  if(occAnimated) return;
+  occAnimated = true;
+  occEnterAnimation(container);
+  startOccLiveUpdates();
+}
+const occIo = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      runOccEnterOnce(e.target);
+      occIo.unobserve(e.target);
+    }
+  });
+}, {threshold:.15});
+/* Safety net: some environments (headless capture, delayed layout) never fire the
+   IntersectionObserver in time — guarantee the bars fill in regardless. */
+setTimeout(()=>{ const el = $('#occList'); if(el) runOccEnterOnce(el); }, 1800);
+
+let occLiveStarted = false;
+function startOccLiveUpdates(){
+  if(occLiveStarted || reduceMotion) return;
+  occLiveStarted = true;
+  function scheduleNext(){
+    const delay = 8000 + Math.random()*4000;
+    setTimeout(()=>{
+      const idx = Math.floor(Math.random()*occupancy.length);
+      const o = occupancy[idx];
+      const delta = (Math.random()<0.5?-1:1) * (1 + Math.floor(Math.random()*3));
+      const next = Math.max(38, Math.min(94, o.pct + delta));
+      const row = document.querySelector('.occ-row[data-id="'+o.id+'"]');
+      if(row){
+        const fill = $('.occ-bar-fill', row), pct = $('.occ-pct', row);
+        const from = o.pct;
+        o.pct = next;
+        animateOccValue(fill, pct, from, next, 1200);
+        row.classList.add('just-updated');
+        setTimeout(()=>row.classList.remove('just-updated'), 1200);
+      }
+      resetUpdatedTimer('occ');
+      scheduleNext();
+    }, delay);
+  }
+  scheduleNext();
+}
+
+/* ============================= ETA CHART (LIVE) ============================= */
+let etaChartInstance=null;
+let etaChartStarted = false;
+
+function positionLiveOverlay(){
+  if(!etaChartInstance) return;
+  const meta = etaChartInstance.getDatasetMeta(0);
+  const lastPoint = meta.data[meta.data.length-1];
+  if(!lastPoint) return;
+  const glow = document.getElementById('chartPointGlow');
+  const tag = document.getElementById('chartLiveTag');
+  if(glow){ glow.style.transform = `translate(${lastPoint.x}px, ${lastPoint.y}px) translate(-50%,-50%)`; }
+  if(tag){ tag.style.transform = `translate(${lastPoint.x}px, ${lastPoint.y}px) translate(-50%, -230%)`; }
+}
+
+function renderEtaChart(){
+  const ctx = document.getElementById('etaChart');
+  etaChartInstance = new Chart(ctx, {
+    type:'line',
+    data:{ labels: etaByDay.labels, datasets:[{
+      label:'Avg ETA (min)', data: etaByDay.data, borderColor:'#2647c9', backgroundColor:'rgba(53,87,224,.12)',
+      fill:true, tension:.4, pointBackgroundColor:'#1c3aa8', pointBorderColor:'#fff', pointBorderWidth:1.5,
+      pointRadius:4, pointHoverRadius:6.5, borderWidth:2.4,
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      animation: reduceMotion? false : {duration:1400, easing:'easeOutCubic', onComplete: positionLiveOverlay},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#ffffff', titleColor:'#0d1327', bodyColor:'#333d5c',
+          borderColor:'#2647c9', borderWidth:1.4, padding:11, titleFont:{family:'JetBrains Mono', size:12, weight:'600'}, bodyFont:{family:'JetBrains Mono', size:11.5},
+          displayColors:false, cornerRadius:10,
+          callbacks:{
+            title:(items)=> fullDayNames[items[0].dataIndex] || etaByDay.labels[items[0].dataIndex],
+            label:(item)=> 'Response time: '+etaByDay.data[item.dataIndex].toFixed(1)+' min'
+          }
+        }
+      },
+      scales:{
+        y:{ beginAtZero:true, grid:{color:'#e2e7f0'}, ticks:{font:{family:'JetBrains Mono',size:11}, color:'#5b6584'} },
+        x:{ grid:{display:false}, ticks:{font:{family:'JetBrains Mono',size:11}, color:'#5b6584'} }
+      }
+    }
+  });
+  requestAnimationFrame(()=>requestAnimationFrame(positionLiveOverlay));
+  window.addEventListener('resize', ()=>requestAnimationFrame(positionLiveOverlay));
+}
+
+function startEtaLiveUpdates(){
+  if(reduceMotion) return;
+  function scheduleNext(){
+    const delay = 10000 + Math.random()*5000;
+    setTimeout(()=>{
+      const last = etaByDay.data.length-1;
+      const touchTwo = Math.random() < 0.35;
+      const idxs = touchTwo ? [last-1, last] : [last];
+      idxs.forEach(i=>{
+        const delta = (Math.random()<0.5?-1:1) * (0.2 + Math.random()*0.6);
+        etaByDay.data[i] = Math.max(8.5, Math.min(14.5, +(etaByDay.data[i] + delta).toFixed(1)));
+      });
+      etaChartInstance.update();
+      resetUpdatedTimer('eta');
+      const tag = document.getElementById('chartLiveTag');
+      if(tag){ tag.classList.add('pulse-once'); setTimeout(()=>tag.classList.remove('pulse-once'), 700); }
+      scheduleNext();
+    }, delay);
+  }
+  scheduleNext();
+}
+
+function initEtaChartLazy(){
+  const wrap = document.querySelector('#etaCard .chart-wrap');
+  if(!wrap) return;
+  function startOnce(){
+    if(etaChartStarted) return;
+    etaChartStarted = true;
+    renderEtaChart();
+    startEtaLiveUpdates();
+  }
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ startOnce(); io.unobserve(e.target); } });
+  }, {threshold:.15});
+  io.observe(wrap);
+  /* Safety net: guarantee the chart renders with demo data even if the
+     IntersectionObserver never reports an intersection in time. */
+  setTimeout(startOnce, 1800);
+}
+
+/* ============================= FAQ ============================= */
+function renderFaq(){
+  $('#faqList').innerHTML = faqs.map((f,i)=>`
+    <div class="glass-card faq-item" data-open="false">
+      <button class="faq-q" aria-expanded="false" aria-controls="faq-a-${i}" id="faq-q-${i}">
+        ${f.q}
+        <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="faq-a" id="faq-a-${i}" role="region" aria-labelledby="faq-q-${i}"><p>${f.a}</p></div>
+    </div>`).join('');
+  $$('.faq-item').forEach(item=>{
+    const q = $('.faq-q', item), a = $('.faq-a', item);
+    q.addEventListener('click', ()=>{
+      const open = item.dataset.open === 'true';
+      item.dataset.open = (!open).toString();
+      q.setAttribute('aria-expanded', (!open).toString());
+      a.style.maxHeight = open ? '0px' : a.scrollHeight+'px';
+    });
+  });
+}
+
+/* ============================= TESTIMONIAL DOTS (mobile) ============================= */
+function renderTestiDots(){
+  const track = $('#testiTrack');
+  const cards = $$('.testi-card', track);
+  const dotsWrap = $('#testiDots');
+  dotsWrap.innerHTML = cards.map((_,i)=>`<button aria-label="Go to story ${i+1}" aria-current="${i===0}"></button>`).join('');
+  const dots = $$('button', dotsWrap);
+  dots.forEach((d,i)=>d.addEventListener('click', ()=>{ cards[i].scrollIntoView({behavior: reduceMotion?'auto':'smooth', inline:'center'}); }));
+  if('IntersectionObserver' in window){
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          const idx = cards.indexOf(e.target);
+          dots.forEach((d,i)=>d.setAttribute('aria-current', (i===idx).toString()));
+        }
+      });
+    },{root:track, threshold:.6});
+    cards.forEach(c=>io.observe(c));
+  }
+}
+
+/* ============================= EMERGENCY CARE PANEL (FAQ side) ============================= */
+const emergencyStats = [
+  {id:'icu', label:'ICU beds online', value:147, icon:'icu', min:120, max:165},
+  {id:'amb', label:'Ambulances ready', value:27, icon:'ambulance', min:18, max:32},
+  {id:'blood', label:'Blood units available', value:1286, icon:'blood', min:1150, max:1360},
+  {id:'hosp', label:'Partner hospitals', value:12, icon:'hospital', min:12, max:12},
+];
+
+function renderEmergencyStats(){
+  const el = $('#ecStatsGrid');
+  if(!el) return;
+  el.innerHTML = emergencyStats.map(s=>`
+    <div class="ec-stat" data-id="${s.id}">
+      <div class="ec-stat-icon">${icon(s.icon)}</div>
+      <div><div class="ec-stat-num" data-target="${s.value}">0</div><div class="ec-stat-label">${s.label}</div></div>
+    </div>`).join('');
+}
+
+function animateEcCount(el, from, to, duration){
+  if(reduceMotion){ el.textContent = to.toLocaleString(); return; }
+  const start = performance.now();
+  function step(t){
+    const p = Math.min(1,(t-start)/duration);
+    const eased = 1 - Math.pow(1-p,3);
+    el.textContent = Math.round(from + (to-from)*eased).toLocaleString();
+    if(p<1) requestAnimationFrame(step);
+    else el.textContent = to.toLocaleString();
+  }
+  requestAnimationFrame(step);
+}
+
+let ecStatsAnimated = false;
+function runEcStatsEnterOnce(){
+  if(ecStatsAnimated) return;
+  ecStatsAnimated = true;
+  emergencyStats.forEach(s=>{
+    const numEl = document.querySelector('.ec-stat[data-id="'+s.id+'"] .ec-stat-num');
+    if(numEl) animateEcCount(numEl, 0, s.value, reduceMotion?1:1500);
+  });
+  startEcLiveUpdates();
+}
+
+function startEcLiveUpdates(){
+  if(reduceMotion) return;
+  function scheduleNext(){
+    const delay = 9000 + Math.random()*5000;
+    setTimeout(()=>{
+      const candidates = emergencyStats.filter(s=>s.max>s.min);
+      const s = candidates[Math.floor(Math.random()*candidates.length)];
+      const delta = Math.round((Math.random()<0.5?-1:1) * (1 + Math.random()* (s.id==='blood'?14:2)));
+      const next = Math.max(s.min, Math.min(s.max, s.value + delta));
+      const from = s.value;
+      s.value = next;
+      const numEl = document.querySelector('.ec-stat[data-id="'+s.id+'"] .ec-stat-num');
+      if(numEl) animateEcCount(numEl, from, next, 1000);
+      scheduleNext();
+    }, delay);
+  }
+  scheduleNext();
+}
+
+function initEcPanel(){
+  renderEmergencyStats();
+  const panel = $('#ecPanel');
+  if(panel){
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting){ runEcStatsEnterOnce(); io.unobserve(e.target); } });
+    }, {threshold:.2});
+    io.observe(panel);
+    setTimeout(runEcStatsEnterOnce, 2200); // safety net, same pattern as the analytics section
+  }
+
+  const ctaBtn = $('#ecCtaBtn');
+  const noteEl = $('#ecLocationNote');
+  if(!ctaBtn) return;
+  ctaBtn.addEventListener('click', ()=>{
+    requestLocation({
+      onStart:()=>{ ctaBtn.disabled = true; noteEl.textContent = 'Finding nearest care…'; noteEl.classList.remove('denied','active'); },
+      onSuccess:()=>{
+        ctaBtn.disabled = false;
+        noteEl.textContent = 'Nearby resources updated — showing closest first';
+        noteEl.classList.add('active'); noteEl.classList.remove('denied');
+        document.getElementById('icu-beds').scrollIntoView({behavior: reduceMotion?'auto':'smooth', block:'start'});
+      },
+      onDenied:()=>{
+        ctaBtn.disabled = false;
+        noteEl.textContent = 'Location not shared — showing default Chattogram network';
+        noteEl.classList.add('denied'); noteEl.classList.remove('active');
+      },
+      onUnavailable:()=>{
+        ctaBtn.disabled = false;
+        noteEl.textContent = 'Geolocation unavailable — showing default Chattogram network';
+        noteEl.classList.add('denied'); noteEl.classList.remove('active');
+      }
+    });
+  });
+}
+
+/* ============================= INIT ============================= */
+renderResourceList();
+renderAmbulances();
+renderBloodGroups();
+renderBloodBanks();
+initActivityFeed();
+renderOccupancy();
+occIo.observe($('#occList'));
+initEtaChartLazy();
+renderFaq();
+renderTestiDots();
+initEcPanel();
+updatedTickers.occ = makeUpdatedTicker('occUpdated');
+updatedTickers.eta = makeUpdatedTicker('etaUpdated');
+
+/* locating text settle */
+setTimeout(()=>{ if(!geoApplied) setTopBarLocation('Chattogram, BD — 18 partners live', 'Chattogram, BD'); }, 2600);
+
+/* partner CTA */
+$('#partnerCta').addEventListener('click', (e)=>{ e.preventDefault(); alert('Thanks for your interest — the hospital partnerships team will reach out within one business day.'); });
+})();
 </script>
 </body>
 </html>
